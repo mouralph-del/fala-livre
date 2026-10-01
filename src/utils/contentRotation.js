@@ -1,4 +1,4 @@
-function normalizeThemeIds(themeIds) {
+export function normalizeThemeIds(themeIds) {
   if (!Array.isArray(themeIds)) return []
 
   return [...new Set(themeIds.filter(themeId => typeof themeId === 'string' && themeId.trim()))]
@@ -60,6 +60,10 @@ export function getCurrentTheme(rotationState) {
   if (!rotationState || !Array.isArray(rotationState.order)) return null
   if (!Number.isInteger(rotationState.currentIndex)) return null
   return rotationState.order[rotationState.currentIndex] || null
+}
+
+export function reconcileRotation(rotationState, themeIds, randomFn = Math.random) {
+  return normalizeRotationState(rotationState, themeIds, randomFn)
 }
 
 export function normalizeRotationState(rotationState, themeIds, randomFn = Math.random) {
