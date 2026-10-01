@@ -1,0 +1,110 @@
+﻿.app-header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.header-content { max-width: 1180px; width: calc(100% - 48px); min-height: 96px; margin: 0 auto; padding-block: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark { width: 60px; height: 56px; }
+.brand-copy { min-width: 0; }
+.brand-name { font-size: 30px; font-weight: 900; letter-spacing: -0.8px; color: #165D8C; }
+.brand p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.profile-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 17px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.profile-button svg { width: 19px; height: 19px; }
+.profile-button:hover { background: #F7F8FA; border-color: var(--primary); }
+.home-surround { position: relative; isolation: isolate; }
+/* Only the decorative layer is clipped; content and focus outlines remain visible. */
+.home-decoration { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
+.home-decoration::before, .home-decoration::after { content: ''; position: absolute; width: clamp(160px, 19vw, 300px); height: 280px; border-radius: 48% 52% 67% 33%; }
+.home-decoration::before { left: -90px; bottom: 0; background: #E1EDFA; transform: rotate(-24deg); }
+.home-decoration::after { right: -90px; bottom: 5px; background: #E0EEE6; transform: rotate(32deg); }
+.home { max-width: 1180px; width: calc(100% - 48px); margin: 0 auto; padding-block: 34px 40px; }
+.welcome { margin-bottom: 28px; padding-inline: 48px; }
+
+.welcome h1 { color: #203F69; font-size: clamp(32px, 4vw, 42px); line-height: 1.25; font-weight: 800; letter-spacing: -1px; }
+.welcome p { margin-top: 10px; font-size: 18px; line-height: 1.5; color: var(--muted); }
+.activity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.activity-card { min-width: 0; display: grid; grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr); align-items: center; gap: 20px; min-height: 312px; padding: 24px 28px 24px 12px; border: 1px solid var(--border); border-radius: 28px; box-shadow: 0 4px 16px rgb(37 49 60 / 3%); overflow-wrap: anywhere; text-align: left; }
+.activity-card--learn { background: #E5F1FE; border-color: #DCE6F0; }
+.activity-card--play { background: #E7F3EC; border-color: #DAE8E1; }
+.activity-illustration { display: block; width: 100%; max-width: 280px; height: auto; aspect-ratio: 28 / 27; object-fit: contain; justify-self: center; }
+.activity-content { min-height: 244px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.activity-card h2 { color: #165D8C; font-size: clamp(25px, 2.5vw, 36px); letter-spacing: 0.8px; line-height: 1.4; }
+.activity-card--play h2 { color: #166562; }
+.activity-card p { margin-top: 10px; margin-bottom: 18px; color: #586671; font-size: 17px; line-height: 1.6; }
+.start-button { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; min-height: 48px; margin-top: auto; padding: 12px 18px; border: 1px solid #D1DEEC; border-radius: 999px; background: white; color: #165D8C; font-weight: 700; }
+.start-button:hover { background: #F3F7FC; border-color: var(--primary); }
+.activity-card--play .start-button { background: white; border-color: #CDDFD4; color: #166562; }
+.activity-card--play .start-button:hover { background: #F3F8F5; border-color: var(--secondary); }
+.progress { margin-top: 24px; }
+.section-heading { margin-bottom: 12px; }
+.section-heading h2 { display: flex; align-items: center; gap: 10px; font-size: 29px; color: #203F69; line-height: 1.4; }
+.section-heading h2 svg { width: 28px; height: 28px; color: var(--primary); }
+
+.progress-card { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 18px 12px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); box-shadow: 0 4px 16px rgb(37 49 60 / 2%); }
+.progress-card > div { min-width: 0; text-align: center; padding-inline: 6px; overflow-wrap: anywhere; }
+.progress-card > div + div { border-left: 1px solid var(--border); }
+.progress-card dt { font-size: 16px; line-height: 1.5; color: var(--muted); }
+.progress-icon { display: grid; place-items: center; width: 48px; height: 48px; margin: 0 auto 8px; border-radius: 12px; background: #EDF2F8; color: #436B94; }
+.progress-icon--warm { background: #FBF3DA; color: #826B32; }
+.progress-icon svg { width: 36px; height: 36px; }
+.progress-icon--warm svg { fill: #E5C878; }
+.progress-card dd { margin-top: 6px; font-size: 36px; color: #203F69; line-height: 1.2; font-weight: 800; }
+.positive-message { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 22px; padding: 18px 20px; border: 1px solid #E3ECE7; border-radius: 18px; background: #E7F3EC; color: #46655D; text-align: center; font-size: 18px; font-weight: 700; line-height: 1.6; }
+
+.progress-icon--green { background: #EAF3E9; color: #57734D; }
+
+.home-decoration span { position: absolute; top: -145px; left: -140px; width: 330px; height: 300px; border-radius: 50%; background: #E3EEFC; }
+
+@media (max-width: 900px) {
+  .welcome { padding-inline: 0; }
+  .activity-card { grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 24px; text-align: center; }
+  .activity-illustration { width: 180px; max-width: 100%; }
+  .activity-content { min-height: 0; align-items: center; width: 100%; height: 100%; }
+}
+
+@media (max-width: 600px) {
+  .header-content { width: calc(100% - 32px); min-height: 88px; padding-block: 16px; }
+  .brand { gap: 8px; }
+  .brand-mark { width: 36px; height: 36px; }
+  .brand-name { font-size: 23px; }
+  .brand p { font-size: 11px; }
+  .profile-button { padding: 10px 12px; gap: 6px; }
+  .home { width: calc(100% - 32px); padding-block: 28px 32px; }
+  .welcome { margin-bottom: 24px; }
+  .welcome p { font-size: 16px; }
+  .activity-grid { gap: 12px; }
+  .activity-card { min-height: 0; gap: 10px; grid-template-rows: auto 1fr; padding: 18px 12px; border-radius: 20px; }
+  .activity-illustration { width: 120px; height: auto; margin-bottom: 0; }
+  .activity-card h2 { font-size: 17px; letter-spacing: 0.3px; }
+  .activity-card p { font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
+  .section-heading h2 { font-size: 24px; }
+  .start-button { font-size: 14px; padding: 10px; }
+  .progress { margin-top: 26px; }
+  .progress-card { padding: 20px 6px; }
+  .progress-card dt { font-size: 12px; }
+  .progress-card dd { font-size: 30px; }
+  .progress-icon { width: 48px; height: 48px; }
+  .progress-icon svg { width: 34px; height: 34px; }
+  .positive-message { font-size: 13px; padding: 16px 12px; }
+  .home-decoration::before { left: -75px; }
+  .home-decoration::after { right: -75px; }
+}
+
+@media (max-width: 359px) {
+  .header-content { width: calc(100% - 24px); gap: 8px; }
+  .brand { gap: 6px; }
+  .brand-mark { width: 28px; height: 30px; }
+  .brand-name { font-size: 22px; }
+  .brand p { font-size: 10px; }
+  .profile-button { padding: 10px 8px; font-size: 13px; }
+  .profile-button svg { width: 16px; height: 16px; }
+  .home { width: calc(100% - 24px); }
+  .welcome p { font-size: 15px; }
+  .activity-grid { gap: 10px; }
+  .activity-card { padding: 16px 10px; }
+  .activity-illustration { width: 110px; height: auto; }
+  .activity-card h2 { font-size: 16px; letter-spacing: 0; }
+  .activity-card p { font-size: 12px; }
+  .start-button { font-size: 13px; padding-inline: 9px; }
+}
+
+
+
+

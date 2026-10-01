@@ -1,0 +1,50 @@
+.situations-page { max-width: 1000px; width: calc(100% - 48px); margin: auto; padding: 20px 0 40px; }
+.situations-back { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; margin-bottom: 16px; color: #165D8C; border-radius: 12px; text-decoration: none; font-weight: 700; }
+.situations-back:hover { background: #E5F1FE; }
+.situations-intro h1 { font-size: clamp(28px, 3.4vw, 42px); line-height: 1.25; color: #203F69; }
+.situations-intro p { margin-top: 10px; color: var(--muted); line-height: 1.5; }
+.situations-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; margin: 24px 0; }
+.situations-stages li { display: flex; align-items: center; gap: 8px; padding: 10px; border-bottom: 3px solid transparent; color: var(--muted); }
+.situations-stages li[aria-current] { border-bottom-color: #365E87; color: #203F69; font-weight: 800; }
+.situations-stages span { display: grid; place-items: center; min-width: 28px; height: 28px; border-radius: 50%; background: #E5F1FE; }
+.situations-panel { padding: 28px; background: white; border: 1px solid var(--border); border-radius: 28px; }
+.situations-panel h2 { font-size: 24px; line-height: 1.4; color: #203F69; }
+.situation-context { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+.situation-context > img { width: 150px; height: 150px; object-fit: contain; }
+.situation-context > div { min-width: 0; }
+.situation-context p { margin: 8px 0 16px; color: var(--muted); line-height: 1.5; }
+.situations-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; max-width: 100%; padding: 12px 16px; border: 1px solid #CDDAE6; border-radius: 14px; background: #E5F1FE; color: #165D8C; font-weight: 700; cursor: pointer; }
+.situations-action:hover { background: #D9EAF9; border-color: #365E87; }
+.situations-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 20px; }
+.situation-option { min-width: 0; display: flex; flex-direction: column; border-radius: 20px; }
+.situation-option > .communication-card { flex: 1; }
+.situation-option--hint { outline: 3px solid #365E87; outline-offset: 3px; }
+.situation-hint-label { padding: 10px; background: #E7F3EC; color: #166562; font-size: 14px; font-weight: 700; border-radius: 16px 16px 0 0; }
+.situation-feedback:not(:empty) { margin: 16px 0; padding: 16px; border-radius: 16px; background: #E7F3EC; color: #166562; line-height: 1.6; }
+.situation-help-status, .situation-audio-status { color: var(--muted); line-height: 1.5; font-size: 14px; }
+.situation-help-status:not(:empty), .situation-audio-status:not(:empty) { margin-top: 12px; }
+.situation-phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 0; list-style: none; margin: 20px 0; }
+.situation-phrase li { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; background: #E7F3EC; border-radius: 18px; color: #166562; font-weight: 800; }
+.situation-phrase img { width: 110px; max-width: 100%; height: auto; object-fit: contain; }
+.situations-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.situations-credit { margin-top: 24px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.situations-credit a { display: inline-flex; align-items: center; min-height: 44px; color: #165D8C; border-radius: 4px; }
+@media (max-width: 768px) {
+  .situations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .situations-page { width: calc(100% - 32px); padding-top: 8px; }
+  .situations-back { margin-bottom: 8px; }
+  .situations-panel { padding: 18px 14px; border-radius: 20px; }
+  .situations-panel h2 { font-size: 22px; }
+  .situations-stages { gap: 4px; font-size: 13px; }
+  .situations-stages li { flex-direction: column; padding: 8px 2px; }
+  .situation-context { flex-direction: column; text-align: center; gap: 12px; }
+  .situation-context > img { width: 120px; height: 120px; }
+  .situations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .situation-phrase { gap: 8px; }
+  .situation-phrase li { padding: 12px 6px; font-size: 13px; }
+}
+@media (max-width: 430px) {
+  .situations-grid { grid-template-columns: 1fr; }
+}

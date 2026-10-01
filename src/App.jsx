@@ -1,0 +1,136 @@
+import './App.css'
+
+import ActivityIllustration from './components/ActivityIllustration'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
+import Learn from './pages/Learn'
+import Communication from './pages/Communication'
+import Profile from './pages/Profile'
+import Games from './pages/Games'
+import { games } from './data/games'
+import DailySituations from './pages/DailySituations'
+import Writing from './pages/Writing'
+import EducationalKeyboard from './pages/EducationalKeyboard'
+import Notebook from './pages/Notebook'
+import WordsAndPhrases from './pages/WordsAndPhrases'
+
+function subscribeToRoute(callback) {
+  window.addEventListener('hashchange', callback)
+  return () => window.removeEventListener('hashchange', callback)
+}
+
+function getRoute() {
+  const game = games.find(item => item.route === window.location.hash)
+  if (game) return 'games/' + game.id
+  if (window.location.hash === '#/jogar') return 'games'
+  if (window.location.hash === '#/aprender/situacoes') return 'situations'
+  if (window.location.hash === '#/aprender/escrever') return 'writing'
+  if (window.location.hash === '#/aprender/escrever/teclado') return 'keyboard'
+  if (window.location.hash === '#/aprender/escrever/caderno') return 'notebook'
+  if (window.location.hash === '#/aprender/palavras-frases') return 'words'
+  if (window.location.hash === '#/perfil') return 'profile'
+  if (window.location.hash === '#/aprender/comunicar') return 'communication'
+  return window.location.hash === '#/aprender' ? 'learn' : 'home'
+}
+
+function Icon({ name }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {name === 'activities' && <><path d="M3 21h18" /><rect x="4" y="12" width="4" height="9" rx="1" /><rect x="10" y="7" width="4" height="14" rx="1" /><rect x="16" y="3" width="4" height="18" rx="1" /></>}
+      {name === 'points' && <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />}
+      {name === 'award' && <><path d="M7 3h10v6a5 5 0 0 1-10 0Z" fill="#E5C878" /><path d="M7 5H3v3a4 4 0 0 0 4 4M17 5h4v3a4 4 0 0 1-4 4M12 14v5M8 21h8M9 19h6" /></>}
+      {name === 'growth' && <><path d="M12 21V11M12 16C5 16 3 12 3 7c6 0 9 3 9 9ZM12 12c0-6 3-9 9-9 0 6-3 9-9 9Z" /></>}
+      {name === 'profile' && <><circle cx="12" cy="8" r="3.5" /><path d="M5 21v-2a7 7 0 0 1 14 0v2" /></>}
+    </svg>
+  )
+}
+
+function Brand() {
+  return (
+    <div className="brand">
+      <svg className="brand-mark" viewBox="0 0 56 52" aria-hidden="true">
+        <path d="M22 18h20c7 0 12 5 12 12v15l-10-5H32c-7 0-10-4-10-10Z" fill="#78A6A3" />
+        <path d="M3 14C3 7 8 3 15 3h17c7 0 12 4 12 11v10c0 7-5 11-12 11H17L6 43V32c-2-2-3-5-3-8Z" fill="#4F7CAC" />
+        <circle cx="16" cy="15" r="2" fill="white" />
+        <circle cx="30" cy="15" r="2" fill="white" />
+        <path d="M17 23q6 6 12 0" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+      <div className="brand-copy">
+        <span className="brand-name">Fala Livre</span>
+        <p>Comunicar • Aprender • Conectar</p>
+      </div>
+    </div>
+  )
+}
+
+function ActivityCard({ title, description, variant, action }) {
+  return (
+    <article className={`activity-card activity-card--${variant}`}>
+      <ActivityIllustration variant={variant} />
+      <div className="activity-content">
+        <h2>{title}</h2>
+        <p>{description}</p>
+        <button className="start-button" type="button" aria-label={variant === 'learn' ? 'Começar a aprender' : 'Começar a jogar'} onClick={() => { window.location.hash = variant === 'learn' ? '/aprender' : '/jogar' }}>
+          {action} <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function App() {
+  const route = useSyncExternalStore(subscribeToRoute, getRoute)
+  const previousRoute = useRef(route)
+
+  useEffect(() => {
+    document.title = route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : 'Fala Livre'
+    if (route !== previousRoute.current) {
+      window.scrollTo(0, 0)
+      document.getElementById('conteudo')?.focus({ preventScroll: true })
+    }
+    previousRoute.current = route
+  }, [route])
+
+  return (
+    <>
+      <a className="skip-link" href="#conteudo" onClick={(event) => { event.preventDefault(); document.getElementById('conteudo')?.focus() }}>Pular para o conteúdo</a>
+      <header className="app-header">
+        <div className="header-content">
+          <Brand />
+          <button className="profile-button" type="button" onClick={() => { window.location.hash = '/perfil' }}>
+            <Icon name="profile" />Perfil
+          </button>
+        </div>
+      </header>
+      <div className="home-surround">
+        <div className="home-decoration" aria-hidden="true"><span /></div>
+        {route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : <main id="conteudo" className="home" tabIndex={-1}>
+          <section className="welcome" aria-labelledby="welcome-title">
+            <h1 id="welcome-title">Olá, Pedro</h1>
+            <p>O que você gostaria de fazer hoje?</p>
+          </section>
+          <div className="activity-grid">
+            <ActivityCard title="APRENDER" description={<>Comunicação, palavras<br />e escrita para o dia a dia.</>} variant="learn" action="Começar" />
+            <ActivityCard title="JOGAR" description={<>Jogos e atividades<br />divertidas para aprender.</>} variant="play" action="Jogar" />
+          </div>
+
+          <section className="progress" aria-labelledby="progress-title">
+            <div className="section-heading">
+              <h2 id="progress-title"><Icon name="activities" />Meu progresso</h2>
+            </div>
+            <dl className="progress-card" aria-label="Progresso com dados demonstrativos">
+              <div><dt><span className="progress-icon"><Icon name="activities" /></span>Atividades</dt><dd>3</dd></div>
+              <div><dt><span className="progress-icon progress-icon--warm"><Icon name="points" /></span>Pontos</dt><dd>120</dd></div>
+              <div><dt><span className="progress-icon progress-icon--green"><Icon name="award" /></span>Conquistas</dt><dd>2</dd></div>
+            </dl>
+          </section>
+          <p className="positive-message"><Icon name="growth" /><span>Cada pequeno passo é uma grande conquista!</span></p>
+        </main>}
+      </div>
+    </>
+  )
+}
+
+export default App
+
+
+

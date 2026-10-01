@@ -1,0 +1,54 @@
+import './Learn.css'
+
+const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', routine: '/aprender/situacoes' }
+
+const activities = [
+  { id: 'communicate', title: 'COMUNICAR', description: 'Expresse desejos, necessidades e ideias.', tone: 'blue' },
+  { id: 'words', title: 'PALAVRAS E FRASES', description: 'Aprenda palavras e construa pequenas frases.', tone: 'green' },
+  { id: 'write', title: 'ESCREVER', description: 'Pratique a escrita do seu jeito.', detail: 'Teclado ou caderno', tone: 'green' },
+  { id: 'routine', title: 'SITUAÇÕES DO DIA A DIA', description: 'Aprenda com situações e escolhas do cotidiano.', tone: 'blue' },
+]
+
+function LearningIllustration({ activity }) {
+  return (
+    <svg className="learning-illustration" viewBox="0 0 100 90" fill="none" aria-hidden="true">
+      <path d="M10 49C6 23 28 8 52 10c30 1 45 20 38 46-7 25-35 30-57 21C19 72 12 61 10 49Z" fill="currentColor" opacity=".09" />
+      <g stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        {activity === 'communicate' && <><path d="M35 38h37q9 0 9 9v24l-12-7H45q-10 0-10-10Z" fill="#FFFFFF" /><path d="M20 20h39q10 0 10 10v21q0 10-10 10H37L23 72V60q-9-2-9-11V30q0-10 6-10Z" fill="#FFFFFF" /><path d="M29 36h24M29 46h16" /></>}
+        {activity === 'words' && <><rect x="17" y="19" width="42" height="49" rx="9" fill="#FFFFFF" transform="rotate(-8 38 44)" /><rect x="47" y="38" width="36" height="36" rx="8" fill="#FFFFFF" /><path d="m27 52 9-22 9 22m-15-7h12M58 49h12m-12 8h15m-15 8h9" /></>}
+        {activity === 'write' && <><path d="M18 28q15-6 31 2 16-8 32-2v43q-17-4-32 3-15-7-31-3Z" fill="#FFFFFF" /><path d="M49 32v39M26 43h13m-13 9h13m-13 9h13" /><path d="m54 52 17-35q3-5 8-2l3 2q4 2 1 7L66 59l-13 8Z" fill="#DDEAE5" /><path d="m69 22 11 6M54 52l12 7" /></>}
+        {activity === 'routine' && <><path d="m14 44 36-28 36 28M23 39v34h54V39" fill="#FFFFFF" /><path d="M42 73V52h17v21" /><rect x="31" y="39" width="9" height="9" rx="2" /><path d="M63 21v-7h11v15" /></>}
+      </g>
+    </svg>
+  )
+}
+
+export default function Learn() {
+  return (
+    <main id="conteudo" className="learn-page" tabIndex={-1}>
+      <a className="learn-back" href="#/">← Início</a>
+      <section className="learn-intro" aria-labelledby="learn-title">
+        <h1 id="learn-title">O que vamos aprender hoje?</h1>
+        <p>Escolha uma atividade para começar.</p>
+      </section>
+      <div className="learning-grid">
+        {activities.map(({ id, title, description, detail, tone }) => (
+          <article className={`learning-card learning-card--${tone}`} key={id}>
+            <LearningIllustration activity={id} />
+            <div className="learning-content">
+              <h2><span className="learning-title-desktop">{title}</span><span className="learning-title-mobile">{title === 'PALAVRAS E FRASES' ? <>PALAVRAS<span className="learning-title-line"> E FRASES</span></> : title === 'SITUAÇÕES DO DIA A DIA' ? <>SITUAÇÕES<span className="learning-title-line"> DO DIA A DIA</span></> : title}</span></h2>
+              <p>{description}</p>
+              {detail && <span className="learning-detail">{detail}</span>}
+              <button className="learning-start" type="button" aria-disabled={activityRoutes[id] ? undefined : true} aria-label={activityRoutes[id] ? "Começar: " + title.toLowerCase() : `Começar: ${title.toLowerCase()} — em breve`} onClick={activityRoutes[id] ? () => { window.location.hash = activityRoutes[id] } : undefined}>
+                Começar <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </main>
+  )
+}
+
+
+

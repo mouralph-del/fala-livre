@@ -1,0 +1,104 @@
+﻿.path-page { max-width: 1240px; width: calc(100% - 48px); margin: auto; padding: 12px 0 32px; }
+.path-back { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; color: #165D8C; font-weight: 700; text-decoration: none; }
+.path-back:hover { background: #E5F1FE; }
+.path-intro h1 { color: #203F69; font-size: clamp(28px, 3.4vw, 38px); line-height: 1.25; }
+.path-levels { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.path-level { min-height: 44px; padding: 8px 14px; border: 1px solid #CDDAE6; border-radius: 12px; background: white; color: #165D8C; font-weight: 700; cursor: pointer; }
+.path-level:hover { background: #E5F1FE; border-color: #365E87; }
+.path-level--active { background: #E7F3EC; border-color: #166562; color: #16564E; }
+.path-level:focus-visible { outline: 3px solid #365E87; outline-offset: 3px; }
+.path-page h2 { font-size: 23px; line-height: 1.4; color: #203F69; }
+.path-page p { line-height: 1.5; }
+.path-adventure { display: grid; grid-template-columns: minmax(0, 27fr) minmax(0, 73fr); grid-template-rows: auto 1fr; grid-template-areas: 'mission board' 'controls board'; align-items: start; gap: 16px 20px; margin-top: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 24px; background: white; box-shadow: 0 5px 20px rgb(37 49 60 / 4%); }
+.path-adventure > section { min-width: 0; }
+.path-situation { grid-area: mission; padding: 16px; background: #EDF5EF; border: 1px solid #D6E7DC; border-radius: 18px; }
+.path-mission-label { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 14px; color: #166562; font-weight: 800; }
+.path-mission-label img { width: 52px; height: 52px; padding: 4px; border-radius: 12px; background: white; object-fit: contain; }
+.path-situation .path-action { margin-top: 16px; }
+.path-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; max-width: 100%; padding: 10px 14px; border: 1px solid #CDDAE6; border-radius: 14px; background: #E5F1FE; color: #165D8C; font-weight: 700; cursor: pointer; }
+.path-action:hover:not(:disabled) { border-color: #365E87; background: #D9EAF9; }
+.path-action:disabled { opacity: .5; cursor: default; }
+.path-play { grid-area: board; }
+.path-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.path-progress { margin-top: 16px; color: #46655D; font-size: 14px; }
+.path-progress strong { display: block; margin-bottom: 2px; }
+.path-exploration { margin-top: 12px; color: #46655D; font-size: 14px; }
+/* Only CSS ambience: every character, destination and route is functional UI. */
+.path-board { position: relative; height: 578px; padding: 0; border: 1px solid #D6E4EF; border-radius: 20px; background: radial-gradient(ellipse at top left, #E4F0F7, transparent 65%), linear-gradient(155deg, #F7FAF5, #EAF2E5); isolation: isolate; }
+.path-connections { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; stroke: #789B96; stroke-width: 5; stroke-dasharray: 1 12; stroke-linecap: round; }
+.path-connections line { vector-effect: non-scaling-stroke; }
+.path-connections .path-edge--visited { stroke: #365E87; stroke-width: 7; stroke-dasharray: none; }
+.path-node { position: absolute; transform: translate(-50%, -50%); width: 60px; min-width: 0; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 2px; border: 2px solid #CDDAE6; border-radius: 50%; background: #FFFFFF; color: #25313C; font-size: 17px; font-weight: 800; }
+.path-node:disabled { cursor: default; opacity: 1; }
+.path-node small { font-size: 10px; font-weight: 600; line-height: 1.2; }
+.path-node--available { border-style: dashed; border-color: #365E87; background: #E5F1FE; cursor: pointer; }
+.path-node--available:hover { background: #D9EAF9; }
+.path-node--current { background: #E7F3EC; border: 3px double #166562; }
+.path-node--hint { outline: 3px solid #365E87; outline-offset: 2px; }
+.path-page button:focus-visible { outline: 3px solid #365E87; outline-offset: 4px; }
+.path-node--destination { width: 100px; height: 84px; border-radius: 22px; font-size: 14px; }
+.path-destinations { display: flex; justify-content: center; gap: 3px; }
+.path-destination { width: 38px; height: 38px; object-fit: contain; }
+.path-destination-visual { display: flex; align-items: center; justify-content: center; gap: 1px; width: 38px; height: 38px; }
+.path-destination-visual img { width: 100%; height: 100%; object-fit: contain; }
+.path-destination-visual img + img { width: 68%; height: 68%; margin-left: -15px; }
+.path-visual { position: relative; display: block; width: 100%; height: 100%; border-radius: 8px; background: #F7FAFC; }
+.path-visual--plant { border: 2px solid #527F73; background: #DCEBDD; }
+.path-visual--plant::before { position: absolute; left: 38%; bottom: 18%; width: 24%; height: 45%; border-radius: 50% 50% 8px 8px; background: #527F73; content: ''; }
+.path-visual--plant::after { position: absolute; left: 20%; top: 22%; width: 58%; height: 30%; border-radius: 50%; background: #76A96D; content: ''; transform: rotate(-18deg); }
+.path-visual--tree { border: 2px solid #527F73; background: #E5F0E1; }
+.path-visual--tree::before { position: absolute; left: 42%; bottom: 12%; width: 16%; height: 48%; background: #8A5C3A; content: ''; }
+.path-visual--tree::after { position: absolute; left: 17%; top: 10%; width: 66%; height: 58%; border-radius: 50%; background: #6FA77D; content: ''; }
+.path-visual--bench { border: 2px solid #8A5C3A; background: #EBD2A9; }
+.path-visual--bench::before { position: absolute; left: 12%; right: 12%; top: 30%; height: 18%; background: #8A5C3A; box-shadow: 0 18px #8A5C3A; content: ''; }
+.path-visual--bench::after { position: absolute; left: 22%; right: 22%; bottom: 10%; height: 28%; border-left: 5px solid #8A5C3A; border-right: 5px solid #8A5C3A; content: ''; }
+.path-visual--ball { border: 2px solid #C46B5A; border-radius: 50%; background: #F3B3A2; }
+.path-visual--ball::after { position: absolute; inset: 28%; border: 2px solid #C46B5A; border-radius: 50%; content: ''; }
+.path-node--obstacle { border-color: #A87955; background: #F7E8D8; }
+.path-node--obstacle .path-visual { width: 30px; height: 30px; }
+.path-destinations .path-visual { width: 38px; height: 38px; }
+.path-destinations .path-visual + .path-visual { margin-left: -4px; }
+.path-node--destination.path-node--current { padding-top: 22px; }
+.path-node--destination.path-node--current small { display: none; }
+.path-node--destination.path-node--current .path-destination { width: 30px; height: 30px; }
+.path-player { position: absolute; display: flex; align-items: center; justify-content: center; gap: 2px; width: 76px; height: 54px; transform: translate(-50%, calc(-50% - 44px)); z-index: 2; pointer-events: none; padding: 3px; border: 2px solid #166562; border-radius: 16px; background: white; box-shadow: 0 2px 5px #25313C1A; }
+.path-player img { display: block; min-width: 0; width: 50%; height: 100%; object-fit: contain; }
+.path-player img:only-child { width: 100%; }
+.path-board[data-moving='true'] .path-player { transition: left 400ms ease-in-out, top 400ms ease-in-out; }
+.path-legend { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.path-controls { grid-area: controls; display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
+.path-controls .path-action { width: 100%; }
+.path-hint-text { flex-basis: 100%; color: var(--muted); font-size: 14px; }
+.path-audio-status:not(:empty) { margin-top: 12px; color: var(--muted); font-size: 14px; }
+.path-result { margin-top: 16px; padding: 20px; background: linear-gradient(120deg, #E7F3EC, #F5F8FC); border: 1px solid #CDDFD4; border-radius: 24px; }
+.path-result p { margin-top: 8px; }
+.path-result .path-action { margin: 12px 12px 0 0; }
+.path-phrase { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 480px; list-style: none; padding: 0; }
+.path-phrase li { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 6px; background: white; color: #166562; border-radius: 14px; font-weight: 800; }
+.path-phrase img { width: 72px; max-width: 100%; height: auto; }
+.path-credit { margin-top: 16px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.path-credit a { display: inline-flex; align-items: center; min-height: 44px; color: #165D8C; }
+@media (max-width: 999px) {
+ .path-adventure { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'mission' 'board' 'controls'; gap: 12px; }
+ .path-controls .path-action { width: auto; flex-grow: 1; }
+}
+@media (max-width: 767px) {
+ .path-page { width: calc(100% - 24px); padding-top: 8px; }
+ .path-adventure { border-radius: 20px; padding: 12px 6px; }
+ .path-situation { padding: 12px; }
+ .path-situation h2 { font-size: 19px; }
+ .path-mission-label { margin-bottom: 8px; }
+ .path-mission-label img { width: 40px; height: 40px; }
+ .path-board { height: 538px; }
+ .path-node { width: 56px; height: 56px; font-size: 14px; }
+ .path-node--destination { width: 82px; height: 78px; font-size: 12px; }
+ .path-destination { width: 31px; height: 31px; }
+ .path-destinations .path-visual, .path-destination-visual { width: 31px; height: 31px; }
+ .path-player { width: 66px; height: 48px; transform: translate(-50%, calc(-50% - 42px)); }
+ .path-controls, .path-legend { margin-inline: 6px; }
+ .path-result { padding: 18px 12px; }
+ .path-phrase { gap: 8px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .path-board[data-moving='true'] .path-player { transition: none; }
+}

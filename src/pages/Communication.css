@@ -1,0 +1,379 @@
+.communication-page {
+  max-width: 1180px;
+  width: calc(100% - 48px);
+  margin: auto;
+  padding: 16px 0 40px;
+}
+
+.communication-back {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  color: #165D8C;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 12px;
+}
+
+.communication-back:hover {
+  background: #E5F1FE;
+}
+
+.communication-intro h1 {
+  font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1.25;
+  color: #203F69;
+}
+
+.communication-intro p {
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.communication-level-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.communication-level-button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #CDDAE6;
+  border-radius: 12px;
+  background: white;
+  color: #165D8C;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.communication-level-button--active {
+  background: #E5F1FE;
+  border-color: #365E87;
+}
+
+.sentence-panel {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+}
+
+.communication-page h2 {
+  font-size: 22px;
+  line-height: 1.4;
+  color: #203F69;
+}
+
+.sentence-level-label {
+  color: var(--muted);
+  margin: 8px 0 12px;
+}
+
+.sentence-empty {
+  padding: 28px 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.sentence-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+}
+
+.sentence-words li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sentence-natural {
+  margin-top: 12px;
+  color: #166562;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.communication-card {
+  min-width: 0;
+  border: 1px solid #D6E4EF;
+  border-radius: 20px;
+  background: #E5F1FE;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow-wrap: anywhere;
+}
+
+.communication-card--selected {
+  flex-direction: row;
+  align-items: center;
+  background: #E7F3EC;
+  border-color: #CDDFD4;
+  padding: 6px 8px 6px 14px;
+  gap: 10px;
+}
+
+.communication-card--selected .communication-audio {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.communication-card--removable {
+  position: relative;
+}
+
+.communication-word {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 10px;
+  font-weight: 800;
+  color: #166562;
+}
+
+.communication-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 14px;
+  min-height: 122px;
+  padding: 18px 10px 10px;
+  border: 0;
+  border-radius: 20px 20px 0 0;
+  color: #165D8C;
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.communication-select:hover {
+  background: #D9EAF9;
+}
+
+.communication-select[aria-pressed='true'] {
+  background: #D9EAF9;
+}
+
+.communication-select img {
+  width: 120px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 8px;
+  background: white;
+  border-radius: 12px;
+}
+
+.communication-audio {
+  align-self: flex-end;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 4px 10px 10px;
+  border: 1px solid #CDDFD4;
+  border-radius: 12px;
+  background: white;
+  color: #166562;
+  cursor: pointer;
+}
+
+.communication-audio:hover {
+  background: #F3F8F5;
+}
+
+.communication-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #D1DEEC;
+  border-radius: 12px;
+  background: white;
+  color: #165D8C;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.communication-remove:hover {
+  background: #E5F1FE;
+}
+
+.sentence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sentence-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border: 1px solid #D1DEEC;
+  border-radius: 16px;
+  background: #E5F1FE;
+  color: #165D8C;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sentence-actions button:hover:not(:disabled) {
+  background: #D9EAF9;
+}
+
+.sentence-actions button:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
+.communication-status,
+.audio-feedback {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.communication-status:not(:empty),
+.audio-feedback:not(:empty) {
+  margin-top: 12px;
+}
+
+.communication-choices,
+.quick-answers {
+  margin-top: 26px;
+}
+
+.communication-step,
+.quick-answers > p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.communication-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.quick-grid {
+  max-width: 560px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+  .communication-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .communication-page {
+    width: calc(100% - 32px);
+    padding-top: 8px;
+  }
+
+  .communication-back {
+    margin-bottom: 8px;
+  }
+
+  .communication-intro p {
+    font-size: 14px;
+  }
+
+  .sentence-panel {
+    padding: 16px;
+    margin-top: 18px;
+    border-radius: 20px;
+  }
+
+  .communication-page h2 {
+    font-size: 20px;
+  }
+
+  .sentence-words {
+    gap: 8px;
+  }
+
+  .communication-card--selected {
+    padding-left: 10px;
+    gap: 6px;
+  }
+
+  .communication-word {
+    font-size: 14px;
+  }
+
+  .sentence-actions {
+    gap: 8px;
+  }
+
+  .sentence-actions button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .communication-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .communication-select {
+    min-height: 110px;
+    font-size: 14px;
+  }
+
+  .communication-select img {
+    width: 88px;
+    padding: 6px;
+  }
+
+  .communication-remove {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 359px) {
+  .communication-page {
+    width: calc(100% - 24px);
+  }
+
+  .sentence-panel {
+    padding: 12px;
+  }
+}
+
+.communication-credit {
+  margin-top: 32px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.communication-credit a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #165D8C;
+  text-underline-offset: 3px;
+  border-radius: 4px;
+}

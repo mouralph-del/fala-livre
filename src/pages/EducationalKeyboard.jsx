@@ -1,0 +1,156 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { alphabet } from '../data/alphabet'
+import { learningWords } from '../data/learningWords'
+import WritingPractice from '../components/WritingPractice'
+import { SpeakerIcon } from '../components/CommunicationCard'
+import { falar, stopSpeaking } from '../utils/speech'
+import './Writing.css'
+
+export default function EducationalKeyboard({
+  mode = 'practice',
+  targetWordId = 'casa',
+  onComplete,
+  onAdvance,
+}) {
+  const target = learningWords.find(item => item.id === targetWordId) ?? learningWords[0]
+  const limit = mode === 'practice' ? target.letters.length : 12
+  const [letters, setLetters] = useState([])
+  const [message, setMessage] = useState('')
+  const [statusMessage, setStatusMessage] = useState('')
+  const [finishMessage, setFinishMessage] = useState('')
+  const headingRef = useRef(null)
+
+  const full = letters.length === limit
+  const assembled = letters.join('')
+  const correct = mode === 'practice' && assembled === target.word
+
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true })
+  }, [mode, targetWordId])
+
+  useEffect(() => () => stopSpeaking(), [])
+
+  const speakText = useCallback((text) => {
+    setMessage('')
+    falar(text, setMessage)
+  }, [])
+
+  const insertLetter = useCallback((letter) => {
+    setLetters(current => {
+      if (current.length >= limit) return current
+      const nextLetters = [...current, letter]
+      setStatusMessage(`Letra ${letter} adicionada.`)
+      return nextLetters
+    })
+  }, [limit])
+
+  const removeLastLetter = useCallback(() => {
+    setLetters(current => current.slice(0, -1))
+    setStatusMessage('Última letra apagada.')
+  }, [])
+
+  const clearLetters = useCallback(() => {
+    setLetters([])
+    setStatusMessage('Tudo foi apagado.')
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const targetNode = event.target
+      if (targetNode instanceof HTMLElement && (targetNode.closest('button, a, input, textarea, select') || targetNode.isContentEditable)) return
+
+      const pressed = event.key.toUpperCase()
+      const normalized = pressed
+
+      if (/^[A-ZÁÉÍÓÚÀÂÊÔÜÇ]$/.test(normalized)) {
+        event.preventDefault()
+        insertLetter(normalized)
+        return
+      }
+
+      if (event.key === 'Backspace') {
+        event.preventDefault()
+        removeLastLetter()
+        return
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setStatusMessage(mode === 'explore' ? 'Exploração pronta para continuar.' : 'Teclado pronto para continuar.')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [insertLetter, mode, removeLastLetter])
+
+  const confirmWord = useCallback(() => {
+    if (mode !== 'practice') return
+    if (assembled === target.word) {
+      setFinishMessage(`Muito bem! Você escreveu ${target.word}.`)
+      onComplete?.(target.id)
+      return
+    }
+    setFinishMessage('Quase! Confira a palavra e tente novamente.')
+  }, [assembled, mode, onComplete, target.id, target.word])
+
+  return <main id="conteudo" className="writing-page" tabIndex={-1}>
+    <a className="writing-back" href="#/aprender/escrever">← Escrever</a>
+    <header className="writing-intro">
+      <h1 ref={headingRef} tabIndex={-1}>{mode === 'explore' ? 'Conhecer as letras' : 'Teclado educativo'}</h1>
+      <p>{mode === 'explore' ? 'Explore o alfabeto e ouça cada letra com atenção.' : `Use o teclado para escrever a palavra ${target.word}.`}</p>
+    </header>
+
+    {mode === 'practice' && <WritingPractice wordId={target.id} />}
+
+    <section className="writing-work" aria-labelledby="your-writing">
+      {mode === 'practice' ? <h2 id="your-writing">Sua escrita</h2> : <h2 id="your-writing">Exploração do alfabeto</h2>}
+
+      <div className="writing-slot-panel" aria-label={mode === 'practice' ? `Sua escrita da palavra ${target.word}` : 'Letras exploradas'}>
+        {mode === 'practice' ? (
+          Array.from({ length: target.letters.length }, (_, index) => (
+            <span key={`${target.id}-slot-${index}`} className="writing-slot" aria-label={`Posição ${index + 1}: ${letters[index] || 'vazia'}`}>
+              {letters[index] || '_'}
+            </span>
+          ))
+        ) : (
+          Array.from({ length: Math.min(letters.length || 1, 12) }, (_, index) => (
+            <span key={`explore-slot-${index}`} className="writing-slot writing-slot--explore" aria-label={`Letra ${letters[index] || 'vazia'}`}>
+              {letters[index] || '_'}
+            </span>
+          ))
+        )}
+      </div>
+
+      <div className="writing-controls">
+        <button type="button" disabled={!letters.length} onClick={removeLastLetter}>Apagar</button>
+        <button type="button" disabled={!letters.length} onClick={clearLetters}>Limpar</button>
+        {mode === 'practice' && <button type="button" disabled={!letters.length} onClick={confirmWord}>Conferir</button>}
+        {mode === 'explore' && <button type="button" onClick={() => setFinishMessage('Exploração concluída.')}>Concluir exploração</button>}
+      </div>
+
+      <div className="writing-feedback" role="status" aria-live="polite">
+        {finishMessage ? <><strong>{mode === 'practice' ? 'Resultado' : 'Exploração'}</strong><p>{finishMessage}</p></> : null}
+        {mode === 'practice' && correct && <><strong>Muito bem!</strong><p>Você escreveu {target.word}.</p></>}
+      </div>
+
+      {mode === 'practice' && correct && (
+        <div className="writing-actions">
+          <button type="button" onClick={() => speakText(target.audioText)}><SpeakerIcon />Ouvir palavra</button>
+          <button type="button" onClick={onAdvance}>Próxima palavra</button>
+        </div>
+      )}
+
+      <div className="writing-keyboard" aria-label="Letras do alfabeto">
+        {alphabet.map(({ letter, audioText }) => (
+          <div className="writing-key" key={letter}>
+            <button type="button" className="writing-letter" aria-label={`Inserir letra ${letter}`} aria-disabled={mode === 'practice' && full} onClick={() => insertLetter(letter)}>{letter}</button>
+            <button type="button" aria-label={`Ouvir letra ${letter}`} onClick={() => speakText(audioText)}><SpeakerIcon /></button>
+          </div>
+        ))}
+      </div>
+
+      <p role="status" aria-live="polite" className="writing-audio-message">{message || statusMessage}</p>
+    </section>
+  </main>
+}
