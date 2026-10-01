@@ -2,43 +2,45 @@ import { useEffect, useRef, useState } from 'react'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { pictogramCredit } from '../data/communicationOptions'
 import { learningWords } from '../data/learningWords'
+import { getCurrentTheme } from '../utils/contentRotation'
+import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import { falar, stopSpeaking } from '../utils/speech'
 import './WordsAndPhrases.css'
 
-const levels = [
-  { id: 'know', label: 'Nível 1', title: 'Conhecer' },
-  { id: 'build', label: 'Nível 2', title: 'Montar' },
-  { id: 'sentence', label: 'Nível 3', title: 'Usar na frase' },
-]
+const moduleId = 'wordsAndPhrases'
+const officialWordIds = ['casa', 'cama', 'sofa', 'gato', 'cachorro', 'peixe', 'bola', 'blocos', 'carrinho', 'lapis', 'estojo', 'mochila']
+const phaseTitles = { know: 'Conhecer', build: 'Montar', sentence: 'Usar na frase' }
 
 export default function WordsAndPhrases() {
-  const [selectedLevel, setSelectedLevel] = useState('know')
-  const [knowIndex, setKnowIndex] = useState(0)
-  const [buildIndex, setBuildIndex] = useState(0)
+  const [rotation, setRotation] = useState(() => getModuleRotation(moduleId, officialWordIds))
+  const [qaWordId, setQaWordId] = useState('')
+  const [phase, setPhase] = useState('know')
   const [buildSelection, setBuildSelection] = useState([])
   const [buildFeedback, setBuildFeedback] = useState('')
-  const [sentenceIndex, setSentenceIndex] = useState(0)
+  const [buildSucceeded, setBuildSucceeded] = useState(false)
   const [sentenceSelection, setSentenceSelection] = useState('')
   const [sentenceFeedback, setSentenceFeedback] = useState('')
+  const [sentenceSucceeded, setSentenceSucceeded] = useState(false)
   const [audioMessage, setAudioMessage] = useState('')
   const headingRef = useRef(null)
+  const advanceLocked = useRef(false)
 
-  const currentKnowWord = learningWords[knowIndex]
-  const currentBuildWord = learningWords[buildIndex]
-  const currentSentence = learningWords[sentenceIndex]
-  const buildSlots = currentBuildWord.letters.length
-  const buildLetters = currentBuildWord.scrambleOrder.map(index => ({
-    id: `${currentBuildWord.id}-letter-${index}-${currentBuildWord.letters[index]}`,
-    value: currentBuildWord.letters[index],
+  const currentWordId = qaWordId || getCurrentTheme(rotation)
+  const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
+  const buildSlots = currentWord.letters.length
+  const buildLetters = currentWord.scrambleOrder.map(index => ({
+    id: `${currentWord.id}-letter-${index}`,
+    value: currentWord.letters[index],
   }))
   const buildMap = Object.fromEntries(buildLetters.map(item => [item.id, item.value]))
-  const buildWord = buildSelection.map(id => buildMap[id]).join('')
-  const buildCompleted = buildSelection.length === buildSlots
-  const buildCorrect = buildCompleted && buildWord === currentBuildWord.word
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true })
-  }, [selectedLevel, knowIndex, buildIndex, sentenceIndex])
+  }, [phase, currentWord.id])
+
+  useEffect(() => {
+    advanceLocked.current = false
+  }, [rotation])
 
   useEffect(() => () => stopSpeaking(), [])
 
@@ -48,71 +50,75 @@ export default function WordsAndPhrases() {
     falar(text, setAudioMessage)
   }
 
-  function resetAllState(levelId) {
+  function resetActivity() {
     stopSpeaking()
     setAudioMessage('')
+    setPhase('know')
+    setBuildSelection([])
     setBuildFeedback('')
+    setBuildSucceeded(false)
     setSentenceFeedback('')
     setSentenceSelection('')
-    setBuildSelection([])
-    setSelectedLevel(levelId)
-    setKnowIndex(0)
-    setBuildIndex(0)
-    setSentenceIndex(0)
+    setSentenceSucceeded(false)
   }
 
   function addBuildLetter(letterId) {
     if (buildSelection.includes(letterId) || buildSelection.length >= buildSlots) return
     setBuildSelection(current => [...current, letterId])
+    setBuildFeedback('')
+    setBuildSucceeded(false)
   }
 
   function removeBuildLetter(position) {
     setBuildSelection(current => current.filter((_, index) => index !== position))
+    setBuildFeedback('')
+    setBuildSucceeded(false)
+  }
+
+  function clearBuildSelection() {
+    setBuildSelection([])
+    setBuildFeedback('')
+    setBuildSucceeded(false)
   }
 
   function checkBuildWord() {
     const assembled = buildSelection.map(id => buildMap[id]).join('')
-    if (assembled === currentBuildWord.word) {
-      setBuildFeedback(`Muito bem! Você montou a palavra ${currentBuildWord.word}.`)
+    if (assembled === currentWord.word) {
+      setBuildFeedback(`Muito bem! Você montou ${currentWord.word}.`)
+      setBuildSucceeded(true)
       return
     }
-    setBuildFeedback('Quase! Tente novamente.')
+    setBuildFeedback('Quase! Confira a palavra e tente novamente.')
+    setBuildSucceeded(false)
   }
 
-  function nextBuildWord() {
-    setBuildFeedback('')
-    setBuildSelection([])
-    if (buildIndex < learningWords.length - 1) {
-      setBuildIndex(index => index + 1)
-      return
-    }
-    setSelectedLevel('sentence')
-    setBuildIndex(0)
-    setSentenceIndex(0)
+  function continueToSentence() {
+    setPhase('sentence')
     setSentenceSelection('')
     setSentenceFeedback('')
+    setSentenceSucceeded(false)
   }
 
-  function nextSentence() {
-    setSentenceSelection('')
-    setSentenceFeedback('')
-    if (sentenceIndex < learningWords.length - 1) {
-      setSentenceIndex(index => index + 1)
+  function nextWord() {
+    if (!sentenceSucceeded || qaWordId || advanceLocked.current) return
+    advanceLocked.current = true
+    const nextRotation = advanceModuleRotation(moduleId, officialWordIds)
+    if (!nextRotation) {
+      advanceLocked.current = false
       return
     }
-    setSentenceIndex(learningWords.length - 1)
+    setRotation(nextRotation)
+    resetActivity()
   }
 
   function checkSentenceAnswer() {
-    if (!sentenceSelection) {
-      setSentenceFeedback('Selecione uma opção antes de conferir.')
+    if (sentenceSelection === currentWord.sentenceAnswer) {
+      setSentenceFeedback('Muito bem!')
+      setSentenceSucceeded(true)
       return
     }
-    if (sentenceSelection === currentSentence.sentenceAnswer) {
-      setSentenceFeedback(`Muito bem! ${currentSentence.sentenceText}`)
-      return
-    }
-    setSentenceFeedback('Quase! Tente novamente.')
+    setSentenceFeedback('Tente novamente.')
+    setSentenceSucceeded(false)
   }
 
   return (
@@ -120,49 +126,44 @@ export default function WordsAndPhrases() {
       <a className="words-back" href="#/aprender">← Aprender</a>
       <header className="words-intro"><h1>Palavras e frases</h1><p>Aprenda palavras e use-as nas frases.</p></header>
 
-      <div className="words-level-selector" aria-label="Seleção de nível">
-        {levels.map(level => (
-          <button
-            key={level.id}
-            type="button"
-            className={`words-level-button${selectedLevel === level.id ? ' words-level-button--active' : ''}`}
-            aria-pressed={selectedLevel === level.id}
-            onClick={() => resetAllState(level.id)}
+      {import.meta.env.DEV && (
+        <label className="words-qa-selector">
+          Palavra para QA
+          <select
+            value={qaWordId}
+            onChange={event => {
+              setQaWordId(event.target.value)
+              resetActivity()
+            }}
           >
-            <span>{level.label}</span>
-            <strong>{level.title}</strong>
-          </button>
-        ))}
-      </div>
+            <option value="">Rotação normal</option>
+            {officialWordIds.map(id => <option key={id} value={id}>{learningWords.find(word => word.id === id).word}</option>)}
+          </select>
+        </label>
+      )}
 
       <section className="words-activity" aria-labelledby="words-heading">
-        {selectedLevel === 'know' && (
+        {phase === 'know' && (
           <>
-            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>Nível 1 · Conhecer</h2>
-            <p className="words-counter">Palavra {knowIndex + 1} de {learningWords.length}</p>
-            <img className="words-picture" src={currentKnowWord.image} alt="" width="300" height="300" />
-            <p className="words-name">{currentKnowWord.word}</p>
+            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>{phaseTitles[phase]}</h2>
+            <img className="words-picture" src={currentWord.image} alt="" width="300" height="300" />
+            <p className="words-name">{currentWord.word}</p>
             <div className="words-actions">
-              <button type="button" onClick={() => speak(currentKnowWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-              <button type="button" onClick={() => setKnowIndex(index => Math.max(0, index - 1))} disabled={knowIndex === 0}>Anterior</button>
-              {knowIndex < learningWords.length - 1 ? (
-                <button type="button" onClick={() => setKnowIndex(index => index + 1)}>Próxima</button>
-              ) : (
-                <button type="button" onClick={() => setSelectedLevel('build')}>Concluir nível</button>
-              )}
+              <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
+              <button type="button" onClick={() => setPhase('build')}>Continuar</button>
             </div>
           </>
         )}
 
-        {selectedLevel === 'build' && (
+        {phase === 'build' && (
           <>
-            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>Nível 2 · Montar</h2>
-            <p className="words-counter">Palavra {buildIndex + 1} de {learningWords.length}</p>
-            <img className="words-picture words-picture--small" src={currentBuildWord.image} alt="" width="300" height="300" />
-            <div className="words-slots" aria-label={`Montando a palavra ${currentBuildWord.word}`}>
+            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>{phaseTitles[phase]}</h2>
+            <img className="words-picture words-picture--small" src={currentWord.image} alt="" width="300" height="300" />
+            <p className="words-name">{currentWord.word}</p>
+            <div className="words-slots" aria-label={`Montando a palavra ${currentWord.word}`}>
               {Array.from({ length: buildSlots }, (_, index) => (
                 <button
-                  key={`slot-${currentBuildWord.id}-${index}`}
+                  key={`slot-${currentWord.id}-${index}`}
                   type="button"
                   className="words-slot"
                   onClick={() => removeBuildLetter(index)}
@@ -191,41 +192,42 @@ export default function WordsAndPhrases() {
             </div>
 
             <div className="words-actions">
-              <button type="button" onClick={() => speak(currentBuildWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-              <button type="button" onClick={() => setBuildSelection([])} disabled={!buildSelection.length}>Reorganizar</button>
-              <button type="button" onClick={checkBuildWord} disabled={!buildCompleted}>Conferir</button>
+              <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
+              <button type="button" onClick={clearBuildSelection} disabled={!buildSelection.length}>Reorganizar</button>
+              <button type="button" onClick={checkBuildWord} disabled={buildSelection.length !== buildSlots}>Conferir</button>
             </div>
 
             <div className="words-feedback" role="status" aria-live="polite">
               {buildFeedback ? <p>{buildFeedback}</p> : null}
             </div>
 
-            {buildCorrect && (
+            {buildSucceeded && (
               <div className="words-actions">
-                <button type="button" onClick={() => speak(currentBuildWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-                {buildIndex < learningWords.length - 1 ? (
-                  <button type="button" onClick={nextBuildWord}>Próxima palavra</button>
-                ) : (
-                  <button type="button" onClick={() => setSelectedLevel('sentence')}>Ir para frases</button>
-                )}
+                <button type="button" onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
+                <button type="button" onClick={continueToSentence}>Continuar</button>
               </div>
             )}
           </>
         )}
 
-        {selectedLevel === 'sentence' && (
+        {phase === 'sentence' && (
           <>
-            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>Nível 3 · Usar na frase</h2>
-            <p className="words-counter">Atividade {sentenceIndex + 1} de {learningWords.length}</p>
-            <p className="words-sentence-prompt">{currentSentence.sentencePrompt}</p>
+            <h2 id="words-heading" ref={headingRef} tabIndex={-1}>{phaseTitles[phase]}</h2>
+            <img className="words-picture words-picture--small" src={currentWord.image} alt="" width="300" height="300" />
+            <p className="words-name">{currentWord.word}</p>
+            <p className="words-sentence-prompt">{currentWord.sentencePrompt}</p>
             <div className="words-options" aria-label="Opções para completar a frase">
-              {currentSentence.sentenceOptions.map(option => (
+              {currentWord.sentenceOptions.map(option => (
                 <button
-                  key={`${currentSentence.id}-${option}`}
+                  key={`${currentWord.id}-${option}`}
                   type="button"
                   className={`words-option${sentenceSelection === option ? ' words-option--selected' : ''}`}
                   aria-pressed={sentenceSelection === option}
-                  onClick={() => setSentenceSelection(option)}
+                  onClick={() => {
+                    setSentenceSelection(option)
+                    setSentenceFeedback('')
+                    setSentenceSucceeded(false)
+                  }}
                 >
                   {option}
                 </button>
@@ -233,21 +235,25 @@ export default function WordsAndPhrases() {
             </div>
             <div className="words-actions">
               <button type="button" onClick={checkSentenceAnswer} disabled={!sentenceSelection}>Conferir</button>
-              {sentenceSelection === currentSentence.sentenceAnswer && (
-                <button type="button" onClick={() => speak(currentSentence.sentenceText)}><SpeakerIcon />Ouvir frase</button>
+              {sentenceSucceeded && (
+                <button type="button" aria-label="Ouvir frase correta" onClick={() => speak(currentWord.sentenceText)}><SpeakerIcon />Ouvir frase</button>
               )}
             </div>
 
             <div className="words-feedback" role="status" aria-live="polite">
               {sentenceFeedback ? <p>{sentenceFeedback}</p> : null}
+              {sentenceSucceeded && <p>{currentWord.sentenceText}</p>}
             </div>
 
-            {sentenceSelection === currentSentence.sentenceAnswer && sentenceFeedback.startsWith('Muito bem!') && (
+            {sentenceSucceeded && (
               <div className="words-actions">
-                {sentenceIndex < learningWords.length - 1 ? (
-                  <button type="button" onClick={nextSentence}>Próxima frase</button>
+                {qaWordId ? (
+                  <button type="button" onClick={() => {
+                    setQaWordId('')
+                    resetActivity()
+                  }}>Voltar à rotação</button>
                 ) : (
-                  <button type="button" onClick={() => resetAllState('know')}>Concluir nível</button>
+                  <button type="button" onClick={nextWord}>Próxima palavra</button>
                 )}
               </div>
             )}
