@@ -80,3 +80,5 @@ export const learningWords = [
     'O peixe está na água.',
   ], 'Eu guardo o material na mochila.'),
 ]
+
+export const learningWordIds = learningWords.map(word => word.id)

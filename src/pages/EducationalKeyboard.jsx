@@ -9,6 +9,7 @@ import './Writing.css'
 export default function EducationalKeyboard({
   mode = 'practice',
   targetWordId = 'casa',
+  embedded = false,
   onComplete,
   onAdvance,
 }) {
@@ -22,7 +23,7 @@ export default function EducationalKeyboard({
 
   const full = letters.length === limit
   const assembled = letters.join('')
-  const correct = mode === 'practice' && assembled === target.word
+  const correct = mode === 'practice' && assembled === target.word && finishMessage === `Muito bem! Você escreveu ${target.word}.`
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true })
@@ -40,19 +41,31 @@ export default function EducationalKeyboard({
       if (current.length >= limit) return current
       const nextLetters = [...current, letter]
       setStatusMessage(`Letra ${letter} adicionada.`)
+      setFinishMessage('')
       return nextLetters
     })
   }, [limit])
 
   const removeLastLetter = useCallback(() => {
     setLetters(current => current.slice(0, -1))
+    setFinishMessage('')
     setStatusMessage('Última letra apagada.')
   }, [])
 
   const clearLetters = useCallback(() => {
     setLetters([])
+    setFinishMessage('')
     setStatusMessage('Tudo foi apagado.')
   }, [])
+
+  const updatePhysicalInput = useCallback((event) => {
+    const nextLetters = [...event.target.value.toLocaleUpperCase('pt-BR')]
+      .filter(letter => /^[A-ZÁÉÍÓÚÀÂÊÔÜÇ]$/.test(letter))
+      .slice(0, limit)
+    setLetters(nextLetters)
+    setFinishMessage('')
+    setStatusMessage('Texto atualizado pelo teclado físico.')
+  }, [limit])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -94,12 +107,14 @@ export default function EducationalKeyboard({
     setFinishMessage('Quase! Confira a palavra e tente novamente.')
   }, [assembled, mode, onComplete, target.id, target.word])
 
-  return <main id="conteudo" className="writing-page" tabIndex={-1}>
-    <a className="writing-back" href="#/aprender/escrever">← Escrever</a>
-    <header className="writing-intro">
+  const Page = embedded ? 'section' : 'main'
+
+  return <Page id={embedded ? undefined : 'conteudo'} className={embedded ? 'writing-embedded' : 'writing-page'} tabIndex={embedded ? undefined : -1}>
+    {!embedded && <a className="writing-back" href="#/aprender/escrever">← Escrever</a>}
+    {!embedded && <header className="writing-intro">
       <h1 ref={headingRef} tabIndex={-1}>{mode === 'explore' ? 'Conhecer as letras' : 'Teclado educativo'}</h1>
-      <p>{mode === 'explore' ? 'Explore o alfabeto e ouça cada letra com atenção.' : `Use o teclado para escrever a palavra ${target.word}.`}</p>
-    </header>
+      <p>{mode === 'explore' ? 'Explore o alfabeto e ouça cada letra com atenção.' : `Use letras para escrever ${target.word}.`}</p>
+    </header>}
 
     {mode === 'practice' && <WritingPractice wordId={target.id} />}
 
@@ -122,6 +137,21 @@ export default function EducationalKeyboard({
         )}
       </div>
 
+      {mode === 'practice' && (
+        <label className="writing-physical-entry">
+          Digitar pelo teclado físico
+          <input
+            type="text"
+            value={letters.join('')}
+            maxLength={limit}
+            autoComplete="off"
+            spellCheck={false}
+            aria-label={`Digitar ${target.word} pelo teclado físico`}
+            onChange={updatePhysicalInput}
+          />
+        </label>
+      )}
+
       <div className="writing-controls">
         <button type="button" disabled={!letters.length} onClick={removeLastLetter}>Apagar</button>
         <button type="button" disabled={!letters.length} onClick={clearLetters}>Limpar</button>
@@ -130,14 +160,13 @@ export default function EducationalKeyboard({
       </div>
 
       <div className="writing-feedback" role="status" aria-live="polite">
-        {finishMessage ? <><strong>{mode === 'practice' ? 'Resultado' : 'Exploração'}</strong><p>{finishMessage}</p></> : null}
-        {mode === 'practice' && correct && <><strong>Muito bem!</strong><p>Você escreveu {target.word}.</p></>}
+        {finishMessage ? <p>{finishMessage}</p> : null}
       </div>
 
       {mode === 'practice' && correct && (
         <div className="writing-actions">
           <button type="button" onClick={() => speakText(target.audioText)}><SpeakerIcon />Ouvir palavra</button>
-          <button type="button" onClick={onAdvance}>Próxima palavra</button>
+          <button type="button" onClick={onAdvance}>Praticar no caderno</button>
         </div>
       )}
 
@@ -152,5 +181,5 @@ export default function EducationalKeyboard({
 
       <p role="status" aria-live="polite" className="writing-audio-message">{message || statusMessage}</p>
     </section>
-  </main>
+  </Page>
 }

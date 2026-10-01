@@ -1,22 +1,64 @@
+import { useState } from 'react'
+import DrawingCanvas from '../components/DrawingCanvas'
+import WritingPractice from '../components/WritingPractice'
+import { learningWords, learningWordIds } from '../data/learningWords'
+import EducationalKeyboard from './EducationalKeyboard'
+import { getCurrentTheme } from '../utils/contentRotation'
+import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Writing.css'
 
 export default function Writing() {
+  const [rotation, setRotation] = useState(() => getModuleRotation('writing', learningWordIds))
+  const [phase, setPhase] = useState('typing')
+  const [qaWordId, setQaWordId] = useState('')
+  const currentWordId = qaWordId || getCurrentTheme(rotation)
+  const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
+
+  function completePractice() {
+    if (qaWordId) {
+      setQaWordId('')
+      setPhase('typing')
+      return
+    }
+
+    const nextRotation = advanceModuleRotation('writing', learningWordIds)
+    if (!nextRotation) return
+    setRotation(nextRotation)
+    setPhase('typing')
+  }
+
   return <main id="conteudo" className="writing-page" tabIndex={-1}>
     <a className="writing-back" href="#/aprender">← Aprender</a>
-    <header className="writing-intro"><h1>Escrever</h1><p>Escolha o jeito de praticar.</p></header>
-    <div className="writing-modes">
-      <article>
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="10" width="42" height="28" rx="5"/><path d="M10 18h4m6 0h4m6 0h7M10 25h4m6 0h4m6 0h7M13 32h22"/></svg>
-        <h2>TECLADO EDUCATIVO</h2>
-        <p>Use letras grandes, ouça cada letra e escreva a palavra CASA.</p>
-        <a className="writing-action" href="#/aprender/escrever/teclado" aria-label="Abrir teclado educativo">Abrir teclado →</a>
-      </article>
-      <article>
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M9 6h26v36H9zM5 13h8M5 23h8M5 33h8M20 30l3-9L38 6l5 5-15 15zM23 21l5 5"/></svg>
-        <h2>CADERNO</h2>
-        <p>Escreva, desenhe e experimente lápis, marcador, giz e borracha.</p>
-        <a className="writing-action" href="#/aprender/escrever/caderno" aria-label="Abrir caderno">Abrir caderno →</a>
-      </article>
-    </div>
+    <header className="writing-intro">
+      <h1>Escrever</h1>
+      <p>{phase === 'typing' ? 'Digite a palavra e depois pratique no caderno.' : 'Pratique a palavra no caderno.'}</p>
+    </header>
+
+    {import.meta.env.DEV && (
+      <label className="writing-qa-selector">
+        Palavra para QA
+        <select value={qaWordId} onChange={event => { setQaWordId(event.target.value); setPhase('typing') }}>
+          <option value="">Rotação normal</option>
+          {learningWords.map(word => <option key={word.id} value={word.id}>{word.word}</option>)}
+        </select>
+      </label>
+    )}
+
+    <p className="writing-phase-label" aria-live="polite">{phase === 'typing' ? 'Digitar' : 'Praticar no caderno'}</p>
+
+    {phase === 'typing' ? (
+      <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onAdvance={() => setPhase('notebook')} />
+    ) : (
+      <div className="writing-notebook-flow">
+        <h2 id="writing-notebook-title">Praticar no caderno</h2>
+        <WritingPractice key={currentWord.id} notebook wordId={currentWord.id} />
+        <section className="writing-work" aria-label="Caderno de prática">
+          <DrawingCanvas key={currentWord.id} showKeyboardLink={false} />
+          <div className="writing-actions">
+            <button type="button" onClick={completePractice}>Concluir prática</button>
+          </div>
+        </section>
+      </div>
+    )}
   </main>
 }

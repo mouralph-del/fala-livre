@@ -29,7 +29,7 @@ const resolveStrokeStyle = (tool, baseColor, thicknessKey) => {
   return { width: thicknessOptions[thicknessKey].width, opacity: 1, color: baseColor }
 }
 
-export default function DrawingCanvas() {
+export default function DrawingCanvas({ showKeyboardLink = true }) {
   const canvas = useRef(null)
   const active = useRef(null)
   const [strokes, setStrokes] = useState([])
@@ -174,7 +174,10 @@ export default function DrawingCanvas() {
   }
 
   return <>
-    <p id="canvas-help" className="writing-canvas-help">Use o mouse, o dedo ou uma caneta para escrever no caderno. Para praticar com teclado, use o <a href="#/aprender/escrever/teclado">Teclado educativo</a>.</p>
+    <p id="canvas-help" className="writing-canvas-help">
+      Use o mouse, o dedo ou uma caneta para escrever no caderno.
+      {showKeyboardLink && <> Para praticar com teclado, use o <a href="#/aprender/escrever/teclado">Teclado educativo</a>.</>}
+    </p>
 
     <div className="writing-notebook-toolbar" aria-label="Ferramentas do caderno">
       <div className="writing-tool-group" aria-label="Ferramentas de desenho">
