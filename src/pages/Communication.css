@@ -33,27 +33,29 @@
   line-height: 1.5;
 }
 
-.communication-level-selector {
+.communication-qa-selector {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: var(--muted);
 }
 
-.communication-level-button {
+.communication-qa-selector select {
   min-height: 44px;
-  padding: 8px 14px;
+  max-width: 100%;
+  padding: 8px 12px;
   border: 1px solid #CDDAE6;
-  border-radius: 12px;
+  border-radius: 8px;
   background: white;
-  color: #165D8C;
-  font-weight: 700;
-  cursor: pointer;
+  color: #203F69;
 }
 
-.communication-level-button--active {
-  background: #E5F1FE;
-  border-color: #365E87;
+.communication-page button:focus-visible,
+.communication-page select:focus-visible {
+  outline: 3px solid #F8B84E;
+  outline-offset: 2px;
 }
 
 .sentence-panel {
@@ -70,7 +72,7 @@
   color: #203F69;
 }
 
-.sentence-level-label {
+.sentence-set-label {
   color: var(--muted);
   margin: 8px 0 12px;
 }
@@ -166,6 +168,19 @@
   background: #D9EAF9;
 }
 
+.communication-page .communication-select[aria-pressed='true']::after {
+  content: 'Selecionado';
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin: 0 10px 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #166562;
+  color: white;
+  font-size: 12px;
+}
+
 .communication-select img {
   width: 120px;
   max-width: 100%;
@@ -242,6 +257,39 @@
 .sentence-actions button:disabled {
   opacity: .55;
   cursor: default;
+}
+
+.quick-response-natural {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.quick-response-natural p {
+  margin: 0;
+  color: #166562;
+  font-weight: 700;
+}
+
+.quick-response-natural button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #D1DEEC;
+  border-radius: 12px;
+  background: #E5F1FE;
+  color: #165D8C;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quick-response-natural button:hover {
+  background: #D9EAF9;
 }
 
 .communication-status,

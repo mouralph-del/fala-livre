@@ -1,117 +1,70 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import CommunicationCard, { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
-import { communicationWords, pictogramCredit } from '../data/communicationOptions'
+import {
+  communicationNaturalPhrases,
+  communicationSetIds,
+  communicationSets,
+  pictogramCredit,
+} from '../data/communicationOptions'
+import { learningConcepts } from '../data/learningConcepts'
+import { getCurrentTheme } from '../utils/contentRotation'
+import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Communication.css'
 
-const levels = [
-  {
-    id: 'nivel-1',
-    title: 'Nível 1',
-    description: 'Eu quero',
-    availableTokens: ['eu', 'quero', 'agua', 'comer', 'brincar', 'dormir'],
-    quickResponses: [],
-  },
-  {
-    id: 'nivel-2',
-    title: 'Nível 2',
-    description: 'Eu preciso / Eu estou',
-    availableTokens: ['eu', 'quero', 'preciso', 'estou', 'agua', 'comer', 'brincar', 'dormir', 'ajuda', 'banheiro', 'fome', 'dor'],
-    quickResponses: [],
-  },
-  {
-    id: 'nivel-3',
-    title: 'Nível 3',
-    description: 'Minhas escolhas',
-    availableTokens: ['eu', 'quero', 'preciso', 'estou', 'nao', 'agua', 'comer', 'brincar', 'dormir', 'ajuda', 'banheiro', 'fome', 'dor'],
-    quickResponses: ['sim', 'nao'],
-  },
-]
-
-const levelById = Object.fromEntries(levels.map(level => [level.id, level]))
-const intentionIds = ['quero', 'preciso', 'estou']
-const nounIds = ['agua', 'comer', 'brincar', 'dormir', 'ajuda', 'banheiro', 'fome', 'dor']
-const tokenCatalog = Object.fromEntries(Object.entries(communicationWords).map(([id, value]) => [id, { ...value, id }]))
+const tokenCatalog = Object.fromEntries(Object.entries(learningConcepts).map(([id, concept]) => [id, {
+  id,
+  label: concept.label,
+  audioText: concept.speech,
+  image: concept.image,
+}]))
+const functionalPhraseKeys = new Set(Object.keys(communicationNaturalPhrases).filter(key => key !== 'sim' && key !== 'nao'))
 
 function getNaturalPhrase(tokens) {
   const ids = tokens.filter(Boolean)
   if (!ids.length) return ''
 
-  if (ids.length === 1) {
-    if (ids[0] === 'sim') return 'Sim.'
-    if (ids[0] === 'nao') return 'Não.'
-  }
-
-  const map = {
-    'eu,quero,agua': 'Eu quero beber água.',
-    'eu,quero,comer': 'Eu quero comer.',
-    'eu,quero,brincar': 'Eu quero brincar.',
-    'eu,quero,dormir': 'Eu quero dormir.',
-    'eu,preciso,ajuda': 'Eu preciso de ajuda.',
-    'eu,preciso,banheiro': 'Eu preciso ir ao banheiro.',
-    'eu,estou,fome': 'Eu estou com fome.',
-    'eu,estou,dor': 'Eu estou com dor.',
-    'eu,nao,quero,comer': 'Eu não quero comer.',
-    'eu,nao,quero,brincar': 'Eu não quero brincar.',
-  }
-
   const key = ids.join(',')
-  if (map[key]) return map[key]
+  if (communicationNaturalPhrases[key]) return communicationNaturalPhrases[key]
 
-  const labels = ids.map(id => tokenCatalog[id]?.label || id)
-  let phrase = labels.join(' ')
-  phrase = phrase.replace(/\s+/g, ' ').trim()
-  if (!phrase) return ''
-  return phrase.charAt(0).toUpperCase() + phrase.slice(1)
-}
-
-function canAddToken(currentPhrase, item) {
-  const ids = currentPhrase.map(entry => entry.id)
-  if (!item || ids.includes(item.id)) return false
-
-  if (item.id === 'eu') return !ids.includes('eu')
-
-  if (item.id === 'nao') {
-    return ids.includes('eu') && !ids.includes('nao') && !ids.includes('quero') && !ids.includes('preciso') && !ids.includes('estou')
-  }
-
-  if (intentionIds.includes(item.id)) {
-    return ids.includes('eu') && !ids.some(id => intentionIds.includes(id))
-  }
-
-  if (nounIds.includes(item.id)) {
-    if (ids.includes('nao') && !ids.includes('quero')) return false
-    const currentIntention = ids.find(id => intentionIds.includes(id))
-    if (item.id === 'ajuda' || item.id === 'banheiro') return currentIntention === 'preciso'
-    if (item.id === 'fome' || item.id === 'dor') return currentIntention === 'estou'
-    return Boolean(currentIntention)
-  }
-
-  return true
+  const words = ids.map(id => (tokenCatalog[id]?.audioText || tokenCatalog[id]?.label || id).toLocaleLowerCase('pt-BR'))
+  const phrase = words.join(' ')
+  return `${phrase.charAt(0).toLocaleUpperCase('pt-BR')}${phrase.slice(1)}.`
 }
 
 export default function Communication() {
-  const [selectedLevelId, setSelectedLevelId] = useState(levels[0].id)
+  const [rotation, setRotation] = useState(() => getModuleRotation('communication', communicationSetIds))
+  const [qaSetId, setQaSetId] = useState('')
+  const selectedSetId = qaSetId || getCurrentTheme(rotation)
+  const selectedSet = communicationSets.find(set => set.id === selectedSetId) ?? communicationSets[0]
   const [phrase, setPhrase] = useState([])
+  const [quickResponse, setQuickResponse] = useState(null)
+  const [hasFunctionalCommunication, setHasFunctionalCommunication] = useState(false)
   const [audioMessage, setAudioMessage] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
   const stepTitle = useRef(null)
+  const advanceLocked = useRef(false)
 
-  const selectedLevel = levelById[selectedLevelId] || levels[0]
-  const vocabulary = useMemo(() => selectedLevel.availableTokens.map(id => tokenCatalog[id]).filter(Boolean), [selectedLevel])
-  const quickAnswers = useMemo(() => selectedLevel.quickResponses.map(id => tokenCatalog[id]).filter(Boolean), [selectedLevel])
+  const vocabulary = useMemo(() => selectedSet.tokenIds.map(id => tokenCatalog[id]).filter(Boolean), [selectedSet])
+  const quickAnswers = useMemo(() => selectedSet.quickResponseIds.map(id => tokenCatalog[id]).filter(Boolean), [selectedSet])
   const naturalPhrase = useMemo(() => getNaturalPhrase(phrase.map(item => item.id)), [phrase])
 
-  useEffect(() => { stepTitle.current?.focus({ preventScroll: true }) }, [selectedLevelId])
+  useEffect(() => { stepTitle.current?.focus({ preventScroll: true }) }, [selectedSetId])
+  useEffect(() => { advanceLocked.current = false }, [rotation])
   useEffect(() => () => stopSpeaking(), [])
 
-  function handleLevelChange(levelId) {
-    const nextLevel = levelById[levelId] || levels[0]
-    setSelectedLevelId(nextLevel.id)
+  function resetSetState() {
+    stopSpeaking()
     setPhrase([])
+    setQuickResponse(null)
+    setHasFunctionalCommunication(false)
     setAudioMessage('')
     setStatusMessage('')
-    stopSpeaking()
+  }
+
+  function handleQaSetChange(setId) {
+    setQaSetId(setId)
+    resetSetState()
   }
 
   useEffect(() => {
@@ -134,21 +87,18 @@ export default function Communication() {
   }
 
   function addItem(item) {
-    if (!item || !canAddToken(phrase, item)) {
-      setStatusMessage('Essa combinação ainda não está disponível neste nível.')
-      return
-    }
-
     const next = [...phrase, item]
     setPhrase(next)
     setAudioMessage('')
-    setStatusMessage(`${item.audioText} adicionado.`)
+    setStatusMessage('Pictograma adicionado à frase.')
+    if (functionalPhraseKeys.has(next.map(entry => entry.id).join(','))) setHasFunctionalCommunication(true)
   }
 
   function addQuickAnswer(item) {
-    setPhrase([item])
+    setQuickResponse(item)
+    setHasFunctionalCommunication(true)
     setAudioMessage('')
-    setStatusMessage(`${item.audioText} selecionado.`)
+    setStatusMessage('Resposta rápida selecionada.')
   }
 
   function removeItem(index) {
@@ -161,8 +111,27 @@ export default function Communication() {
   function clear() {
     stopSpeaking()
     setPhrase([])
+    setQuickResponse(null)
     setAudioMessage('')
     setStatusMessage('Frase limpa.')
+  }
+
+  function continueLearning() {
+    if (!hasFunctionalCommunication) return
+    if (qaSetId) {
+      setQaSetId('')
+      resetSetState()
+      return
+    }
+    if (advanceLocked.current) return
+    advanceLocked.current = true
+    const nextRotation = advanceModuleRotation('communication', communicationSetIds)
+    if (!nextRotation) {
+      advanceLocked.current = false
+      return
+    }
+    setRotation(nextRotation)
+    resetSetState()
   }
 
   return (
@@ -171,26 +140,23 @@ export default function Communication() {
 
       <section className="communication-intro" aria-labelledby="communication-title">
         <h1 id="communication-title">O que você quer dizer?</h1>
-        <p>Escolha as opções para montar sua frase dentro do vocabulário do nível.</p>
+        <p>Escolha pictogramas para expressar o que você quer comunicar.</p>
       </section>
 
-      <div className="communication-level-selector" aria-label="Seleção de nível">
-        {levels.map(level => (
-          <button
-            key={level.id}
-            type="button"
-            className={['communication-level-button', level.id === selectedLevelId ? 'communication-level-button--active' : ''].join(' ')}
-            onClick={() => handleLevelChange(level.id)}
-          >
-            {level.title}
-          </button>
-        ))}
-      </div>
+      {import.meta.env.DEV && (
+        <label className="communication-qa-selector">
+          Conjunto para QA
+          <select value={qaSetId} onChange={event => handleQaSetChange(event.target.value)}>
+            <option value="">Rotação normal</option>
+            {communicationSets.map(set => <option key={set.id} value={set.id}>{set.label}</option>)}
+          </select>
+        </label>
+      )}
 
       <section className="sentence-panel" aria-labelledby="sentence-title">
         <h2 id="sentence-title">Sua frase</h2>
 
-        <p className="sentence-level-label">{selectedLevel.description}</p>
+        <p className="sentence-set-label">Conjunto: {selectedSet.label}</p>
 
         {phrase.length ? (
           <ol className="sentence-words">
@@ -211,7 +177,15 @@ export default function Communication() {
         <div className="sentence-actions">
           <button type="button" disabled={!naturalPhrase} onClick={() => speak(naturalPhrase)}><SpeakerIcon />Ouvir frase</button>
           <button type="button" onClick={clear}>Limpar</button>
+          <button type="button" disabled={!hasFunctionalCommunication} onClick={continueLearning}>{qaSetId ? 'Voltar à rotação' : 'Continuar aprendendo'}</button>
         </div>
+
+        {quickResponse && (
+          <div className="quick-response-natural" role="status" aria-live="polite">
+            <p>Resposta rápida: {getNaturalPhrase([quickResponse.id])}</p>
+            <button type="button" aria-label={`Ouvir resposta rápida: ${getNaturalPhrase([quickResponse.id])}`} onClick={() => speak(getNaturalPhrase([quickResponse.id]))}><SpeakerIcon />Ouvir resposta</button>
+          </div>
+        )}
 
         <p className="communication-status" role="status" aria-live="polite">{statusMessage}</p>
         <p className="audio-feedback" role="status" aria-live="polite">{audioMessage}</p>
@@ -219,12 +193,13 @@ export default function Communication() {
 
       <section className="communication-choices" aria-labelledby="step-title">
         <p className="communication-step">Vocabulário disponível</p>
-        <h2 id="step-title" ref={stepTitle} tabIndex={-1}>{selectedLevel.title}</h2>
+        <h2 id="step-title" ref={stepTitle} tabIndex={-1}>{selectedSet.label}</h2>
         <div className="communication-grid">
           {vocabulary.map(item => (
             <CommunicationCard
               key={item.id}
               {...item}
+              selected={phrase.some(phraseItem => phraseItem.id === item.id)}
               onSelect={() => addItem(item)}
               onSpeak={speak}
             />
@@ -243,6 +218,7 @@ export default function Communication() {
                 {...item}
                 onSelect={() => addQuickAnswer(item)}
                 onSpeak={speak}
+                selected={quickResponse?.id === item.id}
               />
             ))}
           </div>

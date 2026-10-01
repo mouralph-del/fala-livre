@@ -54,3 +54,47 @@ export const options = {
   'NÃO QUERO': [words.agua, words.comer, words.banheiro, words.dormir, words.brincar],
 }
 export const answers = [words.sim, words.nao]
+
+export const communicationSets = [
+  {
+    id: 'want',
+    label: 'QUERO',
+    tokenIds: ['eu', 'quero', 'agua', 'comer', 'brincar', 'dormir'],
+    quickResponseIds: [],
+  },
+  {
+    id: 'need',
+    label: 'PRECISO',
+    tokenIds: ['eu', 'preciso', 'ajuda', 'banheiro'],
+    quickResponseIds: [],
+  },
+  {
+    id: 'state',
+    label: 'COMO ESTOU',
+    tokenIds: ['eu', 'estou', 'fome', 'dor'],
+    quickResponseIds: [],
+  },
+  {
+    id: 'choiceRefusal',
+    label: 'ESCOLHAS / RECUSA',
+    tokenIds: ['eu', 'nao', 'quero', 'comer', 'brincar'],
+    quickResponseIds: ['sim', 'nao'],
+  },
+]
+
+export const communicationSetIds = communicationSets.map(set => set.id)
+
+export const communicationNaturalPhrases = {
+  'eu,quero,agua': 'Eu quero beber água.',
+  'eu,quero,comer': 'Eu quero comer.',
+  'eu,quero,brincar': 'Eu quero brincar.',
+  'eu,quero,dormir': 'Eu quero dormir.',
+  'eu,preciso,ajuda': 'Eu preciso de ajuda.',
+  'eu,preciso,banheiro': 'Eu preciso ir ao banheiro.',
+  'eu,estou,fome': 'Eu estou com fome.',
+  'eu,estou,dor': 'Eu estou com dor.',
+  'eu,nao,quero,comer': 'Eu não quero comer.',
+  'eu,nao,quero,brincar': 'Eu não quero brincar.',
+  sim: 'Sim.',
+  nao: 'Não.',
+}
