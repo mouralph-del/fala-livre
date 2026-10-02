@@ -1,12 +1,11 @@
 import './Learn.css'
 
-const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', routine: '/aprender/situacoes', myDay: '/aprender/meu-dia-a-dia' }
+const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', myDay: '/aprender/meu-dia-a-dia' }
 
 const activities = [
   { id: 'communicate', title: 'COMUNICAR', description: 'Expresse desejos, necessidades e ideias.', tone: 'blue' },
   { id: 'words', title: 'PALAVRAS E FRASES', description: 'Aprenda palavras e construa pequenas frases.', tone: 'green' },
   { id: 'write', title: 'ESCREVER', description: 'Pratique a escrita do seu jeito.', detail: 'Teclado ou caderno', tone: 'green' },
-  { id: 'routine', title: 'SITUAÇÕES DO DIA A DIA', description: 'Aprenda com situações e escolhas do cotidiano.', tone: 'blue' },
   { id: 'myDay', title: 'MEU DIA A DIA', description: 'Aprenda rotinas, comunicação e emoções em situações do cotidiano.', tone: 'green' },
 ]
 
