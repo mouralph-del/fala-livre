@@ -12,6 +12,9 @@ import Writing from './pages/Writing'
 import EducationalKeyboard from './pages/EducationalKeyboard'
 import Notebook from './pages/Notebook'
 import WordsAndPhrases from './pages/WordsAndPhrases'
+import MyDay, { MyDayEmotions } from './pages/MyDay'
+import SequenceGame from './pages/SequenceGame'
+import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
 
 function subscribeToRoute(callback) {
   window.addEventListener('hashchange', callback)
@@ -22,6 +25,10 @@ function getRoute() {
   const game = games.find(item => item.route === window.location.hash)
   if (game) return 'games/' + game.id
   if (window.location.hash === '#/jogar') return 'games'
+  if (window.location.hash === '#/aprender/meu-dia-a-dia') return 'myDay'
+  if (window.location.hash === '#/aprender/meu-dia-a-dia/rotinas') return 'myDayRoutines'
+  if (window.location.hash === '#/aprender/meu-dia-a-dia/comunicacao') return 'myDayCommunication'
+  if (window.location.hash === '#/aprender/meu-dia-a-dia/emocoes') return 'myDayEmotions'
   if (window.location.hash === '#/aprender/situacoes') return 'situations'
   if (window.location.hash === '#/aprender/escrever') return 'writing'
   if (window.location.hash === '#/aprender/escrever/teclado') return 'keyboard'
@@ -82,7 +89,7 @@ function App() {
   const previousRoute = useRef(route)
 
   useEffect(() => {
-    document.title = route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : 'Fala Livre'
+    document.title = route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
     if (route !== previousRoute.current) {
       window.scrollTo(0, 0)
       document.getElementById('conteudo')?.focus({ preventScroll: true })
@@ -103,7 +110,7 @@ function App() {
       </header>
       <div className="home-surround">
         <div className="home-decoration" aria-hidden="true"><span /></div>
-        {route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : <main id="conteudo" className="home" tabIndex={-1}>
+        {route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded initialLevelId="nivel-1" /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
             <h1 id="welcome-title">Olá, Pedro</h1>
             <p>O que você gostaria de fazer hoje?</p>

@@ -6,6 +6,6 @@ export const games = [
   { id: 'encontre-imagem', title: 'ENCONTRE A IMAGEM', pageTitle: 'Encontre a Imagem', description: 'Encontre o pictograma pedido entre as opções.', route: '#/jogar/encontre-imagem', icon: 'find-image', tone: 'blue' },
   { id: 'bingo', title: 'BINGO DE PALAVRAS', pageTitle: 'Bingo de Palavras', description: 'Ouça a palavra e encontre na cartela.', route: '#/jogar/bingo', icon: 'bingo', tone: 'green', visible: false },
   { id: 'onde-pertence', title: 'ONDE PERTENCE?', pageTitle: 'Onde pertence?', description: 'Leve cada objeto ao lugar certo.', route: '#/jogar/onde-pertence', icon: 'association', tone: 'green' },
-  { id: 'sequencias', title: 'SEQUÊNCIAS', pageTitle: 'Sequências', description: 'Coloque as ações na ordem.', route: '#/jogar/sequencias', icon: 'sequence', tone: 'blue' },
-  { id: 'situacoes-interativas', title: 'SITUAÇÕES INTERATIVAS', pageTitle: 'Situações Interativas', description: 'Faça escolhas e participe de pequenas conversas.', route: '#/jogar/situacoes-interativas', icon: 'conversation', tone: 'green' },
+  { id: 'sequencias', title: 'SEQUÊNCIAS', pageTitle: 'Sequências', description: 'Coloque as ações na ordem.', route: '#/jogar/sequencias', icon: 'sequence', tone: 'blue', visible: false },
+  { id: 'situacoes-interativas', title: 'SITUAÇÕES INTERATIVAS', pageTitle: 'Situações Interativas', description: 'Faça escolhas e participe de pequenas conversas.', route: '#/jogar/situacoes-interativas', icon: 'conversation', tone: 'green', visible: false },
 ]

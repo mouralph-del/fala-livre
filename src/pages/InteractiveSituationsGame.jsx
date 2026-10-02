@@ -21,6 +21,12 @@ function createPhrase(length) {
   return Array.from({ length }, () => null)
 }
 
+function initialForLevel(levelId) {
+  const level = interactiveSituations.find(item => item.id === levelId)
+  const situation = level?.situations[0]
+  return situation ? { ...initial, levelId: level.id, phrase: createPhrase(situation.expectedTokens.length) } : initial
+}
+
 function reducer(state, action) {
   if (action.type === 'menu') return initial
 
@@ -125,8 +131,8 @@ function reducer(state, action) {
   return state
 }
 
-export default function InteractiveSituationsGame() {
-  const [state, dispatch] = useReducer(reducer, initial)
+export default function InteractiveSituationsGame({ embedded = false, initialLevelId = null }) {
+  const [state, dispatch] = useReducer(reducer, initialLevelId, initialForLevel)
   const [audioMessage, setAudioMessage] = useState('')
   const heading = useRef(null)
   const board = useRef(null)
@@ -140,6 +146,7 @@ export default function InteractiveSituationsGame() {
 
   const currentLevel = interactiveSituations.find(item => item.id === state.levelId) || null
   const currentSituation = currentLevel?.situations[state.situationIndex] || null
+  const currentLevelLabel = embedded ? 'Comunicação' : currentLevel?.title
   const phraseSpeech = interactivePhraseSpeech(state.phrase, currentSituation?.naturalPhrase)
   const full = state.phrase.every(Boolean)
   const stage = `${state.levelId}/${state.situationIndex}/${state.confirmed}/${state.finished}`
@@ -288,7 +295,8 @@ export default function InteractiveSituationsGame() {
 
   if (!currentLevel || !currentSituation) {
     return <main id="conteudo" className="interactive-page" tabIndex={-1} onKeyDown={escape}>
-      <header className="interactive-intro"><a className="interactive-back" href="#/jogar">← Jogos</a><h1>Situações Interativas</h1></header>
+      <header className="interactive-intro"><a className="interactive-back" href={embedded ? '#/aprender/meu-dia-a-dia' : '#/jogar'}>{embedded ? '← Meu Dia a Dia' : '← Jogos'}</a><h1>{embedded ? 'Comunicação' : 'Situações Interativas'}</h1></header>
+      {embedded ? <p role="status">Esta atividade ainda não está disponível.</p> : <>
       <section className="interactive-menu" aria-labelledby="interactive-menu-title">
         <h2 id="interactive-menu-title" ref={heading} tabIndex={-1}>Escolha um nível</h2>
         <div className="interactive-menu-grid">
@@ -304,17 +312,18 @@ export default function InteractiveSituationsGame() {
           ))}
         </div>
       </section>
+      </>}
       <footer className="interactive-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
     </main>
   }
 
   return <main id="conteudo" className="interactive-page" tabIndex={-1} onKeyDown={escape}>
     <header className="interactive-intro">
-      <a className="interactive-back" href="#/jogar">← Jogos</a>
-      <h1>Situações Interativas</h1>
+      <a className="interactive-back" href={embedded ? '#/aprender/meu-dia-a-dia' : '#/jogar'}>{embedded ? '← Meu Dia a Dia' : '← Jogos'}</a>
+      <h1>{embedded ? 'Comunicação' : 'Situações Interativas'}</h1>
     </header>
 
-    <div className="interactive-level-switcher" aria-label="Seleção de nível">
+    {!embedded && <div className="interactive-level-switcher" aria-label="Seleção de nível">
       {interactiveSituations.map(level => (
         <button
           type="button"
@@ -325,16 +334,16 @@ export default function InteractiveSituationsGame() {
           {level.title}
         </button>
       ))}
-    </div>
+    </div>}
 
     {state.finished ? (
       <section className="interactive-panel interactive-summary" aria-labelledby="interactive-complete">
-        <p className="interactive-context">{currentLevel.title}</p>
-        <h2 id="interactive-complete" ref={heading} tabIndex={-1}>Nível concluído!</h2>
-        <p className="interactive-summary-text">Você terminou as {currentLevel.situations.length} situações deste nível com sucesso.</p>
+        <p className="interactive-context">{currentLevelLabel}</p>
+        <h2 id="interactive-complete" ref={heading} tabIndex={-1}>{embedded ? 'Muito bem!' : 'Nível concluído!'}</h2>
+        <p className="interactive-summary-text">{embedded ? 'Você terminou estas situações de comunicação.' : `Você terminou as ${currentLevel.situations.length} situações deste nível com sucesso.`}</p>
         <div className="interactive-controls">
-          <button type="button" className="interactive-action" onClick={() => change({ type: 'reset-level' })}>Repetir nível</button>
-          <button type="button" className="interactive-action" onClick={() => change({ type: 'menu' })}>Escolher outro nível</button>
+          <button type="button" className="interactive-action" onClick={() => change({ type: 'reset-level' })}>{embedded ? 'Repetir situações' : 'Repetir nível'}</button>
+          {embedded ? <a className="interactive-action" href="#/aprender/meu-dia-a-dia">Voltar ao Meu Dia a Dia</a> : <button type="button" className="interactive-action" onClick={() => change({ type: 'menu' })}>Escolher outro nível</button>}
         </div>
       </section>
     ) : (
@@ -344,7 +353,7 @@ export default function InteractiveSituationsGame() {
         </div>
 
         <div className="interactive-mission">
-          <p className="interactive-context">{currentLevel.title} · Situação {state.situationIndex + 1} de {currentLevel.situations.length}</p>
+          <p className="interactive-context">{currentLevelLabel} · Situação {state.situationIndex + 1} de {currentLevel.situations.length}</p>
           <h2 id="interactive-mission" ref={!state.confirmed ? heading : undefined} tabIndex={-1}>{currentSituation.prompt}</h2>
           {currentSituation.context && <p className="interactive-narrative">{currentSituation.context}</p>}
           <button type="button" className="interactive-action interactive-question-audio" aria-label="Ouvir missão" onClick={() => speak(currentSituation.prompt)}>
@@ -478,7 +487,7 @@ export default function InteractiveSituationsGame() {
               </button>
               <div className="interactive-controls">
                 <button type="button" className="interactive-action" ref={nextButton} onClick={() => change({ type: 'continue' })}>
-                  {state.situationIndex < currentLevel.situations.length - 1 ? 'Continuar' : 'Concluir nível'}
+                  {state.situationIndex < currentLevel.situations.length - 1 ? 'Continuar' : embedded ? 'Concluir' : 'Concluir nível'}
                 </button>
               </div>
             </section>
@@ -493,7 +502,7 @@ export default function InteractiveSituationsGame() {
       </div>
     )}
 
-    <button type="button" className="interactive-action interactive-menu-back" onClick={() => change({ type: 'menu' })}>Escolher outro nível</button>
+    {!embedded && <button type="button" className="interactive-action interactive-menu-back" onClick={() => change({ type: 'menu' })}>Escolher outro nível</button>}
 
     <p className="interactive-audio-status" role="status">{audioMessage}</p>
     <footer className="interactive-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>

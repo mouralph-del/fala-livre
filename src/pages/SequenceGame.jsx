@@ -45,7 +45,7 @@ function SequenceVisual({ step }) {
   </span>
 }
 
-export default function SequenceGame() {
+export default function SequenceGame({ embedded = false }) {
   const [level, setLevel] = useState(sequenceGameLevels[0])
   const [state, dispatch] = useReducer(reducer, sequenceGameLevels[0], selectedLevel => initial(selectedLevel.activities.map(activity => shuffleSequence(activity))))
   const [audioMessage, setAudioMessage] = useState('')
@@ -149,10 +149,10 @@ export default function SequenceGame() {
   }
 
   return <main id="conteudo" className="sequence-page" tabIndex={-1} onKeyDown={escape}>
-    <header className="sequence-intro"><a className="sequence-back" href="#/jogar">← Jogos</a><h1>Sequências</h1></header>
-    <nav className="sequence-levels" aria-label="Escolher nível">
+    <header className="sequence-intro"><a className="sequence-back" href={embedded ? '#/aprender/meu-dia-a-dia' : '#/jogar'}>{embedded ? '← Meu Dia a Dia' : '← Jogos'}</a><h1>{embedded ? 'Rotinas' : 'Sequências'}</h1></header>
+    {!embedded && <nav className="sequence-levels" aria-label="Escolher nível">
       {sequenceGameLevels.map((item, index) => <button key={item.id} type="button" className={`sequence-level${item.id === level.id ? ' sequence-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
-    </nav>
+    </nav>}
     {!finished ? <section className={`sequence-play${state.complete ? ' sequence-play--complete' : ''}`} aria-labelledby="sequence-title">
       <p className="sequence-round">Atividade {state.activityIndex + 1} de {level.activities.length}</p>
       <h2 id="sequence-title" ref={heading} tabIndex={-1}>{activity.title}</h2>
@@ -189,8 +189,8 @@ export default function SequenceGame() {
       </>}</div>
       {drag && <div className="sequence-drag" aria-hidden="true" style={{ left: drag.x, top: drag.y }}><SequenceVisual step={activity.steps.find(step => step.id === state.order[drag.source])} /></div>}
     </section> : <section className="sequence-success" aria-labelledby="sequence-complete">
-      <h2 id="sequence-complete" ref={heading} tabIndex={-1}>Muito bem!</h2><p>Você completou {level.label.toLowerCase()}.</p>
-      <button type="button" className="sequence-action" onClick={restart}>Jogar novamente</button>
+      <h2 id="sequence-complete" ref={heading} tabIndex={-1}>Muito bem!</h2><p>{embedded ? 'Você completou estas rotinas.' : `Você completou ${level.label.toLowerCase()}.`}</p>
+      <button type="button" className="sequence-action" onClick={restart}>{embedded ? 'Repetir rotinas' : 'Jogar novamente'}</button>
     </section>}
     <p className="sequence-audio-status" role="status">{audioMessage}</p>
     <footer className="sequence-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
