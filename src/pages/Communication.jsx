@@ -8,11 +8,13 @@ import {
   pictogramCredit,
 } from '../data/communicationOptions'
 import { learningConcepts } from '../data/learningConcepts'
+import { socialExpressions } from '../data/socialExpressions'
+import { constructedSpeech } from '../utils/myDayCommunication'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Communication.css'
 
-const tokenCatalog = Object.fromEntries(Object.entries(learningConcepts).map(([id, concept]) => [id, {
+const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ...socialExpressions }).map(([id, concept]) => [id, {
   id,
   label: concept.label,
   audioText: concept.speech,
@@ -21,15 +23,11 @@ const tokenCatalog = Object.fromEntries(Object.entries(learningConcepts).map(([i
 const functionalPhraseKeys = new Set(Object.keys(communicationNaturalPhrases).filter(key => key !== 'sim' && key !== 'nao'))
 
 function getNaturalPhrase(tokens) {
-  const ids = tokens.filter(Boolean)
-  if (!ids.length) return ''
-
-  const key = ids.join(',')
-  if (communicationNaturalPhrases[key]) return communicationNaturalPhrases[key]
-
-  const words = ids.map(id => (tokenCatalog[id]?.audioText || tokenCatalog[id]?.label || id).toLocaleLowerCase('pt-BR'))
-  const phrase = words.join(' ')
-  return `${phrase.charAt(0).toLocaleUpperCase('pt-BR')}${phrase.slice(1)}.`
+  const phrases = { ...communicationNaturalPhrases }
+  for (const [key, speech] of Object.entries(communicationNaturalPhrases)) {
+    for (const item of Object.values(socialExpressions)) phrases[`${key},${item.id}`] = `${speech.slice(0, -1)}, ${item.speech.toLocaleLowerCase('pt-BR')}`
+  }
+  return constructedSpeech(tokens, phrases, tokenCatalog)
 }
 
 export default function Communication() {
@@ -206,6 +204,14 @@ export default function Communication() {
           ))}
         </div>
       </section>
+
+      <details className="communication-social">
+        <summary>Expressões sociais</summary>
+        <p>Você pode escolher uma expressão sozinha ou acrescentá-la à sua mensagem.</p>
+        <div className="communication-grid">
+          {Object.keys(socialExpressions).map(id => <CommunicationCard key={id} {...tokenCatalog[id]} onSelect={() => addItem(tokenCatalog[id])} onSpeak={speak} selected={phrase.some(item => item.id === id)} />)}
+        </div>
+      </details>
 
       {quickAnswers.length > 0 && (
         <section className="quick-answers" aria-labelledby="quick-title">

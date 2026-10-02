@@ -62,3 +62,12 @@ Origem e correspondência visual conferidas nos PNGs oficiais e nos metadados da
 | chegar-casa.png | 16805 | llegar | https://arasaac.org/pictograms/es/16805 | https://static.arasaac.org/pictograms/16805/16805_300.png |
 | pendurar-mochila.png | 37896 | colgar; colgar la mochila | https://arasaac.org/pictograms/es/37896 | https://static.arasaac.org/pictograms/37896/37896_300.png |
 | tirar-sapato.png | 14536 | descalzar | https://arasaac.org/pictograms/es/14536 | https://static.arasaac.org/pictograms/14536/14536_300.png |
+
+## Expressões sociais — Etapa 08D.3
+
+Autor: Sergio Palao. Proprietário: Governo de Aragão. Fonte: ARASAAC. Licença: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Sem adaptações; dimensionamento por CSS. OBRIGADO e OBRIGADA compartilham o mesmo PNG; a escolha linguística é explícita.
+
+| Arquivo local | ID | Nome original (es) | Página oficial | PNG oficial |
+| --- | --- | --- | --- | --- |
+| por-favor.png | 8195 | por favor | https://arasaac.org/pictograms/es/8195 | https://static.arasaac.org/pictograms/8195/8195_300.png |
+| agradecimento.png | 8129 | gracias | https://arasaac.org/pictograms/es/8129 | https://static.arasaac.org/pictograms/8129/8129_300.png |

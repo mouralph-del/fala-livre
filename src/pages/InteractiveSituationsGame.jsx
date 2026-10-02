@@ -4,6 +4,40 @@ import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './InteractiveSituationsGame.css'
+import { myDayCommunication, myDayCommunicationIds } from '../data/myDayCommunication'
+import { learningConcepts } from '../data/learningConcepts'
+import { socialExpressions } from '../data/socialExpressions'
+import { communicationHelp, constructedSpeech, validateCommunication } from '../utils/myDayCommunication'
+import { getCurrentTheme } from '../utils/contentRotation'
+import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
+
+const continuousVocabulary = { ...learningConcepts, ...socialExpressions }
+const continuousPhrases = Object.fromEntries(myDayCommunication.flatMap(item => item.alternatives.map(variant => [variant.tokens.join(','), variant.speech])))
+function continuousInitial(rotation) {
+  const situation = myDayCommunication.find(item => item.id === getCurrentTheme(rotation))
+  return { ...initial, continuous: true, rotation, phrase: createPhrase(situation.slotCount), helpCount: 0, helpText: '' }
+}
+function continuousReducer(state, action) {
+  if (action.type === 'next-situation') return continuousInitial(action.rotation)
+  const situation = myDayCommunication.find(item => item.id === getCurrentTheme(state.rotation))
+  if (state.confirmed) return state
+  if (action.type === 'hint') {
+    const help = communicationHelp(state.phrase, situation, state.helpCount)
+    return { ...state, helpCount: Math.min(2, state.helpCount + 1), hint: help.position, helpText: help.text }
+  }
+  if (action.type === 'confirm') return { ...state, confirmed: validateCommunication(state.phrase, situation), retry: !validateCommunication(state.phrase, situation), editing: null, hint: null, helpText: '' }
+  if (action.type === 'edit') return { ...state, editing: state.editing === action.position ? null : action.position }
+  if (action.type === 'cancel') return { ...state, editing: null, announcement: 'Seleção cancelada.' }
+  if (action.type === 'clear') return { ...state, phrase: createPhrase(situation.slotCount), editing: null, retry: false, hint: null, helpText: '', announcement: 'Frase limpa.' }
+  if (action.type === 'place' || action.type === 'remove') {
+    if (!Number.isInteger(action.position) || action.position < 0 || action.position >= state.phrase.length) return state
+    if (action.type === 'place' && !situation.options.some(item => item.id === action.id)) return state
+    const phrase = [...state.phrase]
+    phrase[action.position] = action.type === 'remove' ? null : action.id
+    return { ...state, phrase, editing: null, retry: false, hint: null, helpText: '', announcement: action.announcement }
+  }
+  return state
+}
 
 const initial = {
   levelId: null,
@@ -28,6 +62,7 @@ function initialForLevel(levelId) {
 }
 
 function reducer(state, action) {
+  if (state.continuous) return continuousReducer(state, action)
   if (action.type === 'menu') return initial
 
   if (action.type === 'select-level') {
@@ -131,8 +166,9 @@ function reducer(state, action) {
   return state
 }
 
-export default function InteractiveSituationsGame({ embedded = false, initialLevelId = null }) {
-  const [state, dispatch] = useReducer(reducer, initialLevelId, initialForLevel)
+export default function InteractiveSituationsGame({ embedded = false, initialLevelId = null, continuous = false }) {
+  const [state, dispatch] = useReducer(reducer, null, () => continuous ? continuousInitial(getModuleRotation('myDayCommunication', myDayCommunicationIds)) : initialForLevel(initialLevelId))
+  const advanceLocked = useRef(false)
   const [audioMessage, setAudioMessage] = useState('')
   const heading = useRef(null)
   const board = useRef(null)
@@ -144,12 +180,13 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
   const focusSlot = useRef(null)
   const [drag, setDrag] = useState(null)
 
-  const currentLevel = interactiveSituations.find(item => item.id === state.levelId) || null
-  const currentSituation = currentLevel?.situations[state.situationIndex] || null
+  const currentLevel = continuous ? { title: 'Comunicação', situations: myDayCommunication } : interactiveSituations.find(item => item.id === state.levelId) || null
+  const currentSituation = continuous ? myDayCommunication.find(item => item.id === getCurrentTheme(state.rotation)) : currentLevel?.situations[state.situationIndex] || null
   const currentLevelLabel = embedded ? 'Comunicação' : currentLevel?.title
-  const phraseSpeech = interactivePhraseSpeech(state.phrase, currentSituation?.naturalPhrase)
+  const phraseSpeech = continuous ? constructedSpeech(state.phrase, continuousPhrases, continuousVocabulary) : interactivePhraseSpeech(state.phrase, currentSituation?.naturalPhrase)
   const full = state.phrase.every(Boolean)
-  const stage = `${state.levelId}/${state.situationIndex}/${state.confirmed}/${state.finished}`
+  const canCheck = continuous ? state.phrase.slice(0, currentSituation.expectedTokens.length).every(Boolean) : full
+  const stage = `${continuous ? currentSituation.id : state.levelId}/${state.situationIndex}/${state.confirmed}/${state.finished}`
   const previousStage = useRef(stage)
 
   useEffect(() => () => {
@@ -158,6 +195,10 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     gesture.current = null
     stopSpeaking()
   }, [])
+
+  useEffect(() => {
+    advanceLocked.current = false
+  }, [state.rotation])
 
   useEffect(() => {
     if (stage !== previousStage.current) {
@@ -178,11 +219,17 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     cancelAnimationFrame(scrollFrame.current)
     const current = gesture.current
     gesture.current = null
-    if (current?.element.hasPointerCapture(current.id)) current.element.releasePointerCapture(current.id)
+    const pointerId = continuous ? current?.pointerId : current?.id
+    if (current?.element.hasPointerCapture(pointerId)) current.element.releasePointerCapture(pointerId)
     setDrag(null)
   }
 
   function change(action) {
+    if (continuous && action.type === 'continue') {
+      if (!state.confirmed || advanceLocked.current) return
+      advanceLocked.current = true
+      action = { type: 'next-situation', rotation: advanceModuleRotation('myDayCommunication', myDayCommunicationIds) }
+    }
     clearTimeout(hintTimer.current)
     cancelGesture()
     suppressClick.current = false
@@ -201,6 +248,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     if (!currentSituation || state.confirmed || state.finished || position < 0 || position >= state.phrase.length) return
     const word = currentSituation.options.find(item => item.id === id)
     if (!word) return
+    if (continuous) stopSpeaking()
     clearTimeout(hintTimer.current)
     focusSlot.current = position
     dispatch({ type: 'place', position, id, announcement: `${word.word} colocado na posição ${position + 1}.` })
@@ -210,6 +258,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     if (!currentSituation || state.confirmed || position < 0 || position >= state.phrase.length) return
     clearTimeout(hintTimer.current)
     const word = currentSituation.options.find(item => item.id === state.phrase[position])
+    if (continuous) stopSpeaking()
     focusSlot.current = position
     dispatch({ type: 'remove', position, announcement: `${word ? word.word : 'Item'} removido da posição ${position + 1}.` })
   }
@@ -217,7 +266,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
   function help() {
     clearTimeout(hintTimer.current)
     dispatch({ type: 'hint' })
-    hintTimer.current = setTimeout(() => dispatch({ type: 'hide-hint' }), 1800)
+    if (!continuous) hintTimer.current = setTimeout(() => dispatch({ type: 'hide-hint' }), 1800)
   }
 
   function slotAt(x, y) {
@@ -347,13 +396,13 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
         </div>
       </section>
     ) : (
-      <section className="interactive-panel interactive-game" aria-labelledby="interactive-mission">
+      <section className="interactive-panel interactive-game" aria-labelledby="interactive-mission" data-situation={currentSituation.id}>
         <div className="interactive-scene">
           <img src={currentSituation.scene} alt={currentSituation.sceneAlt} style={{ objectPosition: currentSituation.imagePosition }} />
         </div>
 
         <div className="interactive-mission">
-          <p className="interactive-context">{currentLevelLabel} · Situação {state.situationIndex + 1} de {currentLevel.situations.length}</p>
+          <p className="interactive-context">{continuous ? currentSituation.title : <>{currentLevelLabel} · Situação {state.situationIndex + 1} de {currentLevel.situations.length}</>}</p>
           <h2 id="interactive-mission" ref={!state.confirmed ? heading : undefined} tabIndex={-1}>{currentSituation.prompt}</h2>
           {currentSituation.context && <p className="interactive-narrative">{currentSituation.context}</p>}
           <button type="button" className="interactive-action interactive-question-audio" aria-label="Ouvir missão" onClick={() => speak(currentSituation.prompt)}>
@@ -365,6 +414,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
           {!state.confirmed && (
             <p className="interactive-instructions">Toque para preencher ou arraste pela alça. Para substituir, selecione um espaço e um pictograma.</p>
           )}
+          {continuous && currentSituation.complements.length > 0 && <p className="interactive-instructions">O último espaço é opcional. Sua mensagem também está completa sem uma expressão social.</p>}
 
           <ol className="interactive-phrase" ref={board} aria-label="Frase construída">
             {state.phrase.map((id, position) => {
@@ -378,10 +428,10 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                   <button
                     type="button"
                     className="interactive-slot"
-                    aria-label={`Posição ${position + 1}${word ? ': ' + word.word : ': vazia'}`}
+                    aria-label={`Posição ${position + 1}${continuous && position >= currentSituation.expectedTokens.length ? ', complemento opcional' : ''}${word ? ': ' + word.word : ': vazia'}`}
                     aria-pressed={selected}
                     disabled={state.confirmed}
-                    onClick={() => dispatch({ type: 'edit', position })}
+                    onClick={() => continuous ? change({ type: 'edit', position }) : dispatch({ type: 'edit', position })}
                   >
                     <span className="interactive-position">{position + 1}</span>
                     {word ? (
@@ -390,7 +440,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                         <strong>{word.word}</strong>
                       </>
                     ) : (
-                      <span className="interactive-empty">Escolha</span>
+                      <span className="interactive-empty">{continuous && position >= currentSituation.expectedTokens.length ? 'Opcional' : 'Escolha'}</span>
                     )}
                   </button>
                   {!state.confirmed && (
@@ -428,7 +478,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
 
               <div className="interactive-options">
                 {currentSituation.options.map(option => {
-                  const optionIsHint = state.hint !== null && currentSituation.expectedTokens[state.hint] === option.id
+                  const optionIsHint = !continuous && state.hint !== null && currentSituation.expectedTokens[state.hint] === option.id
                   return (
                     <div key={option.id} className={['interactive-option', optionIsHint ? 'interactive-option--hint' : ''].join(' ')}>
                       <button
@@ -468,12 +518,12 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                 {state.retry && <>Quase!<br />Veja a missão e tente outra combinação.</>}
               </p>
               <p className="interactive-hint-status" role="status">
-                {state.hint !== null && `${currentSituation.options.find(item => item.id === currentSituation.expectedTokens[state.hint])?.word ?? 'Item'} na posição ${state.hint + 1}.`}
+                {continuous ? state.helpText : state.hint !== null && `${currentSituation.options.find(item => item.id === currentSituation.expectedTokens[state.hint])?.word ?? 'Item'} na posição ${state.hint + 1}.`}
               </p>
 
               <div className="interactive-controls">
                 <button type="button" className="interactive-action" onClick={help}>Preciso de ajuda</button>
-                <button type="button" className="interactive-action" disabled={!full} onClick={() => change({ type: 'confirm' })}>Confirmar frase</button>
+                <button type="button" className="interactive-action" disabled={!canCheck} onClick={() => change({ type: 'confirm' })}>{continuous ? 'Conferir frase' : 'Confirmar frase'}</button>
               </div>
             </>
           )}
@@ -487,7 +537,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
               </button>
               <div className="interactive-controls">
                 <button type="button" className="interactive-action" ref={nextButton} onClick={() => change({ type: 'continue' })}>
-                  {state.situationIndex < currentLevel.situations.length - 1 ? 'Continuar' : embedded ? 'Concluir' : 'Concluir nível'}
+                  {continuous ? 'Próxima situação' : state.situationIndex < currentLevel.situations.length - 1 ? 'Continuar' : embedded ? 'Concluir' : 'Concluir nível'}
                 </button>
               </div>
             </section>
