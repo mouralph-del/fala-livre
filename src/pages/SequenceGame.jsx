@@ -3,6 +3,10 @@ import { sequenceGameLevels, shuffleSequence, isSequenceCorrect } from '../data/
 import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
+import { myDayRoutines, myDayRoutineIds } from '../data/myDayRoutines'
+import { isRoutineComplete, findViolatedDependency, shuffleRoutine } from '../utils/routineSequence'
+import { getModuleRotation, advanceModuleRotation } from '../utils/contentRotationStorage'
+import { getCurrentTheme } from '../utils/contentRotation'
 import './SequenceGame.css'
 
 const initial = starts => ({ starts, activityIndex: 0, order: starts[0], selected: null, hint: null, feedback: '', complete: false, announcement: '' })
@@ -27,8 +31,12 @@ function reducer(state, action) {
     return { ...state, order, selected: null, hint: null, feedback: '', announcement: action.announcement }
   }
   if (action.type === 'verify') {
-    const complete = isSequenceCorrect(state.order, action.activity)
+    const complete = (action.continuous ? isRoutineComplete : isSequenceCorrect)(state.order, action.activity)
     return { ...state, complete, selected: null, hint: null, announcement: '', feedback: complete ? 'correct' : 'retry' }
+  }
+  if (action.type === 'help' && action.continuous) {
+    const dependency = findViolatedDependency(state.order, action.activity)
+    return { ...state, hint: dependency, feedback: dependency ? '' : 'verify' }
   }
   if (action.type === 'help') {
     const position = action.activity.steps.findIndex((step, index) => step.id !== state.order[index])
@@ -46,8 +54,11 @@ function SequenceVisual({ step }) {
 }
 
 export default function SequenceGame({ embedded = false }) {
+  const continuous = embedded
+  const [rotation, setRotation] = useState(() => continuous ? getModuleRotation('myDayRoutines', myDayRoutineIds) : null)
+  const routine = continuous ? myDayRoutines.find(item => item.id === getCurrentTheme(rotation)) : null
   const [level, setLevel] = useState(sequenceGameLevels[0])
-  const [state, dispatch] = useReducer(reducer, sequenceGameLevels[0], selectedLevel => initial(selectedLevel.activities.map(activity => shuffleSequence(activity))))
+  const [state, dispatch] = useReducer(reducer, null, () => initial(continuous ? [shuffleRoutine(routine)] : sequenceGameLevels[0].activities.map(activity => shuffleSequence(activity))))
   const [audioMessage, setAudioMessage] = useState('')
   const heading = useRef(null)
   const board = useRef(null)
@@ -57,24 +68,30 @@ export default function SequenceGame({ embedded = false }) {
   const suppressClick = useRef(false)
   const pendingFocus = useRef(null)
   const [drag, setDrag] = useState(null)
-  const previousIndex = useRef(0)
-  const finished = state.activityIndex === level.activities.length
-  const activity = level.activities[state.activityIndex]
-  const hintStep = state.hint === null || !activity ? null : activity.steps[state.hint]
+  const previousIndex = useRef(continuous ? routine.id : 0)
+  const advanceLock = useRef(false)
+  const finished = !continuous && state.activityIndex === level.activities.length
+  const activity = continuous ? routine : level.activities[state.activityIndex]
+  const hintStep = continuous || state.hint === null || !activity ? null : activity.steps[state.hint]
+  const hintCards = continuous && state.hint ? state.hint : []
+  const activityKey = continuous ? routine.id : state.activityIndex
   const selectedStep = activity?.steps.find(step => step.id === state.selected)
 
   useEffect(() => () => { clearTimeout(hintTimer.current); gesture.current = null; stopSpeaking() }, [])
   useEffect(() => {
-    if (previousIndex.current !== state.activityIndex) heading.current?.focus()
-    previousIndex.current = state.activityIndex
-  }, [state.activityIndex])
+    if (previousIndex.current !== activityKey) heading.current?.focus()
+    previousIndex.current = activityKey
+  }, [activityKey])
   useEffect(() => {
     if (pendingFocus.current !== null) {
       board.current?.querySelectorAll('.sequence-select')[pendingFocus.current]?.focus()
       pendingFocus.current = null
     }
   }, [state.order])
-  useEffect(() => { if (state.complete) nextButton.current?.focus() }, [state.complete])
+  useEffect(() => {
+    if (state.complete) nextButton.current?.focus()
+    else advanceLock.current = false
+  }, [state.complete])
   function cancelGesture() {
     const current = gesture.current
     gesture.current = null
@@ -128,16 +145,28 @@ export default function SequenceGame({ embedded = false }) {
     if (position >= 0) board.current?.querySelectorAll('.sequence-select')[position]?.focus()
   }
   function help() {
-    clearTimeout(hintTimer.current); dispatch({ type: 'help', activity })
-    hintTimer.current = setTimeout(() => dispatch({ type: 'hide-hint', index: state.activityIndex }), 1800)
+    clearTimeout(hintTimer.current); dispatch({ type: 'help', activity, continuous })
+    if (!continuous) hintTimer.current = setTimeout(() => dispatch({ type: 'hide-hint', index: state.activityIndex }), 1800)
   }
-  function verify() { clearTimeout(hintTimer.current); cancelGesture(); dispatch({ type: 'verify', activity }) }
+  function verify() { clearTimeout(hintTimer.current); cancelGesture(); dispatch({ type: 'verify', activity, continuous }) }
   function speak(step) {
     setAudioMessage('')
     falar(step.speechText, () => setAudioMessage('Áudio indisponível no momento. Você pode continuar organizando as ações.'))
   }
-  function clearTransient() { clearTimeout(hintTimer.current); cancelGesture(); suppressClick.current = false; stopSpeaking(); setAudioMessage('') }
-  function next() { clearTransient(); dispatch({ type: 'next', index: state.activityIndex, activitiesLength: level.activities.length }) }
+  function clearTransient() { clearTimeout(hintTimer.current); cancelGesture(); suppressClick.current = false; pendingFocus.current = null; stopSpeaking(); setAudioMessage('') }
+  function next() {
+    if (continuous) {
+      if (!state.complete || advanceLock.current) return
+      advanceLock.current = true
+      clearTransient()
+      const nextRotation = advanceModuleRotation('myDayRoutines', myDayRoutineIds)
+      const nextRoutine = myDayRoutines.find(item => item.id === getCurrentTheme(nextRotation))
+      setRotation(nextRotation)
+      dispatch({ type: 'restart', starts: [shuffleRoutine(nextRoutine)] })
+      return
+    }
+    clearTransient(); dispatch({ type: 'next', index: state.activityIndex, activitiesLength: level.activities.length })
+  }
   function restart() {
     clearTransient()
     dispatch({ type: 'restart', starts: level.activities.map((item, index) => shuffleSequence(item, state.starts[index])) })
@@ -154,16 +183,16 @@ export default function SequenceGame({ embedded = false }) {
       {sequenceGameLevels.map((item, index) => <button key={item.id} type="button" className={`sequence-level${item.id === level.id ? ' sequence-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
     </nav>}
     {!finished ? <section className={`sequence-play${state.complete ? ' sequence-play--complete' : ''}`} aria-labelledby="sequence-title">
-      <p className="sequence-round">Atividade {state.activityIndex + 1} de {level.activities.length}</p>
+      {!continuous && <p className="sequence-round">Atividade {state.activityIndex + 1} de {level.activities.length}</p>}
       <h2 id="sequence-title" ref={heading} tabIndex={-1}>{activity.title}</h2>
       <p className="sequence-context">{activity.context}</p>
       <p className="sequence-instruction">Arraste pela alça ou selecione um cartão e depois uma posição.</p>
       <ol className="sequence-grid" ref={board}>{state.order.map((id, position) => {
         const currentStep = activity.steps.find(item => item.id === id)
         const selected = state.selected === id
-        const clue = hintStep?.id === id
+        const clue = continuous ? hintCards.includes(id) : hintStep?.id === id
         return <li key={position} data-position={position} className={"sequence-slot" + (drag?.over === position ? " sequence-slot--over" : "")}>
-          <button type="button" className={`sequence-position${state.hint === position ? ' sequence-position--hint' : ''}`} aria-label={`Posição ${position + 1}`} disabled={!state.selected || state.complete} aria-describedby={state.hint === position ? 'sequence-hint' : undefined} onClick={event => guardedClick(event, () => swapCards(state.order.indexOf(state.selected), position))}><span className="sequence-position-label">Posição </span>{position + 1}</button>
+          <button type="button" className={`sequence-position${!continuous && state.hint === position ? ' sequence-position--hint' : ''}`} aria-label={`Posição ${position + 1}`} disabled={!state.selected || state.complete} aria-describedby={state.hint === position ? 'sequence-hint' : undefined} onClick={event => guardedClick(event, () => swapCards(state.order.indexOf(state.selected), position))}><span className="sequence-position-label">Posição </span>{position + 1}</button>
           <div className={`sequence-card${selected ? ' sequence-card--selected' : ''}${clue ? ' sequence-card--hint' : ''}`}>
             <button type="button" className="sequence-select" aria-label={`Selecionar ${currentStep.word}`} aria-pressed={selected} disabled={state.complete} aria-describedby={clue ? 'sequence-hint' : undefined} onClick={event => guardedClick(event, () => dispatch({ type: 'select', id }))}>
               <SequenceVisual step={currentStep} /><strong>{currentStep.word}</strong>
@@ -178,12 +207,13 @@ export default function SequenceGame({ embedded = false }) {
       })}</ol>
       <div className="sequence-selection" role="status">{selectedStep ? `${selectedStep.word} selecionado. Escolha uma posição entre 1 e ${activity.steps.length}.` : state.announcement}</div>
       <div className="sequence-feedback" role="status">
+        {continuous && hintCards.length > 0 && <p id="sequence-hint">Neste exemplo, {activity.steps.find(step => step.id === hintCards[0]).word.toLowerCase()} vem antes de {activity.steps.find(step => step.id === hintCards[1]).word.toLowerCase()}.</p>}
         {hintStep && <p id="sequence-hint">{hintStep.word} {state.hint === 0 ? 'vem primeiro.' : `vem na posição ${state.hint + 1}.`}</p>}
         {state.feedback === 'correct' && <><strong>Muito bem!</strong><p>Você colocou as ações na ordem.</p></>}
         {state.feedback === 'retry' && <><strong>Quase!</strong><p>Tente trocar a ordem das ações.</p></>}
         {state.feedback === 'verify' && <p>As ações já estão organizadas. Toque em Conferir.</p>}
       </div>
-      <div className="sequence-controls">{state.complete ? <button type="button" className="sequence-action" ref={nextButton} onClick={next}>Próxima sequência</button> : <>
+      <div className="sequence-controls">{state.complete ? <button type="button" className="sequence-action" ref={nextButton} onClick={next}>{continuous ? 'Próxima rotina' : 'Próxima sequência'}</button> : <>
         <button type="button" className="sequence-action" onClick={verify}>Conferir</button>
         <button type="button" className="sequence-action" onClick={help}>Preciso de ajuda</button>
       </>}</div>

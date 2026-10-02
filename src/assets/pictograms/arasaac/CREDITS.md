@@ -42,3 +42,23 @@ Nenhuma chamada à API é necessária durante o uso. Os dados selecionados prese
 | lavar-maos.png | LAVAR AS MÃOS | 8975 | https://static.arasaac.org/pictograms/8975/8975_300.png |
 | secar-maos.png | SECAR AS MÃOS | 2566 | https://static.arasaac.org/pictograms/2566/2566_300.png |
 | deitar.png | DEITAR | 4553 | https://static.arasaac.org/pictograms/4553/4553_300.png |
+
+## Meu Dia a Dia — Rotinas (Etapa 08C.3)
+
+Origem e correspondência visual conferidas nos PNGs oficiais e nos metadados da API ARASAAC. Autor: Sergio Palao. Proprietário: Governo de Aragão. Fonte: ARASAAC. Licença: CC BY-NC-SA 4.0. Sem adaptações; apenas dimensionamento por CSS.
+
+| Arquivo | ID oficial | Nome original (es) | Página oficial | PNG oficial |
+| --- | --- | --- | --- | --- |
+| colocar-pasta-escova.png | 30086 | echar pasta de dientes | https://arasaac.org/pictograms/es/30086 | https://static.arasaac.org/pictograms/30086/30086_300.png |
+| calcar-sapato.png | 14534 | calzar | https://arasaac.org/pictograms/es/14534 | https://static.arasaac.org/pictograms/14534/14534_300.png |
+| amarrar-cadarco.png | 17026 | atarse las zapatillas; atarse los zapatos; hacer una lazada; atar las zapatillas; atar los zapatos | https://arasaac.org/pictograms/es/17026 | https://static.arasaac.org/pictograms/17026/17026_300.png |
+| vestir-camiseta.png | 2781 | vestir | https://arasaac.org/pictograms/es/2781 | https://static.arasaac.org/pictograms/2781/2781_300.png |
+| colocar-mochila-costas.png | 38265 | poner la mochila | https://arasaac.org/pictograms/es/38265 | https://static.arasaac.org/pictograms/38265/38265_300.png |
+| abrir-porta.png | 24597 | abrir la puerta | https://arasaac.org/pictograms/es/24597 | https://static.arasaac.org/pictograms/24597/24597_300.png |
+| sair.png | 2806 | salir | https://arasaac.org/pictograms/es/2806 | https://static.arasaac.org/pictograms/2806/2806_300.png |
+| sentar-cadeira.png | 2801 | sentar en la silla | https://arasaac.org/pictograms/es/2801 | https://static.arasaac.org/pictograms/2801/2801_300.png |
+| limpar-superficie.png | 3351 | limpiar | https://arasaac.org/pictograms/es/3351 | https://static.arasaac.org/pictograms/3351/3351_300.png |
+| ir-escola.png | 36473 | trasladarse; ir al colegio | https://arasaac.org/pictograms/es/36473 | https://static.arasaac.org/pictograms/36473/36473_300.png |
+| chegar-casa.png | 16805 | llegar | https://arasaac.org/pictograms/es/16805 | https://static.arasaac.org/pictograms/16805/16805_300.png |
+| pendurar-mochila.png | 37896 | colgar; colgar la mochila | https://arasaac.org/pictograms/es/37896 | https://static.arasaac.org/pictograms/37896/37896_300.png |
+| tirar-sapato.png | 14536 | descalzar | https://arasaac.org/pictograms/es/14536 | https://static.arasaac.org/pictograms/14536/14536_300.png |

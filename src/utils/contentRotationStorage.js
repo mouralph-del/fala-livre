@@ -11,6 +11,9 @@ export const CONTENT_ROTATION_MODULES = Object.freeze([
   'wordsAndPhrases',
   'writing',
   'dailySituations',
+  'myDayRoutines',
+  'myDayCommunication',
+  'myDayEmotions',
 ])
 
 const validModules = new Set(CONTENT_ROTATION_MODULES)
