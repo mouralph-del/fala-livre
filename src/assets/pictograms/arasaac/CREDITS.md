@@ -1,5 +1,19 @@
 # Pictogramas ARASAAC
 
+## Meu Dia a Dia — Emoções (Etapa 08E.3)
+
+Autor: Sergio Palao. Proprietário: Governo de Aragão. Fonte: ARASAAC. Licença: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). PNGs oficiais preservados sem modificações; apenas dimensionados na interface. CALMO/CALMA e CONFUSO/CONFUSA compartilham imagens, com escolha linguística explícita.
+
+| Arquivo | ID | Nome original (es) | Página oficial | Origem PNG |
+| --- | --- | --- | --- | --- |
+| feliz.png | 9907 | contento; feliz; contenta | https://arasaac.org/pictograms/es/9907 | https://static.arasaac.org/pictograms/9907/9907_300.png |
+| triste.png | 2606 | triste | https://arasaac.org/pictograms/es/2606 | https://static.arasaac.org/pictograms/2606/2606_300.png |
+| com-raiva.png | 2374 | enfadado; enfadada | https://arasaac.org/pictograms/es/2374 | https://static.arasaac.org/pictograms/2374/2374_300.png |
+| com-medo.png | 39668 | tener miedo; miedo; temor | https://arasaac.org/pictograms/es/39668 | https://static.arasaac.org/pictograms/39668/39668_300.png |
+| calmo.png | 31310 | tranquilo; tranquila | https://arasaac.org/pictograms/es/31310 | https://static.arasaac.org/pictograms/31310/31310_300.png |
+| confuso.png | 2352 | confuso; confusa | https://arasaac.org/pictograms/es/2352 | https://static.arasaac.org/pictograms/2352/2352_300.png |
+| descansar.png | 3299 | descansar; reposar | https://arasaac.org/pictograms/es/3299 | https://static.arasaac.org/pictograms/3299/3299_300.png |
+
 Autor: Sergio Palao. Proprietário: Governo de Aragão.
 Fonte: https://arasaac.org — licença [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 

@@ -16,9 +16,8 @@ const options = [
   {
     id: 'emocoes',
     title: 'Emoções',
-    description: 'Reconheça emoções e conheça formas de lidar com elas.',
+    description: 'Explore sentimentos e estados e comunique o que precisa.',
     route: '/aprender/meu-dia-a-dia/emocoes',
-    pending: true,
   },
 ]
 
@@ -45,16 +44,5 @@ export default function MyDay() {
         </article>
       ))}
     </div>
-  </main>
-}
-
-export function MyDayEmotions() {
-  return <main id="conteudo" className="my-day-page" tabIndex={-1}>
-    <a className="my-day-back" href="#/aprender/meu-dia-a-dia">← Meu Dia a Dia</a>
-    <section className="my-day-emotions" aria-labelledby="my-day-emotions-title">
-      <h1 id="my-day-emotions-title">Emoções</h1>
-      <p>Reconheça emoções e conheça formas de lidar com elas.</p>
-      <span className="my-day-pending" role="status">Em preparação</span>
-    </section>
   </main>
 }
