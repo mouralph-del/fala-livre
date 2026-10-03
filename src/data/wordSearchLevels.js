@@ -19,7 +19,7 @@ const baseLevels = [
     words: [
       { id: 'gato', word: 'GATO', speechText: 'Gato', start: [0, 0], direction: [0, 1] },
       { id: 'bola', word: 'BOLA', speechText: 'Bola', start: [2, 5], direction: [0, -1] },
-      { id: 'cama', word: 'CAMA', speechText: 'Cama', start: [3, 1], direction: [1, 0] },
+      { id: 'cama', word: 'CAMA', speechText: 'Cama', start: [1, 2], direction: [1, 0] },
     ],
   },
   {
@@ -28,7 +28,7 @@ const baseLevels = [
       { id: 'comer', word: 'COMER', speechText: 'Comer', start: [0, 0], direction: [0, 1] },
       { id: 'dormir', word: 'DORMIR', speechText: 'Dormir', start: [2, 7], direction: [1, 0] },
       { id: 'brincar', word: 'BRINCAR', speechText: 'Brincar', start: [7, 0], direction: [-1, 1] },
-      { id: 'passear', word: 'PASSEAR', speechText: 'Passear', start: [4, 0], direction: [0, 1] },
+      { id: 'passear', word: 'PASSEAR', speechText: 'Passear', start: [1, 0], direction: [0, 1] },
     ],
   },
 ]

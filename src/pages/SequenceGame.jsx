@@ -99,9 +99,10 @@ export default function SequenceGame({ embedded = false }) {
     setDrag(null)
   }
   function swapCards(source, destination) {
-    if (state.complete) return
+    if (state.complete || source === destination || !state.order[destination]) return
     const step = activity.steps.find(item => item.id === state.order[source])
     if (!step) return
+    stopSpeaking()
     clearTimeout(hintTimer.current)
     pendingFocus.current = destination
     dispatch({ type: 'swap', source, destination, announcement: step.word + ' na posição ' + (destination + 1) + '.' })
