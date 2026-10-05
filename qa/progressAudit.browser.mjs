@@ -177,7 +177,7 @@ try {
   // Repeated mounting leaves no injected progress listeners or subscriptions.
   for (let i = 0; i < 10; i++) { await act(A, "await a.mount('communication');return true"); assert.deepEqual((await act(A, 'return a.counts()')).types, ['focus', 'pageshow', 'storage', 'visibilitychange']); await act(A, 'await a.unmount()'); assert.equal((await act(A, 'return a.counts()')).subscriptions, 0); assert.equal((await act(A, 'return a.counts()')).listeners, 0) }
   await act(A, 'a.resetPreferences();await a.mount("app");return true'); assert.equal(await act(A, 'return a.raw()'), null)
-  assert.equal(await A.evaluate('document.querySelector(".progress-card")?.textContent.replace(/\\s/g,"")'), 'Atividades3Pontos120Conquistas2')
+  assert.equal(await A.evaluate('document.querySelector(".progress-entry a").getAttribute("href")'), '#/meu-progresso')
   console.log('RESPONSIVE OBSERVATIONS: ' + JSON.stringify(observations))
   assert.equal(observations.some(item => item.introducedControl), false, 'progress control overflow')
   assert.deepEqual(errors, []); assert.deepEqual(warnings, [])

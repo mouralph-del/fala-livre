@@ -8,6 +8,11 @@
 .profile-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 17px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; flex-shrink: 0; }
 .profile-button svg { width: 19px; height: 19px; }
 .profile-button:hover { background: #F7F8FA; border-color: var(--primary); }
+.header-navigation { display: flex; gap: 12px; flex-wrap: wrap; }
+.header-navigation a { text-decoration: none; }
+.progress-entry { padding: 20px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); line-height: 1.6; }
+.progress-entry a { display: inline-block; padding-block: 10px; color: #165d8c; font-weight: 700; }
+@media (max-width: 600px) { .header-content { flex-wrap: wrap; } .header-navigation { width: 100%; } }
 .home-surround { position: relative; isolation: isolate; }
 /* Only the decorative layer is clipped; content and focus outlines remain visible. */
 .home-decoration { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }

@@ -1,8 +1,9 @@
 import './App.css'
 
 import ActivityIllustration from './components/ActivityIllustration'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Learn from './pages/Learn'
+import MyProgress from './pages/MyProgress'
 import Communication from './pages/Communication'
 import Profile from './pages/Profile'
 import Games from './pages/Games'
@@ -35,6 +36,7 @@ function getRoute() {
   if (window.location.hash === '#/aprender/escrever/teclado') return 'keyboard'
   if (window.location.hash === '#/aprender/escrever/caderno') return 'notebook'
   if (window.location.hash === '#/aprender/palavras-frases') return 'words'
+  if (window.location.hash === '#/meu-progresso') return 'progress'
   if (window.location.hash === '#/perfil') return 'profile'
   if (window.location.hash === '#/aprender/comunicar') return 'communication'
   return window.location.hash === '#/aprender' ? 'learn' : 'home'
@@ -88,9 +90,10 @@ function ActivityCard({ title, description, variant, action }) {
 function App() {
   const route = useSyncExternalStore(subscribeToRoute, getRoute)
   const previousRoute = useRef(route)
+  const [transitionDismissed, setTransitionDismissed] = useState(false)
 
   useEffect(() => {
-    document.title = route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
+    document.title = route === 'progress' ? 'Meu Progresso | Fala Livre' : route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
     if (route !== previousRoute.current) {
       window.scrollTo(0, 0)
       document.getElementById('conteudo')?.focus({ preventScroll: true })
@@ -104,16 +107,17 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <Brand />
-          <button className="profile-button" type="button" onClick={() => { window.location.hash = '/perfil' }}>
-            <Icon name="profile" />Perfil
-          </button>
+          <nav className="header-navigation" aria-label="Navegação principal">
+            <a className="profile-button" href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}>Meu Progresso</a>
+            <a className="profile-button" href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined}><Icon name="profile" />Perfil</a>
+          </nav>
         </div>
       </header>
       <div className="home-surround">
         <div className="home-decoration" aria-hidden="true"><span /></div>
-        {route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
+        {route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
-            <h1 id="welcome-title">Olá, Pedro</h1>
+            <h1 id="welcome-title">Olá!</h1>
             <p>O que você gostaria de fazer hoje?</p>
           </section>
           <div className="activity-grid">
@@ -123,13 +127,9 @@ function App() {
 
           <section className="progress" aria-labelledby="progress-title">
             <div className="section-heading">
-              <h2 id="progress-title"><Icon name="activities" />Meu progresso</h2>
+              <h2 id="progress-title"><Icon name="activities" />Meu Progresso</h2>
             </div>
-            <dl className="progress-card" aria-label="Progresso com dados demonstrativos">
-              <div><dt><span className="progress-icon"><Icon name="activities" /></span>Atividades</dt><dd>3</dd></div>
-              <div><dt><span className="progress-icon progress-icon--warm"><Icon name="points" /></span>Pontos</dt><dd>120</dd></div>
-              <div><dt><span className="progress-icon progress-icon--green"><Icon name="award" /></span>Conquistas</dt><dd>2</dd></div>
-            </dl>
+            <div className="progress-entry"><p>Veja as atividades registradas neste navegador.</p><a href="#/meu-progresso">Ver meu progresso</a></div>
           </section>
           <p className="positive-message"><Icon name="growth" /><span>Cada pequeno passo é uma grande conquista!</span></p>
         </main>}
