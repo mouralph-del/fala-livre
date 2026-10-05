@@ -32,6 +32,9 @@
 .profile-feedback { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .profile-feedback:not(:empty) { margin-top: 12px; }
 .profile-restore { margin-top: 24px; }
+.profile-guidance { margin-top: 24px; }
+.profile-guidance a { display: inline-flex; align-items: center; margin-top: 16px; }
+:root[data-element-size='large'] .profile-guidance a { min-height: 56px; font-size: 1.125rem; }
 @media (max-width: 600px) {
   .profile-page { width: calc(100% - 32px); padding-top: 8px; }
   .profile-back { margin-bottom: 8px; }

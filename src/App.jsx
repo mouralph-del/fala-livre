@@ -4,6 +4,7 @@ import ActivityIllustration from './components/ActivityIllustration'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Learn from './pages/Learn'
 import MyProgress from './pages/MyProgress'
+import ResponsibleGuidance from './pages/ResponsibleGuidance'
 import Communication from './pages/Communication'
 import Profile from './pages/Profile'
 import Games from './pages/Games'
@@ -37,6 +38,7 @@ function getRoute() {
   if (window.location.hash === '#/aprender/escrever/caderno') return 'notebook'
   if (window.location.hash === '#/aprender/palavras-frases') return 'words'
   if (window.location.hash === '#/meu-progresso') return 'progress'
+  if (window.location.hash === '#/responsaveis') return 'responsibleGuidance'
   if (window.location.hash === '#/perfil') return 'profile'
   if (window.location.hash === '#/aprender/comunicar') return 'communication'
   return window.location.hash === '#/aprender' ? 'learn' : 'home'
@@ -93,7 +95,7 @@ function App() {
   const [transitionDismissed, setTransitionDismissed] = useState(false)
 
   useEffect(() => {
-    document.title = route === 'progress' ? 'Meu Progresso | Fala Livre' : route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Meu perfil | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
+    document.title = route === 'responsibleGuidance' ? 'Responsáveis | Fala Livre' : route === 'progress' ? 'Meu Progresso | Fala Livre' : route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Configurações | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
     if (route !== previousRoute.current) {
       window.scrollTo(0, 0)
       document.getElementById('conteudo')?.focus({ preventScroll: true })
@@ -109,13 +111,13 @@ function App() {
           <Brand />
           <nav className="header-navigation" aria-label="Navegação principal">
             <a className="profile-button" href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}>Meu Progresso</a>
-            <a className="profile-button" href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined}><Icon name="profile" />Perfil</a>
+            <a className="profile-button" href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined}><Icon name="profile" />Configurações</a>
           </nav>
         </div>
       </header>
       <div className="home-surround">
         <div className="home-decoration" aria-hidden="true"><span /></div>
-        {route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
+        {route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
             <h1 id="welcome-title">Olá!</h1>
             <p>O que você gostaria de fazer hoje?</p>

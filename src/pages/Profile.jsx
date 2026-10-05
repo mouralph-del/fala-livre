@@ -33,7 +33,7 @@ export default function Profile() {
   return (
     <main id="conteudo" className="profile-page" tabIndex={-1}>
       <a className="profile-back" href="#/">← Início</a>
-      <div className="profile-intro"><h1>Meu perfil</h1><p>Deixe o Fala Livre do seu jeito.</p></div>
+      <div className="profile-intro"><h1>Configurações</h1><p>Deixe o Fala Livre do seu jeito.</p></div>
       <div className="profile-sections">
         <section className="profile-section profile-characters" aria-labelledby="characters-title">
           <h2 id="characters-title">PERSONAGENS DA HOME</h2>
@@ -87,6 +87,11 @@ export default function Profile() {
           </label></fieldset>
         </section>
       </div>
+      <section className="profile-section profile-guidance" aria-labelledby="profile-guidance-title">
+        <h2 id="profile-guidance-title">Orientações para responsáveis</h2>
+        <p>Conheça o Fala Livre, como interpretar os registros educativos e as informações de privacidade do MVP.</p>
+        <a className="profile-action" href="#/responsaveis">Ver orientações</a>
+      </section>
       <div className="profile-restore"><button className="profile-action" type="button" onClick={restore}>Restaurar configurações padrão</button><p className="profile-feedback" role="status">{message}</p></div>
     </main>
   )
