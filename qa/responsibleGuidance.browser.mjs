@@ -55,8 +55,21 @@ try {
   assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 2)
   assert.equal(await A.evaluate(`document.querySelector('.header-navigation a[href="#/responsaveis"]') !== null`), false)
   assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("input[name=learnCharacter],input[name=gameCharacter]"),i=>({value:i.value,disabled:i.disabled,checked:i.checked}))'), [
-    {value:'girl',disabled:false,checked:true},{value:'boy',disabled:true,checked:false},{value:'girl',disabled:true,checked:false},{value:'boy',disabled:false,checked:true},
+    {value:'girl',disabled:false,checked:true},{value:'boy',disabled:false,checked:false},{value:'girl',disabled:false,checked:false},{value:'boy',disabled:false,checked:true},
   ])
+  // All four combinations use existing Home illustrations and survive refresh.
+  for (const learn of ['girl', 'boy']) for (const game of ['girl', 'boy']) {
+    await click(`input[name="learnCharacter"][value="${learn}"]`)
+    await click(`input[name="gameCharacter"][value="${game}"]`)
+    const previews = await A.evaluate('Array.from(document.querySelectorAll(".profile-character-preview"),i=>i.src)')
+    await route('/')
+    assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("img.activity-illustration"),i=>i.src)'), previews)
+    await route('/perfil')
+    await A.cdp('Page.reload'); await pause(200); await ready(A)
+    assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("input[name=learnCharacter]:checked,input[name=gameCharacter]:checked"),i=>i.value)'), [learn, game])
+  }
+  await click('input[name="learnCharacter"][value="girl"]')
+  await click('input[name="gameCharacter"][value="boy"]')
   // Seed only an isolated browser profile; then verify the actual restore UI.
   const originals = await A.evaluate(`(async()=>{
     const p=await import('/src/utils/progress.js');const s=await import('/src/utils/progressStorage.js');const r=await import('/src/utils/contentRotationStorage.js');

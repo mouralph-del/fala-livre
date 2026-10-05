@@ -3,6 +3,7 @@ import refeicaoScene from '../assets/scenes/situacao-refeicao.png'
 import brincarScene from '../assets/scenes/situacao-brincar.png'
 import descansoScene from '../assets/scenes/situacao-descanso.png'
 import passeioScene from '../assets/find-image/passeando.png'
+import { communicationNaturalPhrases } from './communicationOptions'
 
 const words = Object.fromEntries(Object.entries(communicationWords).map(([id, item]) => [id, {
   id, word: item.label, image: item.image, speechText: item.audioText,
@@ -44,8 +45,10 @@ function createLevel({ id, title, description, situations }) {
   return { id, title, description, situations }
 }
 
-export function interactivePhraseSpeech(phrase, naturalPhrase = '') {
-  if (naturalPhrase) return naturalPhrase
+export function interactivePhraseSpeech(phrase, naturalPhrase = '', expectedTokens = []) {
+  if (naturalPhrase && phrase.length === expectedTokens.length && expectedTokens.every((id, index) => phrase[index] === id)) return naturalPhrase
+  const natural = communicationNaturalPhrases[phrase.join(',')]
+  if (natural) return natural
   const filled = phrase.filter(Boolean)
   if (!filled.length) return ''
 

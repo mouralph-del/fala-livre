@@ -54,7 +54,7 @@ export default function Profile() {
               </fieldset>
             ))}
           </div>
-          <p className="profile-note">As outras opções estarão disponíveis quando houver personagens equivalentes para cada atividade.</p>
+          <p className="profile-note">Você pode usar o mesmo personagem nas duas áreas. Essa escolha muda apenas a ilustração da Home.</p>
         </section>
         <section className="profile-section" aria-labelledby="voice-title">
           <h2 id="voice-title">VOZ DA COMUNICAÇÃO</h2>

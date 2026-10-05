@@ -1,8 +1,8 @@
 import girlLearning from '../assets/illustrations/aprender-personagem.png'
 import boyPlaying from '../assets/illustrations/jogar-personagem.png'
 
-// Only equivalent, approved artwork can enable a character option.
+// Existing Home illustrations are shared by both visual preferences.
 export const homeCharacters = {
-  learnCharacter: { girl: girlLearning, boy: null },
-  gameCharacter: { girl: null, boy: boyPlaying },
+  learnCharacter: { girl: girlLearning, boy: boyPlaying },
+  gameCharacter: { girl: girlLearning, boy: boyPlaying },
 }

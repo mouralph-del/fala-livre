@@ -1,12 +1,18 @@
 import acordar from '../assets/pictograms/arasaac/acordar.png'
 import escovar from '../assets/pictograms/arasaac/escovar-dentes.png'
+import colocarPasta from '../assets/pictograms/arasaac/colocar-pasta-escova.png'
+import calcarSapato from '../assets/pictograms/arasaac/calcar-sapato.png'
+import abrirPorta from '../assets/pictograms/arasaac/abrir-porta.png'
+import sair from '../assets/pictograms/arasaac/sair.png'
+import chegarCasa from '../assets/pictograms/arasaac/chegar-casa.png'
+import tirarSapato from '../assets/pictograms/arasaac/tirar-sapato.png'
+import limparMesa from '../assets/pictograms/arasaac/limpar-superficie.png'
 import ensaboar from '../assets/pictograms/arasaac/ensaboar-maos.png'
 import lavar from '../assets/pictograms/arasaac/lavar-maos.png'
 import deitar from '../assets/pictograms/arasaac/deitar.png'
 import dormir from '../assets/pictograms/arasaac/dormir.png'
 import comer from '../assets/pictograms/arasaac/comer.png'
 import brincar from '../assets/pictograms/arasaac/brincar.png'
-import casa from '../assets/pictograms/arasaac/casa.png'
 import banheiro from '../assets/pictograms/arasaac/banheiro.png'
 import escovaObjeto from '../assets/where-belongs/objects/escova-dentes.png'
 import sapato from '../assets/find-image/sapato.png'
@@ -23,7 +29,7 @@ const escovarDentes = step('escovar-dentes', 'ESCOVAR OS DENTES', escovar)
 const sapatoPegar = step('pegar-sapato', 'PEGAR SAPATO', sapato, { visualVariant: 'pick' })
 const mochilaPegar = step('pegar-mochila', 'PEGAR MOCHILA', mochila, { visualVariant: 'pick' })
 const colocarPijama = step('colocar-pijama', 'COLOCAR PIJAMA', camisa, { visualVariant: 'sleepwear' })
-const sairDeCasa = step('sair-de-casa', 'SAIR DE CASA', casa, { visualVariant: 'leave' })
+const sairDeCasa = step('sair-de-casa', 'SAIR DE CASA', sair)
 const brincarDescansar = step('brincar-descansar', 'BRINCAR/DESCANSAR', brincar, { visualVariant: 'play-rest', images: [brincar, deitar] })
 
 export const sequenceGameLevels = [
@@ -34,7 +40,7 @@ export const sequenceGameLevels = [
         id: 'escovar-dentes', title: 'Escovar os dentes', context: 'Organize as etapas para escovar os dentes.',
         steps: [
           step('pegar-escova', 'PEGAR ESCOVA', escovaObjeto, { visualVariant: 'pick' }),
-          codeStep('colocar-pasta', 'COLOCAR PASTA', 'toothpaste', { image: escovar }),
+          step('colocar-pasta', 'COLOCAR PASTA', colocarPasta),
           escovarDentes,
         ],
       },
@@ -50,7 +56,7 @@ export const sequenceGameLevels = [
         id: 'calcar-sapato', title: 'Calçar o sapato', context: 'Organize as etapas para calçar o sapato.',
         steps: [
           sapatoPegar,
-          step('calcar-sapato', 'CALÇAR SAPATO', sapato, { visualVariant: 'wear' }),
+          step('calcar-sapato', 'CALÇAR SAPATO', calcarSapato),
           step('ajustar-sapato', 'AJUSTAR/FECHAR SAPATO', sapato, { visualVariant: 'fasten' }),
         ],
       },
@@ -65,11 +71,11 @@ export const sequenceGameLevels = [
       },
       {
         id: 'preparar-sair', title: 'Preparar-se para sair', context: 'Organize as etapas para sair de casa.',
-        steps: [step('colocar-sapato', 'COLOCAR SAPATO', sapato, { visualVariant: 'wear' }), mochilaPegar, codeStep('abrir-porta', 'ABRIR PORTA', 'door'), sairDeCasa],
+        steps: [step('colocar-sapato', 'COLOCAR SAPATO', calcarSapato), mochilaPegar, step('abrir-porta', 'ABRIR PORTA', abrirPorta), sairDeCasa],
       },
       {
         id: 'hora-comer', title: 'Hora de comer', context: 'Organize as etapas da hora de comer.',
-        steps: [codeStep('sentar-mesa', 'SENTAR À MESA', 'table', { image: refeicao }), codeStep('pegar-talheres', 'PEGAR TALHERES', 'cutlery', { image: refeicao }), step('comer', 'COMER', comer), codeStep('limpar-mesa', 'LIMPAR/ORGANIZAR', 'tidy-table', { image: refeicao })],
+        steps: [codeStep('sentar-mesa', 'SENTAR À MESA', 'table', { image: refeicao }), codeStep('pegar-talheres', 'PEGAR TALHERES', 'cutlery', { image: refeicao }), step('comer', 'COMER', comer), step('limpar-mesa', 'LIMPAR/ORGANIZAR', limparMesa)],
       },
     ],
   },
@@ -82,7 +88,7 @@ export const sequenceGameLevels = [
       },
       {
         id: 'voltando-casa', title: 'Voltando para casa', context: 'Organize as etapas ao voltar para casa.',
-        steps: [codeStep('chegar-casa', 'CHEGAR EM CASA', 'home', { image: casa }), codeStep('guardar-mochila', 'GUARDAR MOCHILA', 'store-backpack', { image: mochila }), step('tirar-sapato', 'TIRAR SAPATO', sapato, { visualVariant: 'remove' }), step('lavar-maos', 'LAVAR MÃOS', lavar), brincarDescansar],
+        steps: [step('chegar-casa', 'CHEGAR EM CASA', chegarCasa), codeStep('guardar-mochila', 'GUARDAR MOCHILA', 'store-backpack', { image: mochila }), step('tirar-sapato', 'TIRAR SAPATO', tirarSapato), step('lavar-maos', 'LAVAR MÃOS', lavar), brincarDescansar],
       },
       {
         id: 'preparar-dormir-escola', title: 'Preparando-se para dormir', context: 'Organize as etapas antes de dormir.',

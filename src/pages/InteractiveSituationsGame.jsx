@@ -187,7 +187,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
   const currentLevel = continuous ? { title: 'Comunicação', situations: myDayCommunication } : interactiveSituations.find(item => item.id === state.levelId) || null
   const currentSituation = continuous ? myDayCommunication.find(item => item.id === getCurrentTheme(state.rotation)) : currentLevel?.situations[state.situationIndex] || null
   const currentLevelLabel = embedded ? 'Comunicação' : currentLevel?.title
-  const phraseSpeech = continuous ? constructedSpeech(state.phrase, continuousPhrases, continuousVocabulary) : interactivePhraseSpeech(state.phrase, currentSituation?.naturalPhrase)
+  const phraseSpeech = continuous ? constructedSpeech(state.phrase, continuousPhrases, continuousVocabulary) : interactivePhraseSpeech(state.phrase, currentSituation?.naturalPhrase, currentSituation?.expectedTokens)
   const full = state.phrase.every(Boolean)
   const canCheck = continuous ? state.phrase.slice(0, currentSituation.expectedTokens.length).every(Boolean) : full
   const stage = `${continuous ? currentSituation.id : state.levelId}/${state.situationIndex}/${state.confirmed}/${state.finished}`

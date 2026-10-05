@@ -81,4 +81,10 @@ assert.notEqual(getCurrentTheme(absent.advanceModuleRotation('myDayRoutines',ids
 const legacy = await loadCatalog('src/data/sequenceGameLevels.js','sequenceGameLevels')
 assert.equal(legacy.length,3)
 assert.equal(legacy.flatMap(level=>level.activities).length,9)
+const legacyCards = legacy.flatMap(level=>level.activities.flatMap(activity=>activity.steps))
+for (const [id, file] of Object.entries({ 'colocar-pasta': 'colocar-pasta-escova', 'calcar-sapato': 'calcar-sapato', 'abrir-porta': 'abrir-porta', 'sair-de-casa': 'sair', 'chegar-casa': 'chegar-casa', 'tirar-sapato': 'tirar-sapato', 'limpar-mesa': 'limpar-superficie' })) {
+  const card = legacyCards.find(step=>step.id===id)
+  assert.ok(card.image.endsWith(`/arasaac/${file}.png`), id)
+  assert.equal(card.visualType, undefined)
+}
 console.log('Catalog, exhaustive orders, shuffles, two cycles, storage, legacy structure PASS')

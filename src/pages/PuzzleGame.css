@@ -48,6 +48,8 @@
 .puzzle-slot:focus-visible, .puzzle-piece:focus-visible { z-index: 1; outline: 3px solid var(--focus); outline-offset: 3px; }
 .puzzle-board[data-solved='true'] .puzzle-slot { cursor: default; }
 .puzzle-board[data-solved='true'] .puzzle-slot { box-shadow: none; }
+.puzzle-board[data-solved='true'] .puzzle-slot--hint::after,
+.puzzle-board[data-solved='true'] .puzzle-badge { display: none; }
 .puzzle-status { color: var(--muted); font-size: 14px; }
 .puzzle-status:not(:empty) { margin-top: 14px; }
 .puzzle-feedback:not(:empty), .puzzle-success { margin-top: 20px; padding: 18px; background: var(--soft-green); color: var(--secondary); border-radius: var(--radius-card); line-height: 1.5; }
