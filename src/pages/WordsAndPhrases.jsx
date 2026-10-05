@@ -6,14 +6,16 @@ import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import { falar, stopSpeaking } from '../utils/speech'
 import './WordsAndPhrases.css'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const moduleId = 'wordsAndPhrases'
 const officialWordIds = ['casa', 'cama', 'sofa', 'gato', 'cachorro', 'peixe', 'bola', 'blocos', 'carrinho', 'lapis', 'estojo', 'mochila']
 const phaseTitles = { know: 'Conhecer', build: 'Montar', sentence: 'Usar na frase' }
 
-export default function WordsAndPhrases() {
+export default function WordsAndPhrases({ progressService } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation(moduleId, officialWordIds))
   const [qaWordId, setQaWordId] = useState('')
+  const progress = useLearningProgress(!qaWordId, progressService)
   const [phase, setPhase] = useState('know')
   const [buildSelection, setBuildSelection] = useState([])
   const [buildFeedback, setBuildFeedback] = useState('')
@@ -84,6 +86,7 @@ export default function WordsAndPhrases() {
   function checkBuildWord() {
     const assembled = buildSelection.map(id => buildMap[id]).join('')
     if (assembled === currentWord.word) {
+      if (!buildSucceeded) progress.recordActivityPerformed(moduleId, currentWord.id, ['build'])
       setBuildFeedback(`Muito bem! Você montou ${currentWord.word}.`)
       setBuildSucceeded(true)
       return
@@ -99,8 +102,8 @@ export default function WordsAndPhrases() {
     setSentenceSucceeded(false)
   }
 
-  function nextWord() {
-    if (!sentenceSucceeded || qaWordId || advanceLocked.current) return
+  function nextWord(event) {
+    if (event.detail > 1 || !sentenceSucceeded || qaWordId || advanceLocked.current) return
     advanceLocked.current = true
     const nextRotation = advanceModuleRotation(moduleId, officialWordIds)
     if (!nextRotation) {
@@ -113,6 +116,7 @@ export default function WordsAndPhrases() {
 
   function checkSentenceAnswer() {
     if (sentenceSelection === currentWord.sentenceAnswer) {
+      if (!sentenceSucceeded) progress.recordActivityPerformed(moduleId, currentWord.id, ['sentence', 'complete'])
       setSentenceFeedback('Muito bem!')
       setSentenceSucceeded(true)
       return
@@ -150,7 +154,10 @@ export default function WordsAndPhrases() {
             <p className="words-name">{currentWord.word}</p>
             <div className="words-actions">
               <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-              <button type="button" onClick={() => setPhase('build')}>Continuar</button>
+              <button type="button" onClick={() => {
+                progress.recordActivityExplored(moduleId, currentWord.id)
+                setPhase('build')
+              }}>Continuar</button>
             </div>
           </>
         )}
@@ -261,6 +268,7 @@ export default function WordsAndPhrases() {
         )}
 
         <p className="words-audio-feedback" role="status" aria-live="polite">{audioMessage}</p>
+        <p role="status" aria-live="polite">{progress.message}</p>
       </section>
 
       <footer className="words-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>

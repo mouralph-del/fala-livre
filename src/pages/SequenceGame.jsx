@@ -8,6 +8,7 @@ import { isRoutineComplete, findViolatedDependency, shuffleRoutine } from '../ut
 import { getModuleRotation, advanceModuleRotation } from '../utils/contentRotationStorage'
 import { getCurrentTheme } from '../utils/contentRotation'
 import './SequenceGame.css'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const initial = starts => ({ starts, activityIndex: 0, order: starts[0], selected: null, hint: null, feedback: '', complete: false, announcement: '' })
 function reducer(state, action) {
@@ -53,8 +54,11 @@ function SequenceVisual({ step }) {
   </span>
 }
 
-export default function SequenceGame({ embedded = false }) {
+export default function SequenceGame({ embedded = false, progressService }) {
   const continuous = embedded
+  const progress = useLearningProgress(embedded && continuous, progressService)
+  const recordRoutine = progress.recordActivityPerformed
+  const recordedRoutine = useRef(null)
   const [rotation, setRotation] = useState(() => continuous ? getModuleRotation('myDayRoutines', myDayRoutineIds) : null)
   const routine = continuous ? myDayRoutines.find(item => item.id === getCurrentTheme(rotation)) : null
   const [level, setLevel] = useState(sequenceGameLevels[0])
@@ -76,6 +80,13 @@ export default function SequenceGame({ embedded = false }) {
   const hintCards = continuous && state.hint ? state.hint : []
   const activityKey = continuous ? routine.id : state.activityIndex
   const selectedStep = activity?.steps.find(step => step.id === state.selected)
+
+  useEffect(() => {
+    if (!state.complete) { recordedRoutine.current = null; return }
+    if (!continuous || recordedRoutine.current === routine.id) return
+    recordedRoutine.current = routine.id
+    recordRoutine('myDayRoutines', routine.id, ['complete'])
+  }, [state.complete, continuous, routine?.id, recordRoutine])
 
   useEffect(() => () => { clearTimeout(hintTimer.current); gesture.current = null; stopSpeaking() }, [])
   useEffect(() => {
@@ -155,9 +166,9 @@ export default function SequenceGame({ embedded = false }) {
     falar(step.speechText, () => setAudioMessage('Áudio indisponível no momento. Você pode continuar organizando as ações.'))
   }
   function clearTransient() { clearTimeout(hintTimer.current); cancelGesture(); suppressClick.current = false; pendingFocus.current = null; stopSpeaking(); setAudioMessage('') }
-  function next() {
+  function next(event) {
     if (continuous) {
-      if (!state.complete || advanceLock.current) return
+      if (event.detail > 1 || !state.complete || advanceLock.current) return
       advanceLock.current = true
       clearTransient()
       const nextRotation = advanceModuleRotation('myDayRoutines', myDayRoutineIds)
@@ -224,6 +235,7 @@ export default function SequenceGame({ embedded = false }) {
       <button type="button" className="sequence-action" onClick={restart}>{embedded ? 'Repetir rotinas' : 'Jogar novamente'}</button>
     </section>}
     <p className="sequence-audio-status" role="status">{audioMessage}</p>
+    {embedded && <p role="status" aria-live="polite">{progress.message}</p>}
     <footer className="sequence-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
   </main>
 }

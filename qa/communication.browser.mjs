@@ -183,7 +183,7 @@ try {
     const base=set.tokenIds.slice(0,3)
     if(set.id==='choiceRefusal')continue
     for(const id of base)await click(`.communication-choices [aria-label="Selecionar ${situations[0].options.find(o=>o.id===id).word}"]`)
-    assert.equal(await evaluate(`[...document.querySelectorAll('main button')].find(b=>b.textContent.trim()==='Continuar aprendendo').disabled`),false)
+    assert.equal(await evaluate(`[...document.querySelectorAll('main button')].find(b=>b.textContent.trim()==='Concluir exploração').disabled`),false)
     await click('.communication-social summary');await click('.communication-social [aria-label="Selecionar POR FAVOR"]');await button('Ouvir frase');assert.match(await evaluate(`window.__spoken.at(-1).text`),/por favor\.$/)
   }
   // All legacy levels retain original prompts, answers, help and completion.

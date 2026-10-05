@@ -7,13 +7,15 @@ import { getCurrentTheme } from '../utils/contentRotation'
 import { getModuleRotation, advanceModuleRotation } from '../utils/contentRotationStorage'
 import { falar, stopSpeaking } from '../utils/speech'
 import './MyDayEmotions.css'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const functions = [
   { id: 'explore', title: 'Conhecer emoções', description: 'Explore sentimentos e estados.' },
   { id: 'state', title: 'Como estou', description: 'Escolha o que quer comunicar.' },
   { id: 'need', title: 'O que preciso', description: 'Peça ajuda ou descanso.' },
 ]
-export default function MyDayEmotions() {
+export default function MyDayEmotions({ progressService } = {}) {
+  const progress = useLearningProgress(true, progressService)
   const [view, setView] = useState('menu')
   const [rotation, setRotation] = useState(null)
   const [phrase, setPhrase] = useState([null, null, null])
@@ -62,15 +64,18 @@ export default function MyDayEmotions() {
     setAudioStatus('')
     falar(text, setAudioStatus)
   }
-  function advance() {
-    if (advanceLock.current) return
+  function advance(event, recordExploration) {
+    if (view !== 'explore' || event.detail > 1 || advanceLock.current) return
     advanceLock.current = true
+    if (recordExploration) progress.recordActivityExplored('myDayEmotions', 'educational-exploration')
     stopSpeaking()
     setAudioStatus('')
     const next = advanceModuleRotation('myDayEmotions', myDayEmotionIds)
     if (next) setRotation(next)
     else advanceLock.current = false
   }
+  function continueExploration(event) { advance(event, true) }
+  function skipExploration(event) { advance(event, false) }
   function choose(id) {
     stopSpeaking()
     const position = id === 'eu' ? 0 : ['estou', 'preciso', 'quero'].includes(id) ? 1 : 2
@@ -113,7 +118,7 @@ export default function MyDayEmotions() {
       {concept.variants && variants(concept.id)}
       <div className="emotions-actions"><button type="button" onClick={() => speak(emotionVocabulary[displayId(concept.id)].speech)}><SpeakerIcon />Ouvir nome</button><button type="button" onClick={() => speak(concept.explanation)}><SpeakerIcon />Ouvir explicação</button></div>
       <details><summary>Exemplo fictício</summary><p>{concept.example}</p></details>
-      <div className="emotions-actions"><button type="button" onClick={advance}>Próximo conceito</button><button type="button" onClick={advance}>Pular</button></div>
+      <div className="emotions-actions"><button type="button" onClick={continueExploration}>Próximo conceito</button><button type="button" onClick={skipExploration}>Pular</button></div>
     </section> : view !== 'menu' && view !== 'explore' ? <>
       <section className="emotions-builder" aria-labelledby="emotions-message-title"><h2 id="emotions-message-title">Sua mensagem</h2><p>Escolha os cartões abaixo. Você pode ouvir uma mensagem incompleta.</p>
         <ol className="emotions-slots">{phrase.map((id, position) => <li key={position}>{id ? <><img src={emotionVocabulary[id].image} alt="" width="300" height="300" /><strong>{emotionVocabulary[id].label}</strong><button type="button" aria-label={`Remover ${emotionVocabulary[id].label}`} onClick={() => remove(position)}>Remover</button></> : <span>Posição {position + 1}: vazia</span>}</li>)}</ol>
@@ -124,6 +129,7 @@ export default function MyDayEmotions() {
       {view === 'need' && <p className="emotions-rest">{restExplanation}</p>}</section>
     </> : null}
     <p role="status" className="emotions-status">{status}</p><p role="status" className="emotions-status">{audioStatus}</p>
+    {view === 'explore' && <p role="status" aria-live="polite">{progress.message}</p>}
     <footer>Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
   </main>
 }

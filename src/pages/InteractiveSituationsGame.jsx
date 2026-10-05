@@ -10,6 +10,7 @@ import { socialExpressions } from '../data/socialExpressions'
 import { communicationHelp, constructedSpeech, validateCommunication } from '../utils/myDayCommunication'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const continuousVocabulary = { ...learningConcepts, ...socialExpressions }
 const continuousPhrases = Object.fromEntries(myDayCommunication.flatMap(item => item.alternatives.map(variant => [variant.tokens.join(','), variant.speech])))
@@ -166,7 +167,10 @@ function reducer(state, action) {
   return state
 }
 
-export default function InteractiveSituationsGame({ embedded = false, initialLevelId = null, continuous = false }) {
+export default function InteractiveSituationsGame({ embedded = false, initialLevelId = null, continuous = false, progressService }) {
+  const progress = useLearningProgress(embedded && continuous, progressService)
+  const recordScenario = progress.recordActivityPerformed
+  const recordedSituation = useRef(null)
   const [state, dispatch] = useReducer(reducer, null, () => continuous ? continuousInitial(getModuleRotation('myDayCommunication', myDayCommunicationIds)) : initialForLevel(initialLevelId))
   const advanceLocked = useRef(false)
   const [audioMessage, setAudioMessage] = useState('')
@@ -188,6 +192,13 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
   const canCheck = continuous ? state.phrase.slice(0, currentSituation.expectedTokens.length).every(Boolean) : full
   const stage = `${continuous ? currentSituation.id : state.levelId}/${state.situationIndex}/${state.confirmed}/${state.finished}`
   const previousStage = useRef(stage)
+
+  useEffect(() => {
+    if (!state.confirmed) { recordedSituation.current = null; return }
+    if (!embedded || !continuous || recordedSituation.current === currentSituation.id) return
+    recordedSituation.current = currentSituation.id
+    recordScenario('myDayCommunication', currentSituation.id, ['complete'])
+  }, [embedded, continuous, state.confirmed, currentSituation?.id, recordScenario])
 
   useEffect(() => () => {
     clearTimeout(hintTimer.current)
@@ -536,7 +547,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                 <SpeakerIcon />Ouvir feedback
               </button>
               <div className="interactive-controls">
-                <button type="button" className="interactive-action" ref={nextButton} onClick={() => change({ type: 'continue' })}>
+                <button type="button" className="interactive-action" ref={nextButton} onClick={event => { if (!continuous || event.detail <= 1) change({ type: 'continue' }) }}>
                   {continuous ? 'Próxima situação' : state.situationIndex < currentLevel.situations.length - 1 ? 'Continuar' : embedded ? 'Concluir' : 'Concluir nível'}
                 </button>
               </div>
@@ -555,6 +566,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     {!embedded && <button type="button" className="interactive-action interactive-menu-back" onClick={() => change({ type: 'menu' })}>Escolher outro nível</button>}
 
     <p className="interactive-audio-status" role="status">{audioMessage}</p>
+    {embedded && continuous && <p role="status" aria-live="polite">{progress.message}</p>}
     <footer className="interactive-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
   </main>
 }

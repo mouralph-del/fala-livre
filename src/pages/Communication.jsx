@@ -13,6 +13,7 @@ import { constructedSpeech } from '../utils/myDayCommunication'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Communication.css'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ...socialExpressions }).map(([id, concept]) => [id, {
   id,
@@ -20,7 +21,6 @@ const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ..
   audioText: concept.speech,
   image: concept.image,
 }]))
-const functionalPhraseKeys = new Set(Object.keys(communicationNaturalPhrases).filter(key => key !== 'sim' && key !== 'nao'))
 
 function getNaturalPhrase(tokens) {
   const phrases = { ...communicationNaturalPhrases }
@@ -30,14 +30,14 @@ function getNaturalPhrase(tokens) {
   return constructedSpeech(tokens, phrases, tokenCatalog)
 }
 
-export default function Communication() {
+export default function Communication({ progressService } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('communication', communicationSetIds))
   const [qaSetId, setQaSetId] = useState('')
   const selectedSetId = qaSetId || getCurrentTheme(rotation)
   const selectedSet = communicationSets.find(set => set.id === selectedSetId) ?? communicationSets[0]
   const [phrase, setPhrase] = useState([])
   const [quickResponse, setQuickResponse] = useState(null)
-  const [hasFunctionalCommunication, setHasFunctionalCommunication] = useState(false)
+  const progress = useLearningProgress(!qaSetId, progressService)
   const [audioMessage, setAudioMessage] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
   const stepTitle = useRef(null)
@@ -55,7 +55,6 @@ export default function Communication() {
     stopSpeaking()
     setPhrase([])
     setQuickResponse(null)
-    setHasFunctionalCommunication(false)
     setAudioMessage('')
     setStatusMessage('')
   }
@@ -89,12 +88,10 @@ export default function Communication() {
     setPhrase(next)
     setAudioMessage('')
     setStatusMessage('Pictograma adicionado à frase.')
-    if (functionalPhraseKeys.has(next.map(entry => entry.id).join(','))) setHasFunctionalCommunication(true)
   }
 
   function addQuickAnswer(item) {
     setQuickResponse(item)
-    setHasFunctionalCommunication(true)
     setAudioMessage('')
     setStatusMessage('Resposta rápida selecionada.')
   }
@@ -114,15 +111,15 @@ export default function Communication() {
     setStatusMessage('Frase limpa.')
   }
 
-  function continueLearning() {
-    if (!hasFunctionalCommunication) return
+  function continueLearning(event) {
+    if (event.detail > 1 || advanceLocked.current) return
     if (qaSetId) {
       setQaSetId('')
       resetSetState()
       return
     }
-    if (advanceLocked.current) return
     advanceLocked.current = true
+    progress.recordActivityExplored('communication', 'guided-exploration')
     const nextRotation = advanceModuleRotation('communication', communicationSetIds)
     if (!nextRotation) {
       advanceLocked.current = false
@@ -175,8 +172,10 @@ export default function Communication() {
         <div className="sentence-actions">
           <button type="button" disabled={!naturalPhrase} onClick={() => speak(naturalPhrase)}><SpeakerIcon />Ouvir frase</button>
           <button type="button" onClick={clear}>Limpar</button>
-          <button type="button" disabled={!hasFunctionalCommunication} onClick={continueLearning}>{qaSetId ? 'Voltar à rotação' : 'Continuar aprendendo'}</button>
+          <button type="button" onClick={continueLearning} aria-describedby="communication-exploration-help">{qaSetId ? 'Voltar à rotação' : 'Concluir exploração'}</button>
         </div>
+        <p id="communication-exploration-help">Encerra esta exploração e apresenta outro conteúdo.</p>
+        <p role="status" aria-live="polite">{progress.message}</p>
 
         {quickResponse && (
           <div className="quick-response-natural" role="status" aria-live="polite">

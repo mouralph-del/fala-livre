@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DrawingCanvas from '../components/DrawingCanvas'
 import WritingPractice from '../components/WritingPractice'
 import { learningWords, learningWordIds } from '../data/learningWords'
@@ -6,23 +6,31 @@ import EducationalKeyboard from './EducationalKeyboard'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Writing.css'
+import { useLearningProgress } from '../hooks/useLearningProgress'
 
-export default function Writing() {
+export default function Writing({ progressService } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('writing', learningWordIds))
   const [phase, setPhase] = useState('typing')
   const [qaWordId, setQaWordId] = useState('')
+  const progress = useLearningProgress(!qaWordId, progressService)
+  const advanceLock = useRef(false)
+  const typedWord = useRef(null)
+  useEffect(() => { advanceLock.current = false; typedWord.current = null }, [rotation, qaWordId])
   const currentWordId = qaWordId || getCurrentTheme(rotation)
   const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
 
-  function completePractice() {
+  function completePractice(event) {
+    if (event.detail > 1 || advanceLock.current) return
+    advanceLock.current = true
     if (qaWordId) {
       setQaWordId('')
       setPhase('typing')
       return
     }
 
+    progress.recordActivityPerformed('writing', currentWord.id, ['notebook', 'complete'])
     const nextRotation = advanceModuleRotation('writing', learningWordIds)
-    if (!nextRotation) return
+    if (!nextRotation) { advanceLock.current = false; return }
     setRotation(nextRotation)
     setPhase('typing')
   }
@@ -47,7 +55,11 @@ export default function Writing() {
     <p className="writing-phase-label" aria-live="polite">{phase === 'typing' ? 'Digitar' : 'Praticar no caderno'}</p>
 
     {phase === 'typing' ? (
-      <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onAdvance={() => setPhase('notebook')} />
+      <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onComplete={id => {
+        if (id !== currentWord.id || typedWord.current === id) return
+        typedWord.current = id
+        progress.recordActivityPerformed('writing', id, ['typing'])
+      }} onAdvance={() => setPhase('notebook')} />
     ) : (
       <div className="writing-notebook-flow">
         <h2 id="writing-notebook-title">Praticar no caderno</h2>
@@ -60,5 +72,6 @@ export default function Writing() {
         </section>
       </div>
     )}
+    <p role="status" aria-live="polite">{progress.message}</p>
   </main>
 }
