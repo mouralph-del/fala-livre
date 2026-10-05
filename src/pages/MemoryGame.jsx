@@ -3,6 +3,8 @@ import { memoryGameLevels, createMemoryDeck } from '../data/memoryGameLevels'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './MemoryGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const initialLevel = memoryGameLevels[0]
 const freshState = (level, deck = createMemoryDeck(level)) => ({ level, deck, open: [], found: [], hint: null, lastPair: null, message: '' })
@@ -39,11 +41,12 @@ function CardBack() {
   return <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M15 12h34a9 9 0 0 1 9 9v20a9 9 0 0 1-9 9H29L15 59V50a9 9 0 0 1-9-9V21a9 9 0 0 1 9-9Z" fill="#FFFFFF" /><path d="M25 25c0-10 17-10 17 0 0 7-10 6-10 12M32 42v1" /></svg>
 }
 
-export default function MemoryGame() {
+export default function MemoryGame({ progressService } = {}) {
   const [state, dispatch] = useReducer(reducer, null, () => freshState(initialLevel))
   const [audioMessage, setAudioMessage] = useState('')
   const level = state.level
-  const completed = state.found.length === level.pairs.length
+  const completed = new Set(state.found).size === level.pairs.length && level.pairs.every(pair => state.found.includes(pair.id))
+  const progress = useGameProgress('memoria', level.id, completed, progressService)
   const pending = state.open.length === 2
   const successTitle = useRef(null)
   const firstCard = useRef(null)
@@ -72,6 +75,7 @@ export default function MemoryGame() {
   }
 
   function selectLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     stopSpeaking(); setAudioMessage('')
     dispatch({ type: 'select-level', level: nextLevel })
   }
@@ -80,10 +84,13 @@ export default function MemoryGame() {
     <a className="memory-back" href="#/jogar">← Jogos</a>
     <header className="memory-intro"><div><h1>Jogo da Memória</h1><p>Encontre os pares de cada conjunto.</p></div></header>
     <nav className="memory-levels" aria-label="Níveis da Memória">
-      {memoryGameLevels.map((item, index) => <button key={item.id} type="button" className={`memory-level${item.id === level.id ? ' memory-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => selectLevel(item)}>
+      {memoryGameLevels.map((item, index) => <button key={item.id} type="button" className={`memory-level${item.id === level.id ? ' memory-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => selectLevel(item)}>
         <span>Nível {index + 1}</span><strong>{item.title}</strong><small>{item.pairs.length} pares</small>
+        <GameLevelStatus progress={progress} levelId={item.id} />
       </button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={memoryGameLevels[0]} onChange={selectLevel} />
+    {progress.activeAvailable && <>
     <section className="memory-play" aria-labelledby="memory-title">
       <div className="memory-heading"><h2 id="memory-title">{level.title}</h2><p role="status">{state.found.length} de {level.pairs.length} pares</p></div>
       <div className="memory-grid">{state.deck.map((card, index) => {
@@ -110,6 +117,7 @@ export default function MemoryGame() {
       <ul className="memory-learned">{level.pairs.map(pair => <li key={pair.id}><span><span aria-hidden="true">✓ </span>{pair.speechText}</span><button type="button" className="memory-audio" aria-label={`Ouvir ${pair.word}`} onClick={() => speak(pair)}><SpeakerIcon /></button></li>)}</ul>
       <div className="memory-controls"><button type="button" className="memory-action" onClick={restart}>Jogar novamente</button><a className="memory-action" href="#/jogar">Voltar aos jogos</a></div>
     </section>}
+    </>}
     <p className="memory-feedback" role="status">{audioMessage}</p>
   </main>
 }

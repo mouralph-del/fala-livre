@@ -3,6 +3,8 @@ import { findImageLevels, createFindImageRounds } from '../data/findImageLevels'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './FindImageGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const initial = rounds => ({ rounds, index: 0, correct: false, hint: false, retry: false })
 function reducer(state, action) {
@@ -23,14 +25,15 @@ function reducer(state, action) {
   return state
 }
 
-export default function FindImageGame() {
+export default function FindImageGame({ progressService } = {}) {
   const [level, setLevel] = useState(findImageLevels[0])
   const [state, dispatch] = useReducer(reducer, findImageLevels[0], selectedLevel => initial(createFindImageRounds(selectedLevel)))
   const [audioMessage, setAudioMessage] = useState('')
   const heading = useRef(null)
   const hintTimer = useRef(null)
   const previousIndex = useRef(state.index)
-  const complete = state.index === state.rounds.length
+  const complete = state.rounds.length > 0 && state.index === state.rounds.length
+  const progress = useGameProgress('encontre-imagem', level.id, complete, progressService)
   const round = state.rounds[state.index]
   const target = level.concepts.find(concept => concept.id === round?.target)
 
@@ -70,6 +73,7 @@ export default function FindImageGame() {
   }
 
   function changeLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     clearTimeout(hintTimer.current)
     stopSpeaking(); setAudioMessage('')
     setLevel(nextLevel)
@@ -82,8 +86,10 @@ export default function FindImageGame() {
       <h1>Encontre a Imagem</h1>
     </header>
     <nav className="findimage-levels" aria-label="Escolher nível">
-      {findImageLevels.map((item, index) => <button key={item.id} type="button" className={`findimage-level${item.id === level.id ? ' findimage-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
+      {findImageLevels.map((item, index) => <button key={item.id} type="button" className={`findimage-level${item.id === level.id ? ' findimage-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={findImageLevels[0]} onChange={changeLevel} />
+    {progress.activeAvailable && <>
     {!complete ? <section className="findimage-play" aria-labelledby="findimage-target">
       <div className="findimage-target">
         <h2 id="findimage-target" ref={heading} tabIndex={-1}>{target.question}</h2>
@@ -111,6 +117,7 @@ export default function FindImageGame() {
       <p>Você completou o nível de {level.completionLabel}.</p>
       <button type="button" className="findimage-action" onClick={restart}>Jogar novamente</button>
     </section>}
+    </>}
     <p className="findimage-audio-status" role="status">{audioMessage}</p>
   </main>
 }

@@ -5,10 +5,12 @@ import { falar, stopSpeaking } from '../utils/speech'
 import girl from '../assets/illustrations/aprender-personagem.png'
 import boy from '../assets/illustrations/jogar-personagem.png'
 import './WordSearchGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const normalize = value => value.normalize('NFC')
 
-export default function WordSearchGame() {
+export default function WordSearchGame({ progressService } = {}) {
   const [level, setLevel] = useState(wordSearchLevels[0])
   const [selection, setSelection] = useState([])
   const [found, setFound] = useState([])
@@ -21,7 +23,8 @@ export default function WordSearchGame() {
   const hintTimer = useRef(null)
   const suppressClick = useRef(false)
   const letters = level.grid
-  const complete = found.length === level.words.length
+  const complete = new Set(found).size === level.words.length && level.words.every(word => found.includes(word.id))
+  const progress = useGameProgress('caca-palavras', level.id, complete, progressService)
   const sequence = selection.map(index => letters[index]).join('')
   const marked = new Set(level.words.filter(word => found.includes(word.id)).flatMap(word => word.cells))
   const possible = !selection.length || level.words.some(word => !found.includes(word.id)
@@ -36,7 +39,7 @@ export default function WordSearchGame() {
     const match = level.words.find(word => !found.includes(word.id) && matchesWord(level, next, word))
     setHint(null)
     if (match) {
-      setFound(current => [...current, match.id]); setSelection([])
+      setFound(current => current.includes(match.id) ? current : [...current, match.id]); setSelection([])
       setMessage(`${match.word} encontrada! Você pode procurar a próxima palavra.`)
     } else if (next.length && level.words.some(word => !found.includes(word.id)
       && next.length < word.cells.length
@@ -102,6 +105,7 @@ export default function WordSearchGame() {
     requestAnimationFrame(() => firstCell.current?.focus())
   }
   function changeLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     clearTimeout(hintTimer.current)
     gesture.current = null; suppressClick.current = false
     stopSpeaking(); setLevel(nextLevel); setSelection([]); setFound([]); setHint(null); setMessage(''); setAudioMessage('')
@@ -111,8 +115,10 @@ export default function WordSearchGame() {
     <a className="wordsearch-back" href="#/jogar">← Jogos</a>
     <header className="wordsearch-intro"><div><h1>Caça-palavras</h1><p>Encontre {level.words.map(word => word.word).join(' e ')}</p></div><div className="wordsearch-friends" aria-hidden="true"><img src={girl} alt="" /><img src={boy} alt="" /></div></header>
     <nav className="wordsearch-levels" aria-label="Escolher nível">
-      {wordSearchLevels.map((item, index) => <button key={item.id} type="button" className={`wordsearch-level${item.id === level.id ? ' wordsearch-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
+      {wordSearchLevels.map((item, index) => <button key={item.id} type="button" className={`wordsearch-level${item.id === level.id ? ' wordsearch-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={wordSearchLevels[0]} onChange={changeLevel} />
+    {progress.activeAvailable && <>
     <div className="wordsearch-activity">
     <section className="wordsearch-vocabulary" aria-labelledby="wordsearch-words-title">
       <h2 id="wordsearch-words-title">{level.title.toUpperCase()}</h2>
@@ -156,5 +162,6 @@ export default function WordSearchGame() {
       <div className="wordsearch-controls"><button type="button" className="wordsearch-action" onClick={reset}>Jogar novamente</button><a className="wordsearch-action" href="#/jogar">Voltar aos jogos</a></div></div>
       <img className="wordsearch-success-friend" src={boy} alt="" />
     </section>}
+    </>}
   </main>
 }

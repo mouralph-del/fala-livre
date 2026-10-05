@@ -5,6 +5,8 @@ import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import { getPreferences } from '../utils/preferences'
 import './PathGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const edgeKey = (from, to) => [from, to].sort().join(':')
 
@@ -13,7 +15,7 @@ function VisualDestination({ destination, className = '' }) {
   return <span className={`path-visual path-visual--${destination.visualType} ${className}`} aria-hidden="true" />
 }
 
-export default function PathGame() {
+export default function PathGame({ progressService } = {}) {
   const [level, setLevel] = useState(pathGameLevels[0])
   const [history, setHistory] = useState([level.startNode])
   const [moving, setMoving] = useState(false)
@@ -30,6 +32,7 @@ export default function PathGame() {
   const position = history.at(-1)
   const node = level.nodes.find(item => item.id === position)
   const success = position === level.correctDestination
+  const progress = useGameProgress('caminho', level.id, success && !moving, progressService)
   const available = success || moving ? [] : node.connections
   const visited = new Set(history)
   const traversed = new Set(history.slice(1).map((id, index) => edgeKey(history[index], id)))
@@ -76,6 +79,7 @@ export default function PathGame() {
     stopSpeaking(); setAudioMessage(''); setHint(null); setHistory([level.startNode])
   }
   function changeLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     clearTimeout(timer.current)
     clearTimeout(hintTimer.current)
     lock.current = false
@@ -90,8 +94,10 @@ export default function PathGame() {
     <a className="path-back" href="#/jogar">← Jogos</a>
     <header className="path-intro"><h1>Encontre o caminho</h1></header>
     <nav className="path-levels" aria-label="Escolher nível">
-      {pathGameLevels.map((item, index) => <button key={item.id} type="button" className={`path-level${item.id === level.id ? ' path-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
+      {pathGameLevels.map((item, index) => <button key={item.id} type="button" className={`path-level${item.id === level.id ? ' path-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={pathGameLevels[0]} onChange={changeLevel} />
+    {progress.activeAvailable && <>
     <div className="path-adventure">
       <section className="path-situation" aria-labelledby="path-situation-title">
         <div className="path-mission-label"><img src={level.image} alt="" width="60" height="60" /><span>Sua missão</span></div>
@@ -141,6 +147,7 @@ export default function PathGame() {
       <button type="button" className="path-action" onClick={() => speak(level.communicationSpeech)}><SpeakerIcon />Ouvir frase</button>
       <button type="button" className="path-action" onClick={restart}>Jogar novamente</button>
     </section>}
+    </>}
     <p className="path-audio-status" role="status">{audioMessage}</p>
     <footer className="path-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
   </main>

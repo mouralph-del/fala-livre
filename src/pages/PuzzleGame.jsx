@@ -5,6 +5,8 @@ import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import puzzleScene from '../assets/scenes/jogo-quebra-cabeca.png'
 import './PuzzleGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const initial = level => {
   const pieces = createPuzzlePieces(level)
@@ -18,7 +20,7 @@ function PuzzleFragment({ level, piece }) {
   return <span className="puzzle-fragment" aria-hidden="true" style={{ backgroundImage: `url("${level.image}")`, backgroundSize: `${level.columns * 100}% ${level.rows * 100}%`, backgroundPosition: `${piece.x}% ${piece.y}%` }} />
 }
 
-export default function PuzzleGame() {
+export default function PuzzleGame({ progressService } = {}) {
   const [level, setLevel] = useState(puzzleLevels[0])
   const [layout, setLayout] = useState(() => initial(puzzleLevels[0]))
   const [selected, setSelected] = useState(null)
@@ -29,6 +31,7 @@ export default function PuzzleGame() {
   const firstTrayButton = useRef(null)
   const full = layout.board.every(Boolean)
   const solved = full && layout.board.every((id, index) => id === layout.pieces[index].id)
+  const progress = useGameProgress('quebra-cabeca', level.id, solved, progressService)
 
   useEffect(() => () => stopSpeaking(), [])
   useEffect(() => { if (solved) successHeading.current?.focus() }, [solved])
@@ -86,6 +89,7 @@ export default function PuzzleGame() {
     requestAnimationFrame(() => firstTrayButton.current?.focus())
   }
   function changeLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     stopSpeaking(); setAudioMessage(''); setSelected(null); setHint(null); setMessage('')
     setLevel(nextLevel); setLayout(initial(nextLevel))
   }
@@ -95,8 +99,10 @@ export default function PuzzleGame() {
     <a className="puzzle-back" href="#/jogar">← Jogos</a>
     <header className="puzzle-intro"><h1>Quebra-cabeça</h1></header>
     <nav className="puzzle-levels" aria-label="Escolher nível">
-      {puzzleLevels.map((item, index) => <button key={item.id} type="button" className={`puzzle-level${item.id === level.id ? ' puzzle-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
+      {puzzleLevels.map((item, index) => <button key={item.id} type="button" className={`puzzle-level${item.id === level.id ? ' puzzle-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={puzzleLevels[0]} onChange={changeLevel} />
+    {progress.activeAvailable && <>
     <div className="puzzle-adventure">
     <section className="puzzle-activity" aria-labelledby="puzzle-word" style={{ '--columns': level.columns, '--rows': level.rows, '--image-ratio': level.imageAspectRatio, '--piece-ratio': level.imageAspectRatio * level.rows / level.columns }}>
       <div className="puzzle-reference">{level.composition ? <span className="puzzle-reference-composition" aria-label="Gato e cachorro"><img src={level.composition.images[0]} alt="Gato" /><img src={level.composition.images[1]} alt="Cachorro" /></span> : <img src={level.image} alt={`Imagem para montar: ${level.label.toLowerCase()}`} width="300" height="300" />}<div><h2 id="puzzle-word">Monte a {level.label}</h2><div className="puzzle-reference-meta"><span>{layout.pieces.length} peças</span><button type="button" className="puzzle-action" onClick={speak}><SpeakerIcon />Ouvir palavra</button></div></div><div className="puzzle-scene" aria-hidden="true"><img src={puzzleScene} alt="" /></div></div>
@@ -130,6 +136,7 @@ export default function PuzzleGame() {
       <p className="puzzle-status" role="status">{audioMessage}</p>
     </section>
     </div>
+    </>}
     <footer className="puzzle-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
   </main>
 }

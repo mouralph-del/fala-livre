@@ -3,6 +3,8 @@ import { whereBelongsLevels, createAssociationRounds } from '../data/whereBelong
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './WhereBelongsGame.css'
+import { useGameProgress } from '../hooks/useGameProgress'
+import GameProgressFeedback, { GameLevelStatus } from '../components/GameProgressFeedback'
 
 const initial = rounds => ({ rounds, index: 0, selected: false, correct: false, message: '', hint: false })
 function reducer(state, action) {
@@ -29,7 +31,7 @@ function VisualRepresentation({ item, className = '', alt = '' }) {
   return <span className={`belongs-visual belongs-visual--${item.visualType} ${className}`} aria-hidden="true" />
 }
 
-export default function WhereBelongsGame() {
+export default function WhereBelongsGame({ progressService } = {}) {
   const [level, setLevel] = useState(whereBelongsLevels[0])
   const [state, dispatch] = useReducer(reducer, whereBelongsLevels[0], selectedLevel => initial(createAssociationRounds(selectedLevel)))
   const [drag, setDrag] = useState(null)
@@ -43,7 +45,8 @@ export default function WhereBelongsGame() {
   const hintTimer = useRef(null)
   const previousIndex = useRef(0)
   const round = state.rounds[state.index]
-  const complete = !round
+  const complete = state.rounds.length > 0 && state.index === state.rounds.length
+  const progress = useGameProgress('onde-pertence', level.id, complete, progressService)
 
   useEffect(() => () => { clearTimeout(hintTimer.current); gesture.current = null; stopSpeaking() }, [])
   useEffect(() => {
@@ -114,6 +117,7 @@ export default function WhereBelongsGame() {
   function next() { clearTransient(); dispatch({ type: 'next', index: state.index }) }
   function restart() { clearTransient(); dispatch({ type: 'restart', rounds: createAssociationRounds(level, state.rounds) }) }
   function changeLevel(nextLevel) {
+    if (!progress.canEnter(nextLevel.id)) return
     clearTransient()
     setLevel(nextLevel)
     dispatch({ type: 'restart', rounds: createAssociationRounds(nextLevel) })
@@ -130,8 +134,10 @@ export default function WhereBelongsGame() {
   return <main id="conteudo" className="belongs-page" tabIndex={-1} onKeyDown={escape}>
     <header className="belongs-intro"><a className="belongs-back" href="#/jogar">← Jogos</a><h1>Onde pertence?</h1></header>
     <nav className="belongs-levels" aria-label="Escolher nível">
-      {whereBelongsLevels.map((item, index) => <button key={item.id} type="button" className={`belongs-level${item.id === level.id ? ' belongs-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
+      {whereBelongsLevels.map((item, index) => <button key={item.id} type="button" className={`belongs-level${item.id === level.id ? ' belongs-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
+    <GameProgressFeedback progress={progress} firstLevel={whereBelongsLevels[0]} onChange={changeLevel} />
+    {progress.activeAvailable && <>
     {complete ? <section className="belongs-success">
       <h2 ref={heading} tabIndex={-1}>Muito bem!</h2><p>Você completou {level.label.toLowerCase()}.</p>
       <button type="button" className="belongs-action" onClick={restart}>Jogar novamente</button>
@@ -160,6 +166,7 @@ export default function WhereBelongsGame() {
       <div className="belongs-controls"><span>{state.index + 1} de {state.rounds.length}</span>{state.correct ? <button ref={nextButton} type="button" className="belongs-action" onClick={next}>Próxima</button> : <button type="button" className="belongs-action" onClick={help}>Preciso de ajuda</button>}</div>
       {drag && <div className="belongs-drag" aria-hidden="true" style={{ left: drag.x, top: drag.y }}><VisualRepresentation item={round} /></div>}
     </section>}
+    </>}
     <p className="belongs-audio-status" role="status">{audioMessage}</p>
   </main>
 }

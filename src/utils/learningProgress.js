@@ -33,6 +33,7 @@ export function getLearningProgressRecorder(store) {
   const recorder = Object.freeze({
     recordActivityExplored(moduleId, activityId) { return submit('recordActivityExplored', [moduleId, activityId]) },
     recordActivityPerformed(moduleId, activityId, steps) { return submit('recordActivityPerformed', [moduleId, activityId, [...steps]]) },
+    recordLevelCompleted(gameId, levelId) { return submit('recordLevelCompleted', [gameId, levelId]) },
   })
   recorders.set(store, recorder)
   return recorder
