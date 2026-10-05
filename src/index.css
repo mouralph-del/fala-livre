@@ -1,18 +1,51 @@
 ﻿:root {
-  font-family: 'Nunito Sans', 'Segoe UI', Arial, sans-serif;
-  color: #25313C;
-  background: #F7F8FA;
+  font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+  color: var(--text);
+  background: var(--surface-page);
+  line-height: 1.6;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: light;
   --surface: #FFFFFF;
-  --primary: #4F7CAC;
-  --secondary: #78A6A3;
-  --text: #25313C;
-  --muted: #66727D;
-  --border: #E1E6EA;
+  --primary: #315F8C;
+  --secondary: #397568;
+  --accent: #D8A148;
+  --success: #2E6B4F;
+  --warning: #8A5B16;
+  --error: #A53D43;
+  --surface-page: #F7F8F4;
+  --soft-blue: #EDF3FA;
+  --soft-green: #EEF5F1;
+  --selected: #DCE9F5;
+  --text: #243342;
+  --muted: #536273;
+  --border: #D8E1E6;
+  --border-control: #7A8C9E;
+  --focus: #214E7A;
+  --radius-sm: 8px;
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --shadow-sm: 0 2px 8px rgb(36 51 66 / 5%);
+  --shadow-md: 0 6px 18px rgb(36 51 66 / 8%);
+  --target: 48px;
+  --target-large: 56px;
+  --width-wide: 1180px;
+  --width-activity: 1000px;
+  --width-reading: 760px;
+  --font-page: clamp(1.75rem, 3vw, 2.25rem);
+  --font-section: clamp(1.375rem, 2vw, 1.5rem);
+  --font-card: clamp(1.125rem, 1.8vw, 1.375rem);
+  --font-body: 1rem;
+  --font-auxiliary: .875rem;
+  --duration-ui: 150ms;
 }
 
 * { box-sizing: border-box; }
@@ -24,7 +57,7 @@ button { font: inherit; }
 
 /* Opt-in preferences leave the approved normal layouts unchanged. */
 :root[data-element-size='large'] :is(button, .profile-option, main > a) {
-  min-height: 56px;
+  min-height: var(--target-large);
   font-size: 1rem;
 }
 :root[data-element-size='large'] .communication-audio { min-width: 56px; }
@@ -37,7 +70,7 @@ button { font: inherit; }
   scroll-behavior: auto !important;
 }
 button[aria-disabled='true'] { cursor: default; }
-:focus-visible { outline: 3px solid #365E87; outline-offset: 4px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 svg { display: block; width: 24px; height: 24px; flex-shrink: 0; }
 
 .skip-link {

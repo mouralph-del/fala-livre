@@ -18,6 +18,7 @@ import MyDay from './pages/MyDay'
 import MyDayEmotions from './pages/MyDayEmotions'
 import SequenceGame from './pages/SequenceGame'
 import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
+import './visualIdentity.css'
 
 function subscribeToRoute(callback) {
   window.addEventListener('hashchange', callback)

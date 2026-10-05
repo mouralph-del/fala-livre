@@ -11,20 +11,20 @@
   align-items: center;
   padding: 8px 12px;
   margin-bottom: 16px;
-  color: #165D8C;
+  color: var(--primary);
   font-weight: 700;
   text-decoration: none;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
 }
 
 .communication-back:hover {
-  background: #E5F1FE;
+  background: var(--soft-blue);
 }
 
 .communication-intro h1 {
   font-size: clamp(28px, 3.4vw, 42px);
   line-height: 1.25;
-  color: #203F69;
+  color: var(--text);
 }
 
 .communication-intro p {
@@ -46,30 +46,30 @@
   min-height: 44px;
   max-width: 100%;
   padding: 8px 12px;
-  border: 1px solid #CDDAE6;
-  border-radius: 8px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
   background: white;
-  color: #203F69;
+  color: var(--text);
 }
 
 .communication-page button:focus-visible,
 .communication-page select:focus-visible {
-  outline: 3px solid #F8B84E;
-  outline-offset: 2px;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
 
 .sentence-panel {
   margin-top: 24px;
   padding: 24px;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: var(--radius-card);
   background: var(--surface);
 }
 
 .communication-page h2 {
   font-size: 22px;
   line-height: 1.4;
-  color: #203F69;
+  color: var(--text);
 }
 
 .sentence-set-label {
@@ -99,7 +99,7 @@
 
 .sentence-natural {
   margin-top: 12px;
-  color: #166562;
+  color: var(--secondary);
   font-weight: 700;
   line-height: 1.5;
 }
@@ -107,8 +107,8 @@
 .communication-card {
   min-width: 0;
   border: 1px solid #D6E4EF;
-  border-radius: 20px;
-  background: #E5F1FE;
+  border-radius: var(--radius-card);
+  background: var(--soft-blue);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -118,8 +118,8 @@
 .communication-card--selected {
   flex-direction: row;
   align-items: center;
-  background: #E7F3EC;
-  border-color: #CDDFD4;
+  background: var(--soft-green);
+  border-color: var(--border-control);
   padding: 6px 8px 6px 14px;
   gap: 10px;
 }
@@ -140,7 +140,7 @@
   min-height: 44px;
   padding: 12px 10px;
   font-weight: 800;
-  color: #166562;
+  color: var(--secondary);
 }
 
 .communication-select {
@@ -154,18 +154,18 @@
   padding: 18px 10px 10px;
   border: 0;
   border-radius: 20px 20px 0 0;
-  color: #165D8C;
+  color: var(--primary);
   background: transparent;
   font-weight: 800;
   cursor: pointer;
 }
 
 .communication-select:hover {
-  background: #D9EAF9;
+  background: var(--selected);
 }
 
 .communication-select[aria-pressed='true'] {
-  background: #D9EAF9;
+  background: var(--selected);
 }
 
 .communication-page .communication-select[aria-pressed='true']::after {
@@ -176,7 +176,7 @@
   margin: 0 10px 10px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: #166562;
+  background: var(--secondary);
   color: white;
   font-size: 12px;
 }
@@ -189,7 +189,7 @@
   object-fit: contain;
   padding: 8px;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
 }
 
 .communication-audio {
@@ -199,15 +199,15 @@
   min-width: 44px;
   min-height: 44px;
   margin: 4px 10px 10px;
-  border: 1px solid #CDDFD4;
-  border-radius: 12px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   background: white;
-  color: #166562;
+  color: var(--secondary);
   cursor: pointer;
 }
 
 .communication-audio:hover {
-  background: #F3F8F5;
+  background: var(--soft-green);
 }
 
 .communication-remove {
@@ -217,16 +217,16 @@
   min-height: 44px;
   margin: 0;
   padding: 8px 10px;
-  border: 1px solid #D1DEEC;
-  border-radius: 12px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   background: white;
-  color: #165D8C;
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .communication-remove:hover {
-  background: #E5F1FE;
+  background: var(--soft-blue);
 }
 
 .sentence-actions {
@@ -242,16 +242,16 @@
   gap: 8px;
   min-height: 48px;
   padding: 10px 18px;
-  border: 1px solid #D1DEEC;
-  border-radius: 16px;
-  background: #E5F1FE;
-  color: #165D8C;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: var(--soft-blue);
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .sentence-actions button:hover:not(:disabled) {
-  background: #D9EAF9;
+  background: var(--selected);
 }
 
 .sentence-actions button:disabled {
@@ -269,7 +269,7 @@
 
 .quick-response-natural p {
   margin: 0;
-  color: #166562;
+  color: var(--secondary);
   font-weight: 700;
 }
 
@@ -280,16 +280,16 @@
   gap: 8px;
   min-height: 44px;
   padding: 8px 12px;
-  border: 1px solid #D1DEEC;
-  border-radius: 12px;
-  background: #E5F1FE;
-  color: #165D8C;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: var(--soft-blue);
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .quick-response-natural button:hover {
-  background: #D9EAF9;
+  background: var(--selected);
 }
 
 .communication-status,
@@ -351,7 +351,7 @@
   .sentence-panel {
     padding: 16px;
     margin-top: 18px;
-    border-radius: 20px;
+    border-radius: var(--radius-card);
   }
 
   .communication-page h2 {
@@ -421,10 +421,10 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: #165D8C;
+  color: var(--primary);
   text-underline-offset: 3px;
   border-radius: 4px;
 }
-.communication-social { margin-block: 24px; padding: 16px; border: 2px solid #d8dee8; border-radius: 16px; }
+.communication-social { margin-block: 24px; padding: 16px; border: 2px solid #d8dee8; border-radius: var(--radius-control); }
 .communication-social summary { cursor: pointer; font-weight: 700; padding: 12px; min-height: 44px; box-sizing: border-box; }
-.communication-social summary:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.communication-social summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }

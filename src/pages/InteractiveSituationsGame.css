@@ -17,25 +17,25 @@
   align-items: center;
   min-height: 44px;
   padding: 8px 12px;
-  color: #165D8C;
-  border-radius: 12px;
+  color: var(--primary);
+  border-radius: var(--radius-control);
   font-weight: 700;
   text-decoration: none;
 }
 
 .interactive-back:hover {
-  background: #E5F1FE;
+  background: var(--soft-blue);
 }
 
 .interactive-intro h1 {
-  color: #203F69;
+  color: var(--text);
   font-size: clamp(24px, 2.8vw, 34px);
   line-height: 1.25;
 }
 
 .interactive-page h2,
 .interactive-page h3 {
-  color: #203F69;
+  color: var(--text);
 }
 
 .interactive-page h2 {
@@ -54,7 +54,7 @@
   padding: 24px;
   background: white;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: var(--radius-card);
 }
 
 .interactive-context {
@@ -78,9 +78,9 @@
   flex-direction: column;
   align-items: stretch;
   border: 2px solid #D6E4EF;
-  border-radius: 20px;
-  background: #E5F1FE;
-  color: #165D8C;
+  border-radius: var(--radius-card);
+  background: var(--soft-blue);
+  color: var(--primary);
   line-height: 1.5;
 }
 
@@ -116,8 +116,8 @@
 }
 
 .interactive-menu-card:hover {
-  background: #D9EAF9;
-  border-color: #365E87;
+  background: var(--selected);
+  border-color: var(--focus);
 }
 
 .interactive-level-switcher {
@@ -130,17 +130,17 @@
 .interactive-level-button {
   min-height: 44px;
   padding: 8px 14px;
-  border: 1px solid #CDDAE6;
-  border-radius: 12px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   background: white;
-  color: #165D8C;
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .interactive-level-button--active {
-  background: #E5F1FE;
-  border-color: #365E87;
+  background: var(--soft-blue);
+  border-color: var(--focus);
 }
 
 .interactive-game {
@@ -161,14 +161,14 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
 }
 
 .interactive-mission {
   grid-column: 2;
   margin: 0;
   padding: 14px 14px 10px;
-  background: #E7F3EC;
+  background: var(--soft-green);
   border-bottom: 1px solid var(--border);
   border-radius: 0 23px 0 0;
 }
@@ -217,9 +217,9 @@
   padding: 6px 4px;
   background: #F0F6FC;
   border: 2px solid #D6E4EF;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   text-align: center;
-  color: #165D8C;
+  color: var(--primary);
   line-height: 1.4;
 }
 
@@ -233,8 +233,8 @@
   justify-content: center;
   gap: 4px;
   border: 0;
-  border-radius: 8px;
-  color: #165D8C;
+  border-radius: var(--radius-sm);
+  color: var(--primary);
   padding: 2px;
   background: transparent;
   cursor: pointer;
@@ -245,7 +245,7 @@
 .interactive-select img {
   object-fit: contain;
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .interactive-slot img {
@@ -265,10 +265,10 @@
 
 .interactive-remove {
   min-height: 44px;
-  border: 1px solid #CDDAE6;
-  border-radius: 8px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
   background: white;
-  color: #165D8C;
+  color: var(--primary);
   cursor: pointer;
   padding: 4px 2px;
   font-size: 12px;
@@ -282,13 +282,13 @@
 .interactive-slot--hint,
 .interactive-slot--over,
 .interactive-option--hint {
-  outline: 3px dashed #365E87;
-  outline-offset: 2px;
+  outline: 3px dashed var(--focus);
+  outline-offset: 3px;
 }
 
 .interactive-slot--over {
   outline-style: solid;
-  outline-color: #166562;
+  outline-color: var(--secondary);
 }
 
 .interactive-controls {
@@ -306,30 +306,30 @@
   min-height: 44px;
   max-width: 100%;
   padding: 8px 10px;
-  border: 1px solid #CDDAE6;
-  border-radius: 14px;
-  background: #E5F1FE;
-  color: #165D8C;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: var(--soft-blue);
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .interactive-action:disabled {
   color: var(--muted);
-  background: #F7F8FA;
+  background: var(--surface-page);
   cursor: default;
 }
 
 .interactive-action:hover:not(:disabled),
 .interactive-menu-card:hover,
 .interactive-level-button:hover {
-  background: #D9EAF9;
-  border-color: #365E87;
+  background: var(--selected);
+  border-color: var(--focus);
 }
 
 .interactive-option {
   padding: 8px;
-  border-radius: 16px;
+  border-radius: var(--radius-control);
 }
 
 .interactive-select {
@@ -342,8 +342,8 @@
   padding: 2px 0 8px;
   background: transparent;
   border: 0;
-  border-radius: 12px;
-  color: #165D8C;
+  border-radius: var(--radius-control);
+  color: var(--primary);
   cursor: pointer;
   line-height: 1.4;
 }
@@ -367,10 +367,10 @@
   width: 44px;
   min-height: 44px;
   padding: 4px;
-  border: 1px solid #CDDAE6;
+  border: 1px solid var(--border-control);
   border-radius: 10px;
   background: white;
-  color: #165D8C;
+  color: var(--primary);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -399,24 +399,24 @@
   margin-top: 8px;
   font-size: 13px;
   line-height: 1.4;
-  color: #166562;
+  color: var(--secondary);
 }
 
 .interactive-retry:not(:empty) {
   padding: 10px;
-  background: #E7F3EC;
-  border-radius: 12px;
+  background: var(--soft-green);
+  border-radius: var(--radius-control);
 }
 
 .interactive-response {
   margin-top: 12px;
   padding: 12px;
-  background: #E7F3EC;
-  border-radius: 18px;
+  background: var(--soft-green);
+  border-radius: var(--radius-card);
 }
 
 .interactive-response-text {
-  color: #166562;
+  color: var(--secondary);
   line-height: 1.5;
   margin-bottom: 12px;
 }
@@ -457,12 +457,12 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: #165D8C;
+  color: var(--primary);
 }
 
 .interactive-page :is(button, summary):focus-visible {
-  outline: 3px solid #365E87;
-  outline-offset: 4px;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
 
 .interactive-drag {
@@ -470,8 +470,8 @@
   width: 72px;
   height: 80px;
   padding: 4px;
-  border: 2px solid #365E87;
-  border-radius: 12px;
+  border: 2px solid var(--focus);
+  border-radius: var(--radius-control);
   background: white;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -494,7 +494,7 @@
   .interactive-panel,
   .interactive-menu {
     padding: 18px 12px;
-    border-radius: 20px;
+    border-radius: var(--radius-card);
   }
 
   .interactive-menu-grid,

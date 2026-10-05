@@ -67,7 +67,7 @@ export default function Writing({ progressService } = {}) {
         <section className="writing-work" aria-label="Caderno de prática">
           <DrawingCanvas key={currentWord.id} showKeyboardLink={false} />
           <div className="writing-actions">
-            <button type="button" onClick={completePractice}>Concluir prática</button>
+            <button className="action-primary" type="button" onClick={completePractice}>Concluir prática</button>
           </div>
         </section>
       </div>

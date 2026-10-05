@@ -155,7 +155,7 @@ export default function EducationalKeyboard({
       <div className="writing-controls">
         <button type="button" disabled={!letters.length} onClick={removeLastLetter}>Apagar</button>
         <button type="button" disabled={!letters.length} onClick={clearLetters}>Limpar</button>
-        {mode === 'practice' && <button type="button" disabled={!letters.length} onClick={confirmWord}>Conferir</button>}
+        {mode === 'practice' && <button className="action-primary" type="button" disabled={!letters.length} onClick={confirmWord}>Conferir</button>}
         {mode === 'explore' && <button type="button" onClick={() => setFinishMessage('Exploração concluída.')}>Concluir exploração</button>}
       </div>
 

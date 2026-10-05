@@ -109,7 +109,7 @@ export default function FindImageGame({ progressService } = {}) {
       <div className="findimage-controls">
         <p className="findimage-round">{state.index + 1} de {state.rounds.length}</p>
         {state.correct
-          ? <button type="button" className="findimage-action" onClick={next}>Próxima</button>
+          ? <button type="button" className="findimage-action action-primary" onClick={next}>Próxima</button>
           : <button type="button" className="findimage-action" onClick={help}>Preciso de ajuda</button>}
       </div>
     </section> : <section className="findimage-success" aria-labelledby="findimage-complete">

@@ -1,0 +1,140 @@
+/* Shared visual patterns. Board geometry and educational image treatments
+   remain in their page styles; no universal button sizing touches game pieces. */
+.header-content { max-width: var(--width-wide); gap: var(--space-xl); }
+.brand-name { color: var(--primary); font-size: 28px; font-weight: 800; }
+.brand-mark { width: 52px; height: 48px; }
+.brand p { font-size: var(--font-auxiliary); }
+.header-navigation { gap: var(--space-sm); }
+.header-navigation a { min-height: var(--target); font-size: 1rem; border-color: var(--border-control); padding: var(--space-md) var(--space-lg); }
+.header-navigation a[aria-current='page'] { background: var(--soft-blue); border-color: var(--primary); color: var(--primary); box-shadow: inset 0 -3px var(--primary); }
+.home-decoration { opacity: .35; }
+.home, .learn-page, .my-day-page, .games-page, .profile-page, .communication-page, .emotions-page { max-width: var(--width-wide); }
+.writing-page, .words-page, .sequence-page, .puzzle-page, .wordsearch-page, .belongs-page, .my-progress { max-width: var(--width-activity); }
+.responsible-guidance { max-width: var(--width-reading); }
+
+main[id='conteudo'] h1 { font-size: var(--font-page); line-height: 1.25; letter-spacing: -.025em; font-weight: 750; }
+main.home h1 { font-size: clamp(2rem, 4vw, 2.5rem); }
+main h2 { line-height: 1.35; }
+.learn-intro p, .games-intro p, .my-day-intro p, .welcome p { font-size: var(--font-body); }
+main > a:first-child, :is(.path-back, .puzzle-back, .wordsearch-back, .memory-back, .findimage-back, .belongs-back, .sequence-back, .interactive-back) {
+  min-height: var(--target); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-control); font-weight: 600;
+}
+:is(.communication-credit, .words-credit, .writing-practice small, .writing-canvas-meta, .sequence-credit, .interactive-credit, .path-credit, .puzzle-credit, .wordsearch-legend, .wordsearch-credit, .memory-credit, .findimage-credit, .belongs-credit, .situations-credit, .bingo-credit, .profile-note, .game-level-status) { font-size: var(--font-auxiliary); line-height: 1.5; }
+
+/* Hubs share one card treatment, with restrained module accents. */
+:is(.activity-card, .learning-card, .game-card, .my-day-option) { border-radius: var(--radius-card); box-shadow: var(--shadow-sm); border-color: var(--border); }
+:is(.activity-card, .learning-card, .game-card, .my-day-option) h2 { font-size: var(--font-card); letter-spacing: 0; }
+.activity-card h2 { font-size: clamp(1.25rem, 2.4vw, 1.75rem); }
+.activity-card { padding: var(--space-xl); gap: var(--space-lg); }
+.activity-illustration { max-width: 240px; }
+.activity-content { min-height: 220px; }
+.welcome { padding-inline: 0; }
+.progress-entry { box-shadow: none; padding: var(--space-lg) var(--space-xl); }
+.section-heading h2 { font-size: var(--font-section); }
+.positive-message { font-size: 1rem; font-weight: 600; padding: var(--space-lg); }
+.learning-card, .game-card { padding: var(--space-xl); }
+.game-card { border-top: 4px solid var(--secondary); }
+.game-icon { width: 64px; height: 64px; }
+.my-day-option { padding: var(--space-xl); }
+
+/* Action controls: primary, secondary, and neutral. */
+:is(.start-button, .learning-start, .game-start, .my-day-start, .sentence-actions button, .quick-response-natural button, .words-actions button, .writing-controls button, .writing-actions button, .writing-finish-practice button, .path-action, .puzzle-action, .wordsearch-action, .memory-action, .findimage-action, .belongs-action, .sequence-controls button, .interactive-action, .profile-action, .my-progress button, .game-progress-feedback button, .emotions-actions button, .emotions-functions button) {
+  min-height: var(--target); border-radius: var(--radius-control); border: 1px solid var(--border-control); padding: var(--space-md) var(--space-lg); font-size: 1rem; line-height: 1.4; font-weight: 600; max-width: 100%; overflow-wrap: anywhere;
+  transition: background-color var(--duration-ui), border-color var(--duration-ui);
+}
+:is(.start-button, .learning-start, .game-start, .my-day-start), .activity-card .start-button,
+.sentence-actions button:last-child, main button.action-primary {
+  background: var(--primary); border-color: var(--primary); color: white;
+}
+:is(.start-button, .learning-start, .game-start, .my-day-start):hover, .activity-card .start-button:hover,
+.sentence-actions button:last-child:hover, main button.action-primary:hover:not(:disabled) {
+  background: var(--focus); color: white; border-color: var(--focus);
+}
+:is(.wordsearch-restart, .memory-restart, .profile-action, .communication-remove, .interactive-remove) { background: var(--surface); color: var(--primary); }
+.profile-restore { padding: var(--space-xl); border: 1px dashed var(--border-control); border-radius: var(--radius-card); background: var(--surface); }
+.profile-restore .profile-action { font-weight: 600; }
+:is(.words-page, .writing-page, .emotions-page, .communication-page, .path-page, .memory-page, .wordsearch-page) button:disabled {
+  opacity: 1; color: var(--muted); background: var(--surface-page); border-color: var(--border-control);
+}
+.writing-color-swatch { opacity: 1; }
+main button.action-primary:disabled { background: var(--surface-page); color: var(--muted); border-color: var(--border-control); opacity: 1; }
+main button.action-primary:active:not(:disabled) { background: var(--focus); }
+
+/* Level controls remain readable and focusable when their handlers are locked. */
+:is(.path-levels, .puzzle-levels, .wordsearch-levels, .memory-levels, .findimage-levels, .belongs-levels) {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); margin-block: var(--space-lg);
+}
+:is(.path-level, .puzzle-level, .wordsearch-level, .memory-level, .findimage-level, .belongs-level) {
+  min-width: 0; min-height: var(--target); padding: var(--space-sm); border-radius: var(--radius-control); border-color: var(--border-control); font-size: 1rem; line-height: 1.4; text-align: left; overflow-wrap: anywhere;
+}
+:is(.path-level, .puzzle-level, .wordsearch-level, .memory-level, .findimage-level, .belongs-level)[aria-pressed='true'] { background: var(--soft-blue); border: 2px solid var(--primary); color: var(--primary); }
+:is(.path-level, .puzzle-level, .wordsearch-level, .memory-level, .findimage-level, .belongs-level)[aria-disabled='true'] { opacity: 1; background: var(--surface-page); color: var(--muted); }
+.game-level-status { color: var(--muted); }
+
+/* Keep pictograms clear and personal choices neutral. */
+.sentence-panel, .words-activity, .writing-work, .writing-notebook-level, .interactive-panel, .interactive-builder, .sequence-play { border-radius: var(--radius-card); }
+.sentence-panel { border-top: 4px solid var(--primary); }
+.communication-card { border-color: var(--border-control); }
+.communication-card--selected, .emotions-choice .communication-card--selected { border-color: var(--primary); }
+.emotions-choice .communication-select[aria-pressed='true'] { background: var(--soft-blue); color: var(--primary); }
+.emotions-functions section, .emotions-builder, .emotions-explore { background: var(--surface); }
+.interactive-mission { border-left: 3px solid var(--secondary); }
+.sequence-position { border-color: var(--border-control); font-weight: 700; }
+.writing-physical-entry input, .writing-notebook-word-picker select, .profile-option { border-color: var(--border-control); border-radius: var(--radius-control); }
+.writing-physical-entry input { font-size: 1.125rem; min-height: var(--target); }
+
+.home-surround:has(.memory-page), .home-surround:has(.wordsearch-page) { background: var(--surface-page); }
+.memory-intro, .wordsearch-intro { background: var(--soft-green); border-radius: var(--radius-card); }
+.memory-success, .wordsearch-success, .path-result { background: var(--soft-green); }
+.memory-friends img, .wordsearch-friends img { max-width: 56px; max-height: 56px; }
+:is(.sequence-success, .puzzle-success, .findimage-success, .belongs-success) { color: var(--success); }
+:is(.words-feedback, .writing-feedback, .sequence-feedback):not(:empty) { background: var(--soft-blue); color: var(--text); border-left: 3px solid var(--primary); }
+:is(.audio-feedback, .words-audio-feedback, .writing-audio-message, .path-audio-status, .findimage-audio-status, .belongs-audio-status):not(:empty) { color: var(--error); }
+.records-status:not(:empty) { padding: var(--space-lg); border-left: 3px solid var(--warning); background: var(--surface); color: var(--warning); border-radius: var(--radius-sm); }
+.records-empty aside { border-color: var(--accent); }
+.my-progress :is(details, .records-empty, .records-overview) { padding: var(--space-lg); }
+.my-progress summary { border-radius: var(--radius-control); }
+.profile-section { padding: var(--space-xl); }
+.profile-section h2 { font-size: var(--font-card); }
+.responsible-guidance section { padding: var(--space-xl); }
+.responsible-guidance h2, .my-progress h2 { font-size: var(--font-section); }
+
+/* Focus is unified, including custom cards. Retain the existing focus proxies. */
+main :focus-visible, .header-navigation a:focus-visible, .skip-link:focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 3px;
+}
+.profile-option:has(input:focus-visible), .learning-card:has(.learning-start:focus-visible), .game-card:has(.game-start:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+.profile-option input:focus-visible, .game-start:focus-visible { outline: none; }
+
+:root[data-element-size='large'] :is(.header-navigation a, .start-button, .learning-start, .game-start, .my-day-start, .profile-action, .path-level, .puzzle-level, .wordsearch-level, .memory-level, .findimage-level, .belongs-level) { min-height: var(--target-large); font-size: 1.125rem; }
+@media (max-width: 900px) { .activity-content { min-height: 0; } }
+@media (max-width: 600px) {
+  .header-content { gap: var(--space-md); padding-block: var(--space-lg); }
+  .brand-name { font-size: 24px; }
+  .brand-mark { width: 40px; height: 38px; }
+  .brand p { font-size: .75rem; }
+  .header-navigation { gap: var(--space-sm); }
+  .header-navigation a { padding: var(--space-sm) var(--space-md); }
+  .activity-card { padding: var(--space-lg) var(--space-md); }
+  .activity-card h2 { font-size: 1.125rem; }
+  .activity-card p { font-size: .875rem; }
+  .activity-illustration { width: 112px; }
+  .start-button { padding-inline: var(--space-sm); }
+  .learning-card { padding: var(--space-md); }
+  .learning-card h2 { font-size: 1rem; }
+  main .learning-start { background: transparent; color: var(--primary); border: 0; padding: var(--space-sm) 0; }
+  main .learning-start:hover { background: transparent; color: var(--primary); }
+  .learning-start:focus-visible { outline: none; }
+  .game-card, .my-day-option, .profile-section, .responsible-guidance section { padding: var(--space-lg); }
+  .game-icon { width: 52px; height: 52px; }
+  .game-level-status { font-size: .8125rem; }
+  :root[data-element-size='large'] .activity-grid, :root[data-element-size='large'] .learning-grid { grid-template-columns: minmax(0, 1fr); }
+  :root[data-element-size='large'] .learning-card { min-height: 0; }
+  :root[data-element-size='large'] .activity-card p { font-size: 1rem; }
+}
+@media (max-width: 359px) {
+  .activity-grid { grid-template-columns: minmax(0, 1fr); }
+  .activity-card { grid-template-columns: minmax(0, .4fr) minmax(0, .6fr); text-align: left; }
+  .activity-content { align-items: stretch; }
+  .activity-illustration { width: 100%; }
+}

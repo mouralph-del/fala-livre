@@ -154,7 +154,7 @@ export default function WordsAndPhrases({ progressService } = {}) {
             <p className="words-name">{currentWord.word}</p>
             <div className="words-actions">
               <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-              <button type="button" onClick={() => {
+              <button className="action-primary" type="button" onClick={() => {
                 progress.recordActivityExplored(moduleId, currentWord.id)
                 setPhase('build')
               }}>Continuar</button>
@@ -201,7 +201,7 @@ export default function WordsAndPhrases({ progressService } = {}) {
             <div className="words-actions">
               <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
               <button type="button" onClick={clearBuildSelection} disabled={!buildSelection.length}>Reorganizar</button>
-              <button type="button" onClick={checkBuildWord} disabled={buildSelection.length !== buildSlots}>Conferir</button>
+              <button className="action-primary" type="button" onClick={checkBuildWord} disabled={buildSelection.length !== buildSlots}>Conferir</button>
             </div>
 
             <div className="words-feedback" role="status" aria-live="polite">
@@ -211,7 +211,7 @@ export default function WordsAndPhrases({ progressService } = {}) {
             {buildSucceeded && (
               <div className="words-actions">
                 <button type="button" onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-                <button type="button" onClick={continueToSentence}>Continuar</button>
+                <button className="action-primary" type="button" onClick={continueToSentence}>Continuar</button>
               </div>
             )}
           </>
@@ -241,7 +241,7 @@ export default function WordsAndPhrases({ progressService } = {}) {
               ))}
             </div>
             <div className="words-actions">
-              <button type="button" onClick={checkSentenceAnswer} disabled={!sentenceSelection}>Conferir</button>
+              <button className="action-primary" type="button" onClick={checkSentenceAnswer} disabled={!sentenceSelection}>Conferir</button>
               {sentenceSucceeded && (
                 <button type="button" aria-label="Ouvir frase correta" onClick={() => speak(currentWord.sentenceText)}><SpeakerIcon />Ouvir frase</button>
               )}
