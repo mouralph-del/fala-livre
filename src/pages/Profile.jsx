@@ -1,7 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { homeCharacters } from '../data/homeCharacters'
 import { getPreferences, subscribePreferences, updatePreference, resetPreferences } from '../utils/preferences'
-import { falar, stopSpeaking, getCommunicationVoices, subscribeVoices, voiceIdentifier } from '../utils/speech'
+import { falar, stopSpeaking, getCommunicationVoices, subscribeVoices, voiceIdentifier, isBrazilianVoice, isSpeechReady } from '../utils/speech'
 import './Profile.css'
 import GameTimeSettings from '../components/GameTimeSettings'
 
@@ -63,15 +63,16 @@ export default function Profile() {
           <p>Escolha a voz que você prefere ouvir.</p>
           <fieldset className="profile-voice-options">
             <legend className="profile-field-label">Voz para palavras e frases</legend>
-            <label className="profile-option"><input type="radio" name="voice" checked={!preferences.voice} onChange={() => change('voice', null)} /><span>Seleção automática</span></label>
-            {voices.map(voice => <label className="profile-option" key={voiceIdentifier(voice)}>
+            <label className="profile-option"><input type="radio" name="voice" checked={!preferences.voice || !selectedVoiceAvailable} onChange={() => change('voice', null)} /><span>Automática</span></label>
+            {[[true, 'Português (Brasil)'], [false, 'Outras vozes em português']].map(([brazilian, title]) => voices.some(voice => isBrazilianVoice(voice) === brazilian) && <div key={title} className="profile-voice-group"><h3>{title}</h3>{voices.filter(voice => isBrazilianVoice(voice) === brazilian).map(voice => <label className="profile-option" key={voiceIdentifier(voice)}>
               <input type="radio" name="voice" checked={voiceIdentifier(voice) === preferences.voice || voice.name === preferences.voice} onChange={() => change('voice', voiceIdentifier(voice))} />
               <span>{voice.name}<small>{voice.lang}</small></span>
-            </label>)}
+            </label>)}</div>)}
           </fieldset>
-          {!voices.length && <p className="profile-note">Nenhuma voz em português foi disponibilizada pelo navegador. A seleção automática será usada quando possível.</p>}
-          {preferences.voice && !selectedVoiceAvailable && <p className="profile-note">A voz salva não está disponível nesta lista. Uma voz compatível será usada automaticamente se ela não estiver disponível no dispositivo.</p>}
-          <button className="profile-action" type="button" onClick={() => { setAudioMessage(''); falar('Olá! Eu sou a voz do Fala Livre.', setAudioMessage) }}>Ouvir exemplo</button>
+          {!voices.length && <p className="profile-note">Nenhuma voz em português está disponível. Automática usa uma voz disponível do navegador quando possível.</p>}
+          {preferences.voice && !selectedVoiceAvailable && <p className="profile-note">A voz salva não está disponível. Automática está em uso; você pode escolher outra voz.</p>}
+          {!isSpeechReady() && <p className="profile-note" role="status">Nenhuma voz está pronta neste navegador. Ouvir exemplo ficará disponível quando as vozes forem carregadas.</p>}
+          <button className="profile-action" type="button" disabled={!isSpeechReady()} onClick={() => { setAudioMessage(''); falar('Olá! Eu sou a voz do Fala Livre.', setAudioMessage) }}>Ouvir exemplo</button>
           <p className="profile-feedback" role="status">{audioMessage}</p>
         </section>
         <section className="profile-section profile-accessibility" aria-labelledby="accessibility-title">

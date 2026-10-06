@@ -3,18 +3,22 @@ import { getPreferences } from './preferences'
 let currentUtterance = null
 let observedSynth = null
 let portugueseVoices = []
+let availableVoices = []
+export const speechParameters = Object.freeze({ lang: 'pt-BR', rate: 0.9, pitch: 1.05, volume: 1 })
 const voiceListeners = new Set()
 let voiceSignature = ''
 
-const normalizeLanguage = (lang) => lang.replaceAll('_', '-').toLowerCase()
+const normalizeLanguage = (lang) => (lang || '').replaceAll('_', '-').toLowerCase()
 
 function refreshVoices() {
   try {
-    portugueseVoices = observedSynth.getVoices().filter(({ lang }) => /^pt(?:-|$)/.test(normalizeLanguage(lang)))
+    availableVoices = observedSynth.getVoices()
+    portugueseVoices = availableVoices.filter(({ lang }) => /^pt(?:-|$)/.test(normalizeLanguage(lang)))
   } catch {
     portugueseVoices = []
+    availableVoices = []
   }
-  const signature = JSON.stringify(portugueseVoices.map(({ voiceURI, name, lang, default: isDefault }) => [voiceURI, name, lang, isDefault]))
+  const signature = JSON.stringify(availableVoices.map(({ voiceURI, name, lang, default: isDefault, localService }) => [voiceURI, name, lang, isDefault, localService]))
   if (signature !== voiceSignature) {
     voiceSignature = signature
     voiceListeners.forEach(listener => listener())
@@ -33,14 +37,14 @@ function observeVoices(synth) {
 }
 
 function voiceScore(voice) {
-  // The API exposes no gender, naturalness or timbre metadata. These optional
-  // name hints are preferences only; any available Portuguese voice can work.
-  const name = (voice.name || '').toLowerCase()
-  let score = /natural|neural|enhanced|premium/.test(name) ? 40 : 0
-  if (/\b(female|feminina|francisca|maria|luciana|fernanda|joana)\b/.test(name)) score += 20
-  if (/google/.test(name)) score += 10
-  if (voice.default) score += 1
-  return score
+  // These flags describe availability, not gender, age or audio quality.
+  return (voice.localService === true ? 2 : 0) + (voice.default === true ? 1 : 0)
+}
+
+export function isBrazilianVoice(voice) { return normalizeLanguage(voice.lang) === 'pt-br' }
+export function isSpeechReady() {
+  if (window.speechSynthesis) observeVoices(window.speechSynthesis)
+  return !!window.speechSynthesis && !!window.SpeechSynthesisUtterance && availableVoices.length > 0
 }
 
 export function voiceIdentifier(voice) {
@@ -49,13 +53,14 @@ export function voiceIdentifier(voice) {
 
 export function getCommunicationVoices() {
   if (window.speechSynthesis) observeVoices(window.speechSynthesis)
-  const brazilian = portugueseVoices.filter(({ lang }) => normalizeLanguage(lang) === 'pt-br')
-  return brazilian.length ? brazilian : portugueseVoices
+  return [...portugueseVoices].sort((a, b) => Number(isBrazilianVoice(b)) - Number(isBrazilianVoice(a)))
 }
 
 export function subscribeVoices(listener) {
   voiceListeners.add(listener)
   if (window.speechSynthesis) observeVoices(window.speechSynthesis)
+  // A list may arrive between the initial render and effect subscription.
+  listener()
   return () => voiceListeners.delete(listener)
 }
 
@@ -64,8 +69,7 @@ function preferredVoice() {
   const chosen = portugueseVoices.find(voice => voiceIdentifier(voice) === saved || voice.name === saved)
   if (chosen) return chosen
   const brazilian = portugueseVoices.filter(({ lang }) => normalizeLanguage(lang) === 'pt-br')
-  const fallback = portugueseVoices.filter(({ lang }) => ['pt-pt', 'pt'].includes(normalizeLanguage(lang)))
-  const candidates = brazilian.length ? brazilian : fallback.length ? fallback : portugueseVoices
+  const candidates = brazilian.length ? brazilian : portugueseVoices.length ? portugueseVoices : availableVoices.filter(voice => voice.default).length ? availableVoices.filter(voice => voice.default) : availableVoices
   return candidates.reduce((best, voice) => !best || voiceScore(voice) > voiceScore(best) ? voice : best, null)
 }
 
@@ -97,12 +101,9 @@ export function falar(text, onError = () => {}) {
   try {
     observeVoices(window.speechSynthesis)
     const utterance = new window.SpeechSynthesisUtterance(text)
-    utterance.lang = 'pt-BR'
-    utterance.rate = 0.9
-    utterance.pitch = 1.05
-    utterance.volume = 1
+    Object.assign(utterance, speechParameters)
     const voice = preferredVoice()
-    if (voice) utterance.voice = voice
+    if (voice) { utterance.voice = voice; utterance.lang = voice.lang?.replaceAll('_', '-') || speechParameters.lang }
     utterance.onerror = (event) => {
       if (currentUtterance !== utterance) return
       currentUtterance = null

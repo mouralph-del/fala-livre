@@ -25,6 +25,9 @@
 .profile-option input:focus-visible { outline: none; }
 .profile-option:has(input:disabled) { background: var(--surface-page); color: var(--muted); cursor: default; }
 .profile-voice-options .profile-option + .profile-option { margin-top: 10px; }
+.profile-voice-group { margin-top: 20px; }
+.profile-voice-group h3 { font-size: 1rem; margin: 0 0 10px; color: var(--text); }
+.profile-action:disabled { cursor: default; color: var(--muted); background: var(--surface-page); border-color: var(--border); }
 .profile-note { font-size: 13px; }
 .profile-action { min-height: 48px; max-width: 100%; padding: 12px 18px; border: 1px solid var(--border-control); border-radius: var(--radius-control); background: white; color: var(--primary); font-weight: 700; cursor: pointer; overflow-wrap: anywhere; }
 .profile-action:hover { background: #F1F6FC; border-color: var(--focus); }
