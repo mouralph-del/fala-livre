@@ -29,6 +29,11 @@ export default function ResponsibleGuidance() {
       <a href="#/perfil">Abrir Configurações</a>
     </section>
 
+    <section aria-labelledby="guidance-game-time">
+      <h2 id="guidance-game-time">Tempo de jogos</h2>
+      <p>O limite diário de jogos é definido em Configurações. Quando o tempo termina, Aprender continua disponível. A configuração e o consumo do dia ficam somente neste navegador/dispositivo.</p>
+    </section>
+
     <section aria-labelledby="guidance-privacy">
       <h2 id="guidance-privacy">Privacidade no MVP</h2>
       <p>Neste navegador, o Fala Livre pode guardar registros educativos, preferências e a organização da sequência de conteúdos. Alguns registros podem ficar disponíveis apenas durante a sessão. Frases produzidas, sentimentos escolhidos, necessidades pessoais, desenhos, áudio, erros, tentativas e tempo não são salvos como progresso. Os registros não são vinculados a uma pessoa ou conta.</p>

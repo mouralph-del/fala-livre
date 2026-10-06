@@ -7,7 +7,7 @@ import MyProgress from './pages/MyProgress'
 import ResponsibleGuidance from './pages/ResponsibleGuidance'
 import Communication from './pages/Communication'
 import Profile from './pages/Profile'
-import Games from './pages/Games'
+import AvailableGames from './pages/Games'
 import { games } from './data/games'
 import DailySituations from './pages/DailySituations'
 import Writing from './pages/Writing'
@@ -19,6 +19,7 @@ import MyDayEmotions from './pages/MyDayEmotions'
 import SequenceGame from './pages/SequenceGame'
 import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
 import './visualIdentity.css'
+import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {
   window.addEventListener('hashchange', callback)
@@ -92,6 +93,12 @@ function ActivityCard({ title, description, variant, action }) {
 
 function App() {
   const route = useSyncExternalStore(subscribeToRoute, getRoute)
+  const timer = getGameTimeTracker()
+  const gameTime = useSyncExternalStore(timer.subscribe, timer.getSnapshot)
+  useEffect(startGameTimeTracking, [])
+  useEffect(() => {
+    if (gameTime.exhausted && (route === 'games' || route.startsWith('games/'))) document.getElementById('conteudo')?.focus({ preventScroll: true })
+  }, [gameTime.exhausted, route])
   const previousRoute = useRef(route)
   const [transitionDismissed, setTransitionDismissed] = useState(false)
 
@@ -139,6 +146,19 @@ function App() {
       </div>
     </>
   )
+}
+
+function Games({ gameId }) {
+  const tracker = getGameTimeTracker()
+  const { exhausted } = useSyncExternalStore(tracker.subscribe, tracker.getSnapshot)
+  if (!exhausted) return <AvailableGames gameId={gameId} />
+  return <main id="conteudo" className="profile-page" tabIndex={-1}>
+    <section className="profile-section game-time-ended">
+      <h1>Tempo de jogos</h1>
+      <p role="status">O tempo de jogos de hoje terminou. Você ainda pode usar a área Aprender.</p>
+      <a className="profile-action" href="#/aprender">Ir para Aprender</a>
+    </section>
+  </main>
 }
 
 export default App

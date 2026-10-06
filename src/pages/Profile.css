@@ -33,9 +33,16 @@
 .profile-feedback:not(:empty) { margin-top: 12px; }
 .profile-restore { margin-top: 24px; }
 .profile-guidance { margin-top: 24px; }
+.profile-game-time { grid-column: 1 / -1; }
+.game-time-ended a { display: inline-flex; align-items: center; margin-top: 20px; text-decoration: none; }
+.profile-game-time form { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 20px; }
+.profile-game-time form label, .profile-game-time form p { flex-basis: 100%; line-height: 1.5; }
+.profile-time-input { min-height: 48px; width: 140px; max-width: 100%; padding: 10px; border: 1px solid var(--border-control); border-radius: var(--radius-control); font: inherit; color: var(--text); background: var(--surface); }
+:root[data-element-size='large'] .profile-time-input, :root[data-element-size='large'] .profile-game-time .profile-option { min-height: 56px; font-size: 1.125rem; }
 .profile-guidance a { display: inline-flex; align-items: center; margin-top: 16px; }
 :root[data-element-size='large'] .profile-guidance a { min-height: 56px; font-size: 1.125rem; }
 @media (max-width: 600px) {
+  :root[data-element-size='large'] .profile-game-time .profile-options { grid-template-columns: minmax(0, 1fr); }
   .profile-page { width: calc(100% - 32px); padding-top: 8px; }
   .profile-back { margin-bottom: 8px; }
   .profile-intro { margin-bottom: 20px; }

@@ -3,6 +3,7 @@ import { homeCharacters } from '../data/homeCharacters'
 import { getPreferences, subscribePreferences, updatePreference, resetPreferences } from '../utils/preferences'
 import { falar, stopSpeaking, getCommunicationVoices, subscribeVoices, voiceIdentifier } from '../utils/speech'
 import './Profile.css'
+import GameTimeSettings from '../components/GameTimeSettings'
 
 export default function Profile() {
   const preferences = useSyncExternalStore(subscribePreferences, getPreferences)
@@ -35,6 +36,7 @@ export default function Profile() {
       <a className="profile-back" href="#/">← Início</a>
       <div className="profile-intro"><h1>Configurações</h1><p>Deixe o Fala Livre do seu jeito.</p></div>
       <div className="profile-sections">
+        <GameTimeSettings preferences={preferences} change={change} />
         <section className="profile-section profile-characters" aria-labelledby="characters-title">
           <h2 id="characters-title">PERSONAGENS DA HOME</h2>
           <p>Escolha quem aparece em cada atividade.</p>

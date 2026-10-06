@@ -7,6 +7,8 @@ const defaults = Object.freeze({
   voice: null,
   elementSize: 'normal',
   reduceMotion: false,
+  gameTimeLimit: 'unlimited',
+  customGameMinutes: 20,
 })
 const listeners = new Set()
 
@@ -18,6 +20,8 @@ function sanitize(value) {
     voice: typeof data.voice === 'string' && data.voice.length <= 1000 ? data.voice || null : null,
     elementSize: data.elementSize === 'large' ? 'large' : 'normal',
     reduceMotion: data.reduceMotion === true,
+    gameTimeLimit: ['unlimited', '15', '30', '45', '60', 'custom'].includes(data.gameTimeLimit) ? data.gameTimeLimit : 'unlimited',
+    customGameMinutes: Number.isSafeInteger(data.customGameMinutes) && data.customGameMinutes > 0 && data.customGameMinutes <= 1440 ? data.customGameMinutes : 20,
   }
 }
 
