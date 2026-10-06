@@ -41,11 +41,15 @@ export default function Communication({ progressService } = {}) {
   const [audioMessage, setAudioMessage] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
   const stepTitle = useRef(null)
+  const sentenceAudio = useRef(null)
   const advanceLocked = useRef(false)
 
   const vocabulary = useMemo(() => selectedSet.tokenIds.map(id => tokenCatalog[id]).filter(Boolean), [selectedSet])
   const quickAnswers = useMemo(() => selectedSet.quickResponseIds.map(id => tokenCatalog[id]).filter(Boolean), [selectedSet])
   const naturalPhrase = useMemo(() => getNaturalPhrase(phrase.map(item => item.id)), [phrase])
+  // Only complete affirmative requests already present in the approved catalog.
+  const offerPlease = phrase[0]?.id === 'eu' && phrase[1]?.id === 'quero'
+    && Object.hasOwn(communicationNaturalPhrases, phrase.map(item => item.id).join(','))
 
   useEffect(() => { stepTitle.current?.focus({ preventScroll: true }) }, [selectedSetId])
   useEffect(() => { advanceLocked.current = false }, [rotation])
@@ -169,8 +173,16 @@ export default function Communication({ progressService } = {}) {
           <p className="sentence-natural" aria-live="polite">{naturalPhrase}</p>
         )}
 
+        {offerPlease && <div className="communication-please" aria-labelledby="please-title">
+          <p id="please-title">Quer completar a frase?</p>
+          <CommunicationCard {...tokenCatalog['por-favor']} onSelect={() => {
+            addItem(tokenCatalog['por-favor'])
+            requestAnimationFrame(() => sentenceAudio.current?.focus({ preventScroll: true }))
+          }} onSpeak={speak} />
+        </div>}
+
         <div className="sentence-actions">
-          <button type="button" disabled={!naturalPhrase} onClick={() => speak(naturalPhrase)}><SpeakerIcon />Ouvir frase</button>
+          <button ref={sentenceAudio} type="button" disabled={!naturalPhrase} onClick={() => speak(naturalPhrase)}><SpeakerIcon />Ouvir frase</button>
           <button type="button" onClick={clear}>Limpar</button>
           <button type="button" onClick={continueLearning} aria-describedby="communication-exploration-help">{qaSetId ? 'Voltar à rotação' : 'Concluir exploração'}</button>
         </div>
@@ -187,6 +199,24 @@ export default function Communication({ progressService } = {}) {
         <p className="communication-status" role="status" aria-live="polite">{statusMessage}</p>
         <p className="audio-feedback" role="status" aria-live="polite">{audioMessage}</p>
       </section>
+
+      {quickAnswers.length > 0 && (
+        <section className="quick-answers" aria-labelledby="quick-title">
+          <h2 id="quick-title">Respostas rápidas</h2>
+          <p>Para responder apenas com sim ou não.</p>
+          <div className="communication-grid quick-grid">
+            {quickAnswers.map(item => (
+              <CommunicationCard
+                key={item.id}
+                {...item}
+                onSelect={() => addQuickAnswer(item)}
+                onSpeak={speak}
+                selected={quickResponse?.id === item.id}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="communication-choices" aria-labelledby="step-title">
         <p className="communication-step">Vocabulário disponível</p>
@@ -207,28 +237,10 @@ export default function Communication({ progressService } = {}) {
       <details className="communication-social">
         <summary>Expressões sociais</summary>
         <p>Você pode escolher uma expressão sozinha ou acrescentá-la à sua mensagem.</p>
-        <div className="communication-grid">
-          {Object.keys(socialExpressions).map(id => <CommunicationCard key={id} {...tokenCatalog[id]} onSelect={() => addItem(tokenCatalog[id])} onSpeak={speak} selected={phrase.some(item => item.id === id)} />)}
+        <div className="communication-grid social-grid">
+          {Object.keys(socialExpressions).filter(id => id !== 'por-favor').map(id => <CommunicationCard key={id} {...tokenCatalog[id]} onSelect={() => addItem(tokenCatalog[id])} onSpeak={speak} selected={phrase.some(item => item.id === id)} />)}
         </div>
       </details>
-
-      {quickAnswers.length > 0 && (
-        <section className="quick-answers" aria-labelledby="quick-title">
-          <h2 id="quick-title">Respostas rápidas</h2>
-          <p>Para responder apenas com sim ou não.</p>
-          <div className="communication-grid quick-grid">
-            {quickAnswers.map(item => (
-              <CommunicationCard
-                key={item.id}
-                {...item}
-                onSelect={() => addQuickAnswer(item)}
-                onSpeak={speak}
-                selected={quickResponse?.id === item.id}
-              />
-            ))}
-          </div>
-        </section>
-      )}
 
       <footer className="communication-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
     </main>

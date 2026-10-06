@@ -428,3 +428,65 @@
 .communication-social { margin-block: 24px; padding: 16px; border: 2px solid #d8dee8; border-radius: var(--radius-control); }
 .communication-social summary { cursor: pointer; font-weight: 700; padding: 12px; min-height: 44px; box-sizing: border-box; }
 .communication-social summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+/* Compact auxiliary vocabulary keeps both selection and audio independent. */
+.communication-page .sentence-words .communication-card { flex-wrap: wrap; }
+.communication-page .communication-choices .communication-card { flex-direction: column; align-items: stretch; padding: 0; gap: 0; }
+.communication-page .communication-choices .communication-select { min-width: 0; }
+.communication-page .communication-choices .communication-audio { margin: 4px 10px 10px; }
+.communication-page .communication-choices .communication-select[aria-pressed='true']::after { margin: 0; padding: 3px 7px; max-width: 100%; }
+.communication-page :is(.quick-grid, .social-grid) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 520px;
+  gap: 10px;
+  margin-top: 10px;
+}
+.communication-page .quick-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); }
+:root[data-element-size='large'] .communication-page .quick-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); }
+.communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--radius-control);
+}
+.communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-select {
+  min-width: 0;
+  min-height: var(--target);
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  border-radius: var(--radius-control);
+  font-size: 1rem;
+}
+.communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-select img {
+  width: 48px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+.communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-audio {
+  align-self: center;
+  flex-shrink: 0;
+  min-width: var(--target);
+  min-height: var(--target);
+  margin: 0;
+}
+.communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-select[aria-pressed='true']::after { display: none; }
+.communication-page .communication-social { margin-block: 16px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border-control); }
+.communication-page .communication-social summary { min-height: var(--target); }
+.communication-please { margin-block: 12px; }
+.communication-please p { color: var(--secondary); font-weight: 600; margin-bottom: 8px; }
+.communication-please .communication-card { max-width: 260px; }
+.communication-page .quick-answers { margin-top: 16px; }
+:root[data-element-size='large'] .communication-page :is(.quick-grid, .social-grid, .communication-please) :is(.communication-select, .communication-audio),
+:root[data-element-size='large'] .communication-page .communication-social summary { min-height: var(--target-large); }
+:root[data-element-size='large'] .communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-select { font-size: 1.125rem; }
+:root[data-element-size='large'] .communication-page :is(.quick-grid, .social-grid, .communication-please) .communication-audio { min-width: var(--target-large); }
+@media (max-width: 600px) {
+  .communication-page .sentence-empty { padding-block: 12px; }
+  .communication-page .communication-choices { margin-top: 18px; }
+  .communication-page .communication-grid:not(.quick-grid):not(.social-grid) { gap: 10px; margin-top: 10px; }
+  .communication-page .communication-choices .communication-select { gap: 8px; padding: 10px 6px 6px; }
+  .communication-page .social-grid { grid-template-columns: minmax(0, 1fr); }
+}

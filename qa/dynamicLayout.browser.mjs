@@ -45,7 +45,8 @@ try {
         assert.equal(ornaments.hidden,'true');assert.equal(ornaments.pointer,'none');assert.equal(ornaments.focusable,0)
         assert.equal(ornaments.motifs.length,4)
         assert.ok(ornaments.motifs.every(item=>item.pointer==='none'&&item.animation==='none'))
-        assert.ok(ornaments.motifs.every(item=>item.display===(name==='home'&&width>700?'block':'none')))
+        const visibleMotifs=name==='home'&&width>700?[0,1,2,3]:width>=1024&&['learn','my-day'].includes(name)?[0,2]:width>=1024&&name==='games'?[1]:[]
+        ornaments.motifs.forEach((item,index)=>assert.equal(item.display,visibleMotifs.includes(index)?'block':'none'))
         const size=await A.evaluate('({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth})')
         assert.ok(size.scroll<=size.client+1,JSON.stringify({name,width,large,zoom,size}))
         assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])

@@ -36,21 +36,23 @@ try {
   const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...['caminho','quebra-cabeca','caca-palavras','memoria','encontre-imagem','onde-pertence','bingo','sequencias','situacoes-interativas'].map(g=>'/jogar/'+g),'/meu-progresso','/perfil','/responsaveis'];
   const selector='.navigation-action,a.navigation-return,a[class$="-back"],button.emotions-back,a.puzzle-action,a.wordsearch-action,a.memory-action,a.findimage-action,a.belongs-action,a.sequence-action,a.interactive-action';
   const shots=path.join(os.tmpdir(),'falalivre-navigation-review');fs.mkdirSync(shots,{recursive:true});
-  for(const width of [320,390,768,1366])for(const large of [false,true]){
+  for(const width of [320,360,390,430,768,1024,1366])for(const large of [false,true])for(const zoom of [1,1.25]){
     await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await ev('document.documentElement.dataset.elementSize='+JSON.stringify(large?'large':'normal'));
+    await ev('document.documentElement.style.zoom='+zoom);
     for(const hash of routes){
       await route(hash);
       assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),hash+' overflow');
       const buttons=await ev('Array.from(document.querySelectorAll('+JSON.stringify(selector)+'),e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {text:e.textContent.trim(),height:r.height,scroll:e.scrollWidth,width:e.clientWidth,bg:s.backgroundColor,color:s.color,border:s.borderTopWidth,underline:s.textDecorationLine,primary:e.classList.contains("navigation-action--primary")}})');
-      for(const b of buttons){assert.ok(b.text);assert.ok(b.height>=(large?55:47),JSON.stringify({hash,width,large,b}));assert.ok(b.scroll<=b.width+1);assert.equal(b.underline,'none');assert.equal(b.border,'1px');assert.equal(b.bg,b.primary?'rgb(49, 95, 140)':'rgb(255, 255, 255)');assert.equal(b.color,b.primary?'rgb(255, 255, 255)':'rgb(49, 95, 140)');}
+      for(const b of buttons){assert.ok(b.text);assert.ok(b.height>=(large?55:47)*zoom,JSON.stringify({hash,width,large,b}));assert.ok(b.scroll<=b.width+1);assert.equal(b.underline,'none');assert.ok(parseFloat(b.border)>=0.79);assert.equal(b.bg,b.primary?'rgb(49, 95, 140)':'rgb(255, 255, 255)');assert.equal(b.color,b.primary?'rgb(255, 255, 255)':'rgb(49, 95, 140)');}
       if(buttons.length){await ev('document.querySelector('+JSON.stringify(selector)+').focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
         const focused=await ev('Array.from(document.querySelectorAll('+JSON.stringify(selector)+'),e=>{e.focus();const s=getComputedStyle(e);return {text:e.textContent.trim(),outline:s.outlineStyle,width:s.outlineWidth,clipped:e.scrollHeight>e.clientHeight+1}})');
-        for(const action of focused){assert.equal(action.outline,'solid',action.text);assert.equal(action.width,'3px',action.text);assert.equal(action.clipped,false,action.text);}
+        for(const action of focused){assert.equal(action.outline,'solid',action.text);assert.ok(parseFloat(action.width)*zoom>=2.99,action.text);assert.equal(action.clipped,false,action.text);}
       }
-      if(['/','/meu-progresso'].includes(hash)&&[320,1366].includes(width)) {const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:70,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,(hash==='/'?'home':'progress')+'-'+width+(large?'-large':'')+'.jpg'),Buffer.from(shot.data,'base64'));}
+      if(zoom===1&&((['/','/meu-progresso','/aprender/comunicar'].includes(hash)&&[320,1366].includes(width))||(!large&&width===390))) {const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:70,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,(hash==='/'?'home':hash.slice(1).replaceAll('/','-'))+'-'+width+(large?'-large':'')+'.jpg'),Buffer.from(shot.data,'base64'));}
     }
   }
+  await ev('document.documentElement.style.zoom=""');
   await route('/');const href=await ev('document.querySelector(".progress-entry a").getAttribute("href")');assert.equal(href,'#/meu-progresso');
   await ev('document.querySelector(".progress-entry a").focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
   // Native keyboard activation of the semantic anchor and focus ring.
@@ -58,7 +60,7 @@ try {
   await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await pause(100);assert.equal(await ev('location.hash'),href);
   for(const [text,destination] of [['Explorar Aprender','#/aprender'],['Ver jogos','#/jogar'],['Voltar ao in\u00edcio','#/']]){await route('/meu-progresso');assert.equal(await ev('Array.from(document.querySelectorAll("main a")).find(e=>e.textContent.trim()==='+JSON.stringify(text)+').getAttribute("href")'),destination);}
   await ev('document.documentElement.dataset.reduceMotion="true"');assert.equal(await ev('getComputedStyle(document.querySelector(".navigation-return")).transitionDuration'),'0s');
-  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[]);console.log('PASS navigation actions on 25 routes x 4 widths x Normal/Grande; primary/secondary appearance, 48/56px targets, labels, no overflow, focus/Enter and unchanged destinations. Screenshots: '+shots);
+  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[]);console.log('PASS navigation actions on 25 routes x 7 widths x Normal/Grande x zoom 100/125%; primary/secondary appearance, 48/56px targets, labels, no overflow, focus/Enter and unchanged destinations. Screenshots: '+shots);
 } finally {
   for(const socket of sockets)socket.close();chrome.kill();await server.close();await pause(500)
   const resolved=path.resolve(profile)

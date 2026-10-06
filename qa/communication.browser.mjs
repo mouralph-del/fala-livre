@@ -62,8 +62,8 @@ try {
   const order=()=>evaluate(`[...document.querySelectorAll('.sequence-select strong')].map(el=>el.textContent)`)
   const click=async selector=>{await evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(selector)});el.focus();el.click()})()`); await pause(30)}
   const press=async key=>{
-    await cdp('Input.dispatchKeyEvent',{type:'keyDown',key,text:key==='Enter'?'\r':key===' '?' ':undefined,code:key===' '?'Space':key,windowsVirtualKeyCode:key==='Enter'?13:key==='Escape'?27:32})
-    await cdp('Input.dispatchKeyEvent',{type:'keyUp',key,code:key===' '?'Space':key,windowsVirtualKeyCode:key==='Enter'?13:key==='Escape'?27:32})
+    await cdp('Input.dispatchKeyEvent',{type:'keyDown',key,text:key==='Enter'?'\r':key===' '?' ':undefined,code:key===' '?'Space':key,windowsVirtualKeyCode:key==='Enter'?13:key==='Escape'?27:key==='Tab'?9:32})
+    await cdp('Input.dispatchKeyEvent',{type:'keyUp',key,code:key===' '?'Space':key,windowsVirtualKeyCode:key==='Enter'?13:key==='Escape'?27:key==='Tab'?9:32})
     await pause(30)
   }
   const key='falaLivre_contentRotation_v1'
@@ -165,13 +165,13 @@ try {
     }
     await navigate('/aprender/comunicar');await click('.communication-social summary')
     assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false)
-    assert.equal(await evaluate(`document.querySelectorAll('.communication-social .communication-select').length`),3)
+    assert.equal(await evaluate(`document.querySelectorAll('.communication-social .communication-select').length`),2)
   }
   console.log('320,360,390,430,768,1024,1366px normal/large: five slots, controls, expanded socials PASS')
   await cdp('Emulation.setDeviceMetricsOverride',{width:1366,height:1600,deviceScaleFactor:1,mobile:false})
   await navigate('/aprender/comunicar');await instrument()
   if(!await evaluate(`document.querySelector('.communication-social').open`))await click('.communication-social summary')
-  for(const [label,speech] of [['POR FAVOR','Por favor.'],['OBRIGADO','Obrigado.'],['OBRIGADA','Obrigada.']]){
+  for(const [label,speech] of [['OBRIGADO','Obrigado.'],['OBRIGADA','Obrigada.']]){
     await button('Limpar');await click(`.communication-social [aria-label="Selecionar ${label}"]`);await button('Ouvir frase');assert.equal(await evaluate(`window.__spoken.at(-1).text`),speech)
     await click(`.sentence-words [aria-label="Remover ${label}"]`);assert.equal(await evaluate(`document.querySelectorAll('.sentence-words li').length`),0)
   }
@@ -180,12 +180,77 @@ try {
   for(const set of communicationSets){
     await navigate('/aprender');await evaluate(`(()=>{const d=JSON.parse(localStorage.getItem('${key}'));d.modules.communication={order:${JSON.stringify([set.id,...communicationSets.filter(s=>s.id!==set.id).map(s=>s.id)])},currentIndex:0,cycle:1,lastThemeId:null};localStorage.setItem('${key}',JSON.stringify(d))})()`);await navigate('/aprender/comunicar')
     assert.equal(await evaluate(`!!document.querySelector('.communication-social')`),true)
-    const base=set.tokenIds.slice(0,3)
-    if(set.id==='choiceRefusal')continue
+    const base=set.id==='choiceRefusal'?['eu','nao','quero','comer']:set.tokenIds.slice(0,3)
     for(const id of base)await click(`.communication-choices [aria-label="Selecionar ${situations[0].options.find(o=>o.id===id).word}"]`)
     assert.equal(await evaluate(`[...document.querySelectorAll('main button')].find(b=>b.textContent.trim()==='Concluir exploração').disabled`),false)
-    await click('.communication-social summary');await click('.communication-social [aria-label="Selecionar POR FAVOR"]');await button('Ouvir frase');assert.match(await evaluate(`window.__spoken.at(-1).text`),/por favor\.$/)
+    await button('Ouvir frase');assert.doesNotMatch(await evaluate(`window.__spoken.at(-1).text`),/por favor/)
+    assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),set.id==='want')
+    if(set.id==='want'){
+      const before=await saved()
+      await click('.communication-please .communication-audio');assert.equal(await evaluate(`window.__spoken.at(-1).text`),'Por favor.')
+      await evaluate(`document.querySelector('.communication-please .communication-select').focus()`);await press('Enter')
+      assert.equal(await evaluate(`document.activeElement.textContent.trim()`),'Ouvir frase')
+      assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),false)
+      assert.equal(await evaluate(`document.querySelector('.sentence-natural').textContent`),'Eu quero beber água, por favor.')
+      await button('Ouvir frase');assert.equal(await evaluate(`window.__spoken.at(-1).text`),'Eu quero beber água, por favor.')
+      assert.deepEqual(await saved(),before)
+      await click('.sentence-words [aria-label="Remover POR FAVOR"]');assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),true)
+    }
+    if(set.id==='choiceRefusal'){
+      const text=await evaluate(`document.querySelector('.sentence-natural').textContent`)
+      for(const [label,speech] of [['SIM','Sim'],['NÃO','Não']]){
+        await click(`.quick-grid [aria-label="Selecionar ${label}"]`)
+        assert.equal(await evaluate(`document.querySelector('.sentence-natural').textContent`),text)
+        await click(`.quick-grid .communication-audio[aria-label="Ouvir palavra ${speech}"]`);assert.equal(await evaluate(`window.__spoken.at(-1).text`),speech)
+        await button('Ouvir resposta');assert.equal(await evaluate(`window.__spoken.at(-1).text`),speech+'.')
+        assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),false)
+      }
+    }
+    await button('Limpar');assert.equal(await evaluate(`document.querySelectorAll('.sentence-words li').length`),0)
+    assert.equal(await evaluate(`!!document.querySelector('.quick-response-natural')`),false)
+    assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),false)
+    const before=await saved();await button('Concluir exploração');assert.equal((await saved()).modules.communication.currentIndex,before.modules.communication.currentIndex+1)
   }
+  // The compact public composer, including expanded thanks and independent answers.
+  const openCommunication=async id=>{
+    await navigate('/aprender');await evaluate(`(()=>{const d=JSON.parse(localStorage.getItem('${key}'));d.modules.communication={order:${JSON.stringify([id,...communicationSets.filter(s=>s.id!==id).map(s=>s.id)])},currentIndex:0,cycle:1,lastThemeId:null};localStorage.setItem('${key}',JSON.stringify(d))})()`);await navigate('/aprender/comunicar')
+  }
+  for(const width of [320,360,390,430,768,1024,1366])for(const size of ['normal','large'])for(const zoom of [1,1.25]){
+    await cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
+    await evaluate(`document.documentElement.dataset.elementSize=${JSON.stringify(size)};document.documentElement.style.zoom=${zoom}`)
+    for(const set of ['want','choiceRefusal']){
+      await openCommunication(set)
+      const stored=await saved()
+      for(const label of ['EU','QUERO'])await click(`.communication-choices [aria-label="Selecionar ${label}"]`)
+      assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),false)
+      await click('.communication-choices [aria-label="Selecionar BRINCAR"]')
+      assert.equal(await evaluate(`!!document.querySelector('.communication-please')`),true)
+      await click('.communication-social summary')
+      await press('Tab')
+      const metrics=await evaluate(`(()=>{
+        const controls=[...document.querySelectorAll('.communication-please button,.social-grid button,.quick-grid button')];
+        const rects=controls.map(e=>e.getBoundingClientRect());
+        const focus=controls.every(e=>{e.focus();const s=getComputedStyle(e);return s.outlineStyle==='solid'&&parseFloat(s.outlineWidth)*${zoom}>=2.99});
+        return {overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
+          overlap:rects.some((a,i)=>rects.slice(i+1).some(b=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1)),
+          clipped:controls.some(e=>e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1),
+          target:rects.every(r=>r.height>=${(size==='large'?55:47)*zoom}),focus,
+          quick:[...document.querySelectorAll('.quick-grid .communication-card')].map(e=>e.getBoundingClientRect().height/${zoom}),
+          size:[document.documentElement.scrollWidth,document.documentElement.clientWidth,innerWidth,scrollX],
+          outside:[...document.querySelectorAll('main *')].filter(e=>{const r=e.getBoundingClientRect();return r.right>document.documentElement.clientWidth+1||r.left< -1}).slice(0,8).map(e=>({class:e.className,left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}))}
+      })()`)
+      assert.equal(metrics.overflow,false,JSON.stringify({width,size,zoom,set,metrics}));assert.equal(metrics.overlap,false);assert.equal(metrics.clipped,false);assert.equal(metrics.target,true);assert.equal(metrics.focus,true)
+      assert.ok(metrics.quick.every(height=>height<160),JSON.stringify(metrics))
+      await click('.communication-please .communication-select');await button('Ouvir frase');assert.equal(await evaluate(`window.__spoken.at(-1).text`),'Eu quero brincar, por favor.')
+      if(set==='choiceRefusal')for(const label of ['SIM','NÃO']){await click(`.quick-grid [aria-label="Selecionar ${label}"]`);assert.equal(await evaluate(`document.querySelector('.sentence-natural').textContent`),'Eu quero brincar, por favor.')}
+      assert.deepEqual(await saved(),stored)
+      if([320,390,1366].includes(width)&&zoom===1){const screenshot=await cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),`falalivre-composer-${set}-${width}-${size}.jpg`),Buffer.from(screenshot.data,'base64'))}
+    }
+  }
+  await evaluate(`document.documentElement.style.zoom='';document.documentElement.dataset.reduceMotion='true'`)
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('.communication-back')).transitionDuration`),'0s')
+  await evaluate(`delete document.documentElement.dataset.reduceMotion`)
+  console.log('Compact composer: all 7 widths x Normal/Grande x 100/125%; please, expanded thanks, SIM/NÃO, no clipping/overlap/overflow, focus and unchanged storage PASS')
   // All legacy levels retain original prompts, answers, help and completion.
   const {interactiveSituations}=await loadData('src/data/interactiveSituations.js')
   await navigate('/jogar/situacoes-interativas')
@@ -239,7 +304,7 @@ try {
   await evaluate(`window.SpeechSynthesisUtterance=undefined`);await click('[aria-label="Ouvir EU"]');assert.match(await evaluate(`document.querySelector('.interactive-audio-status').textContent`),/indisponível/)
   await seed('nao-quero-comer');for(const id of ['eu','nao','quero','comer','obrigada'])await select(id)
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false})
-  const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa/communication-390.png',Buffer.from(shot.data,'base64'))
+  const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),'falalivre-communication-390.png'),Buffer.from(shot.data,'base64'))
   assert.equal(errors.length,0,JSON.stringify(errors))
   console.log('UI variants, faithful speech, help, explicit advance, refresh/return, double click, mouse drag/cancel, emulated touch, keyboard, socials four sets, menus/routes and isolated storage PASS')
 } finally {
