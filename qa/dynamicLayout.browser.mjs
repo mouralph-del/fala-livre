@@ -50,13 +50,13 @@ try {
         const size=await A.evaluate('({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth})')
         assert.ok(size.scroll<=size.client+1,JSON.stringify({name,width,large,zoom,size}))
         assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])
-        assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'),2)
-        const logo=await A.evaluate(`(()=>{const image=document.querySelector('.brand-logo'),r=image.getBoundingClientRect(),header=document.querySelector('.header-content').getBoundingClientRect(),nav=document.querySelector('.header-navigation').getBoundingClientRect();return {alt:image.alt,count:document.querySelectorAll('.brand-logo').length,old:document.querySelectorAll('.brand-copy,.brand-mark').length,ratio:r.width/r.height,natural:image.naturalWidth/image.naturalHeight,fit:getComputedStyle(image).objectFit,inside:r.left>=header.left-1&&r.right<=header.right+1&&r.top>=header.top-1&&r.bottom<=header.bottom+1,overlap:r.left<nav.right-1&&r.right>nav.left+1&&r.top<nav.bottom-1&&r.bottom>nav.top+1}})()`)
+        assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'),3)
+        const logo=await A.evaluate(`(()=>{const image=document.querySelector('.brand-logo'),r=image.getBoundingClientRect(),header=document.querySelector('.header-content').getBoundingClientRect(),nav=document.querySelector('.header-menu-toggle').getBoundingClientRect();return {alt:image.alt,count:document.querySelectorAll('.brand-logo').length,old:document.querySelectorAll('.brand-copy,.brand-mark').length,ratio:r.width/r.height,natural:image.naturalWidth/image.naturalHeight,fit:getComputedStyle(image).objectFit,inside:r.left>=header.left-1&&r.right<=header.right+1&&r.top>=header.top-1&&r.bottom<=header.bottom+1,overlap:r.left<nav.right-1&&r.right>nav.left+1&&r.top<nav.bottom-1&&r.bottom>nav.top+1}})()`)
         assert.equal(logo.alt,'Fala Livre — Comunicar, Aprender e Conectar');assert.equal(logo.count,1);assert.equal(logo.old,0)
         assert.ok(Math.abs(logo.ratio-logo.natural)<.02);assert.equal(logo.fit,'contain');assert.equal(logo.inside,true);assert.equal(logo.overlap,false)
         const overlaps=await A.evaluate(`(()=>{const cards=Array.from(document.querySelectorAll('.activity-card'));return cards.some(c=>{const a=c.querySelector('img').getBoundingClientRect(),b=c.querySelector('.activity-content').getBoundingClientRect();return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1})})()`)
         assert.equal(overlaps,false,JSON.stringify({name,width,large,zoom}))
-        for(const selector of ['.start-button','.learning-start','.game-start','.header-navigation a']){
+        for(const selector of ['.start-button','.learning-start','.game-start','.header-menu-toggle']){
           const heights=await A.evaluate(`Array.from(document.querySelectorAll(${JSON.stringify(selector)}),e=>e.getBoundingClientRect().height/${zoom})`)
           assert.ok(heights.every(h=>h>=(large?55:47)),JSON.stringify({selector,width,large,zoom,heights}))
         }

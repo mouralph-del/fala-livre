@@ -1,6 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { interactiveSituations, interactivePhraseSpeech } from '../data/interactiveSituations'
-import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './InteractiveSituationsGame.css'
@@ -373,7 +372,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
         </div>
       </section>
       </>}
-      <footer className="interactive-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
     </main>
   }
 
@@ -533,7 +532,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
               </p>
 
               <div className="interactive-controls">
-                <button type="button" className="interactive-action" onClick={help}>Preciso de ajuda</button>
+                <button type="button" className="interactive-action action-help" aria-label="Preciso de ajuda" onClick={help}>Preciso de ajuda</button>
                 <button type="button" className="interactive-action" disabled={!canCheck} onClick={() => change({ type: 'confirm' })}>{continuous ? 'Conferir frase' : 'Confirmar frase'}</button>
               </div>
             </>
@@ -567,6 +566,6 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
 
     <p className="interactive-audio-status" role="status">{audioMessage}</p>
     {embedded && continuous && <p role="status" aria-live="polite">{progress.message}</p>}
-    <footer className="interactive-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }

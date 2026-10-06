@@ -103,12 +103,12 @@ export default function MemoryGame({ progressService } = {}) {
           aria-label={matched ? `${pair.word}, par encontrado, carta ${index + 1}` : revealed ? `Carta ${pair.word} aberta, carta ${index + 1}` : `Carta fechada ${index + 1}${clue ? ', pista: tente começar por esta carta' : ''}`}
           aria-pressed={revealed} aria-disabled={matched || pending || revealed} onClick={() => dispatch({ type: 'open', id: card.id })}>
           <span className="memory-card-inner">
-            <span className="memory-card-back" aria-hidden={revealed}><CardBack /><span>Carta {index + 1}</span>{clue && <small>Pista</small>}</span>
+            <span className="memory-card-back" aria-hidden={revealed}><CardBack />{clue && <small>Pista</small>}</span>
             <span className="memory-card-front" aria-hidden={!revealed}><img src={pair.image} alt="" /><strong>{pair.word}</strong>{matched && <span className="memory-match-mark" aria-hidden="true">✓</span>}</span>
           </span>
         </button>
       })}</div>
-      {!completed && <div className="memory-controls"><button className="memory-action" type="button" disabled={state.open.length > 0} onClick={() => dispatch({ type: 'help' })}>Preciso de ajuda</button><button className="memory-action memory-restart" type="button" onClick={restart}>Reiniciar</button></div>}
+      {!completed && <div className="memory-controls"><button className="memory-action action-help" aria-label="Preciso de ajuda" type="button" disabled={state.open.length > 0} onClick={() => dispatch({ type: 'help' })}>Preciso de ajuda</button><button className="memory-action memory-restart" type="button" onClick={restart}>Reiniciar</button></div>}
       <p className="memory-feedback" role="status">{completed ? 'Você encontrou todos os pares!' : state.message}</p>
       {!completed && lastPair && <button type="button" className="memory-action" onClick={() => speak(lastPair)}><SpeakerIcon />Ouvir palavra</button>}
     </section>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { learningWords } from '../data/learningWords'
-import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from './CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 
@@ -17,7 +16,7 @@ export default function WritingPractice({ notebook = false, wordId = 'casa' }) {
       <h2>{word.word}</h2>
       <button type="button" onClick={() => { setMessage(''); falar(word.audioText, setMessage) }}><SpeakerIcon />Ouvir palavra</button>
       <p role="status">{message}</p>
-      <small>Pictograma: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></small>
+
     </div>
   </section>
 }

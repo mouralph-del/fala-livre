@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import CommunicationCard, { SpeakerIcon } from '../components/CommunicationCard'
 import { myDayEmotions, myDayEmotionIds, emotionVocabulary, emotionNaturalPhrases, restExplanation } from '../data/myDayEmotions'
-import { pictogramCredit } from '../data/communicationOptions'
 import { constructedSpeech } from '../utils/myDayCommunication'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { getModuleRotation, advanceModuleRotation } from '../utils/contentRotationStorage'
@@ -130,6 +129,6 @@ export default function MyDayEmotions({ progressService } = {}) {
     </> : null}
     <p role="status" className="emotions-status">{status}</p><p role="status" className="emotions-status">{audioStatus}</p>
     {view === 'explore' && <p role="status" aria-live="polite">{progress.message}</p>}
-    <footer>Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }

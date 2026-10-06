@@ -7,7 +7,7 @@ main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.
   gap: 8px;
   min-height: var(--target);
   max-width: 100%;
-  padding: 12px 18px;
+  padding: 10px 14px;
   border: 1px solid var(--border-control);
   border-radius: var(--radius-control);
   background: var(--surface);

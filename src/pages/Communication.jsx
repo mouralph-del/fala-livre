@@ -5,7 +5,6 @@ import {
   communicationNaturalPhrases,
   communicationSetIds,
   communicationSets,
-  pictogramCredit,
 } from '../data/communicationOptions'
 import { learningConcepts } from '../data/learningConcepts'
 import { socialExpressions } from '../data/socialExpressions'
@@ -242,7 +241,6 @@ export default function Communication({ progressService } = {}) {
         </div>
       </details>
 
-      <footer className="communication-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
     </main>
   )
 }

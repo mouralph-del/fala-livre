@@ -2,6 +2,7 @@ import './App.css'
 import officialLogo from './assets/illustrations/fala-livre-logo.png'
 
 import ActivityIllustration from './components/ActivityIllustration'
+import HeaderNavigation from './components/HeaderNavigation'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Learn from './pages/Learn'
 import MyProgress from './pages/MyProgress'
@@ -110,10 +111,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <Brand />
-          <nav className="header-navigation" aria-label="Navegação principal">
-            <a className="profile-button" href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}>Meu Progresso</a>
-            <a className="profile-button" href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined}><Icon name="profile" />Configurações</a>
-          </nav>
+          <HeaderNavigation route={route} />
         </div>
       </header>
       <div className="home-surround">

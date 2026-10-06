@@ -166,7 +166,7 @@ export default function WhereBelongsGame({ progressService } = {}) {
         </button>
       })}</div>
       <p className="belongs-feedback" role="status">{state.message}</p>
-      <div className="belongs-controls"><span>{state.index + 1} de {state.rounds.length}</span>{state.correct ? <button ref={nextButton} type="button" className="belongs-action action-primary" onClick={next}>Próxima</button> : <button type="button" className="belongs-action" onClick={help}>Preciso de ajuda</button>}</div>
+      <div className="belongs-controls"><span>{state.index + 1} de {state.rounds.length}</span>{state.correct ? <button ref={nextButton} type="button" className="belongs-action action-primary" onClick={next}>Próxima</button> : <button type="button" className="belongs-action action-help" aria-label="Preciso de ajuda" onClick={help}>Preciso de ajuda</button>}</div>
       {drag && <div className="belongs-drag" aria-hidden="true" style={{ left: drag.x, top: drag.y }}><VisualRepresentation item={round} /></div>}
     </section>}
     </>}

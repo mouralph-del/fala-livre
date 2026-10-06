@@ -6,7 +6,7 @@ export const puzzleLevels = [
   { id: 'casa', label: 'CASA', speechText: 'Casa', image: casa, imageAspectRatio: 1, rows: 2, columns: 2 },
   { id: 'gato', label: 'GATO', speechText: 'Gato', image: gato, imageAspectRatio: 1, rows: 2, columns: 3 },
   {
-    id: 'gato-cachorro', label: 'GATO E CACHORRO', speechText: 'Gato e cachorro', imageAspectRatio: 1, rows: 3, columns: 3,
+    id: 'gato-cachorro', label: 'GATO E CACHORRO', speechText: 'Gato e cachorro', imageAspectRatio: 2, rows: 3, columns: 3,
     composition: { images: [gato, cachorro] },
   },
 ]

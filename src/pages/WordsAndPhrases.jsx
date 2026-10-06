@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { SpeakerIcon } from '../components/CommunicationCard'
-import { pictogramCredit } from '../data/communicationOptions'
 import { learningWords } from '../data/learningWords'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
@@ -271,7 +270,6 @@ export default function WordsAndPhrases({ progressService } = {}) {
         <p role="status" aria-live="polite">{progress.message}</p>
       </section>
 
-      <footer className="words-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
     </main>
   )
 }

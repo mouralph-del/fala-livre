@@ -1,6 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { pathGameLevels, nextPathStep } from '../data/pathGameLevels'
-import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import { getPreferences } from '../utils/preferences'
@@ -120,10 +119,10 @@ export default function PathGame({ progressService } = {}) {
             const clue = hint === item.id
             return <button key={item.id} type="button" data-node={item.id} disabled={!enabled} aria-current={current ? 'location' : undefined}
               className={'path-node' + (isDestination ? ' path-node--destination' : '') + (item.type === 'obstacle' ? ' path-node--obstacle' : '') + (current ? ' path-node--current' : '') + (enabled ? ' path-node--available' : '') + (clue ? ' path-node--hint' : '') + (visited.has(item.id) ? ' path-node--visited' : '')}
-              style={{ left: ((item.x + .5) / level.columns * 100) + '%', top: ((item.y + .5) / level.rows * 100) + '%' }}
+              style={{ left: isDestination ? `clamp(var(--destination-half), ${(item.x + .5) / level.columns * 100}%, calc(100% - var(--destination-half)))` : ((item.x + .5) / level.columns * 100) + '%', top: ((item.y + .5) / level.rows * 100) + '%' }}
               aria-label={current ? 'Você está em ' + item.label : 'Ir para ' + item.label + (clue ? ' — pista: próximo passo' : '')} onClick={() => move(item.id)}>
               {destination && item.type !== 'obstacle' && <span className="path-destinations">{Array.from({ length: destination.copies || 1 }, (_, index) => <VisualDestination key={index} destination={destination} className="path-destination" />)}</span>}
-              <span>{isDestination || item.type === 'start' ? item.label : clue ? '?' : current ? '' : enabled ? '→' : visited.has(item.id) ? '✓' : item.type === 'obstacle' ? '×' : '·'}</span><small>{current ? 'Aqui' : clue ? 'Pista' : enabled ? 'Pode ir' : visited.has(item.id) ? 'Visitado' : isDestination ? 'Destino' : item.type === 'obstacle' ? 'Obstáculo' : ''}</small>
+              <span>{isDestination || item.type === 'start' ? item.label : clue ? '?' : current ? '' : visited.has(item.id) ? '✓' : item.type === 'obstacle' ? '×' : '·'}</span><small>{current ? 'Aqui' : clue ? 'Pista' : enabled ? 'Pode ir' : visited.has(item.id) ? 'Visitado' : isDestination ? 'Destino' : item.type === 'obstacle' ? 'Obstáculo' : ''}</small>
             </button>
           })}
           <div className="path-player" data-position={position} style={{ left: ((node.x + .5) / level.columns * 100) + '%', top: ((node.y + .5) / level.rows * 100) + '%' }}>
@@ -133,7 +132,7 @@ export default function PathGame({ progressService } = {}) {
           <p className="path-legend">Borda tracejada: pode ir · ✓ e linha contínua: percurso feito.</p>
       </section>
       <section className="path-controls" aria-label="Controles do percurso">
-        <button type="button" className="path-action" disabled={moving || success} onClick={help}>Preciso de ajuda</button>
+        <button type="button" className="path-action action-help" aria-label="Preciso de ajuda" disabled={moving || success} onClick={help}>Preciso de ajuda</button>
         <button type="button" className="path-action" disabled={moving || history.length === 1} onClick={back}>Voltar um passo</button>
         <button type="button" className="path-action" onClick={restart}>Reiniciar</button>
         <p className="path-hint-text" role="status">{hint && 'Pista: vá para ' + level.nodes.find(item => item.id === hint).label + '. Você escolhe quando avançar.'}</p>
@@ -149,7 +148,7 @@ export default function PathGame({ progressService } = {}) {
     </section>}
     </>}
     <p className="path-audio-status" role="status">{audioMessage}</p>
-    <footer className="path-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }
 

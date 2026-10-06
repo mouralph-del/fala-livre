@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import CommunicationCard, { SpeakerIcon } from '../components/CommunicationCard'
-import { communicationWords, pictogramCredit } from '../data/communicationOptions'
+import { communicationWords } from '../data/communicationOptions'
 import { learningConcepts } from '../data/learningConcepts'
 import { dailySituations, dailySituationIds } from '../data/dailySituations'
 import { getCurrentTheme } from '../utils/contentRotation'
@@ -166,7 +166,7 @@ export default function DailySituations() {
         {feedback && <div className="situation-feedback" role="status" aria-live="polite"><p>{feedback}</p></div>}
         <div className="situations-actions">
           <button type="button" className="situations-action" disabled={!choice} onClick={checkAnswer}>Conferir</button>
-          <button type="button" className="situations-action" aria-pressed={hint} onClick={requestHint}>Preciso de ajuda</button>
+          <button type="button" className="situations-action action-help" aria-label="Preciso de ajuda" aria-pressed={hint} onClick={requestHint}>Preciso de ajuda</button>
         </div>
         <p className="situation-help-status" role="status" aria-live="polite">{hint ? `Pista: observe a opção ${resolveConcept(situation.correctOptionId).label}.` : statusMessage}</p>
       </section>}
@@ -180,6 +180,6 @@ export default function DailySituations() {
       </section>}
       <p className="situation-audio-status" role="status" aria-live="polite">{audioMessage}</p>
     </section>
-    <footer className="situations-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }

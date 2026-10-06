@@ -1,6 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { sequenceGameLevels, shuffleSequence, isSequenceCorrect } from '../data/sequenceGameLevels'
-import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import { myDayRoutines, myDayRoutineIds } from '../data/myDayRoutines'
@@ -230,7 +229,7 @@ export default function SequenceGame({ embedded = false, progressService }) {
       </div>
       <div className="sequence-controls">{state.complete ? <button type="button" className="sequence-action action-primary" ref={nextButton} onClick={next}>{continuous ? 'Próxima rotina' : 'Próxima sequência'}</button> : <>
         <button type="button" className="sequence-action action-primary" onClick={verify}>Conferir</button>
-        <button type="button" className="sequence-action" onClick={help}>Preciso de ajuda</button>
+        <button type="button" className="sequence-action action-help" aria-label="Preciso de ajuda" onClick={help}>Preciso de ajuda</button>
       </>}</div>
       {drag && <div className="sequence-drag" aria-hidden="true" style={{ left: drag.x, top: drag.y }}><SequenceVisual step={activity.steps.find(step => step.id === state.order[drag.source])} /></div>}
     </section> : <section className="sequence-success" aria-labelledby="sequence-complete">
@@ -239,6 +238,6 @@ export default function SequenceGame({ embedded = false, progressService }) {
     </section>}
     <p className="sequence-audio-status" role="status">{audioMessage}</p>
     {embedded && <p role="status" aria-live="polite">{progress.message}</p>}
-    <footer className="sequence-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }

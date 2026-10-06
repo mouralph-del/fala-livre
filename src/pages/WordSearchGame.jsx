@@ -26,7 +26,10 @@ export default function WordSearchGame({ progressService } = {}) {
   const complete = new Set(found).size === level.words.length && level.words.every(word => found.includes(word.id))
   const progress = useGameProgress('caca-palavras', level.id, complete, progressService)
   const sequence = selection.map(index => letters[index]).join('')
-  const marked = new Set(level.words.filter(word => found.includes(word.id)).flatMap(word => word.cells))
+  const marked = new Map()
+  level.words.forEach((word, index) => {
+    if (found.includes(word.id)) word.cells.forEach(cell => marked.set(cell, [...(marked.get(cell) ?? []), index % 4]))
+  })
   const possible = !selection.length || level.words.some(word => !found.includes(word.id)
     && selection.length <= word.cells.length
     && (normalize(word.word).startsWith(normalize(sequence)) || normalize(Array.from(word.word).reverse().join('')).startsWith(normalize(sequence)))
@@ -122,7 +125,7 @@ export default function WordSearchGame({ progressService } = {}) {
     <div className="wordsearch-activity">
     <section className="wordsearch-vocabulary" aria-labelledby="wordsearch-words-title">
       <h2 id="wordsearch-words-title">{level.title.toUpperCase()}</h2>
-      <ul>{level.words.map(word => <li key={word.id}><div><strong>{word.word}</strong>{found.includes(word.id) && <span className="wordsearch-found-label">Encontrada</span>}</div><button type="button" className="wordsearch-audio" aria-label={`Ouvir ${word.word}`} onClick={() => speak(word)}><SpeakerIcon /></button></li>)}</ul>
+      <ul>{level.words.map((word, index) => <li key={word.id} data-found-color={found.includes(word.id) ? index % 4 : undefined}><div><strong>{word.word}</strong>{found.includes(word.id) && <span className="wordsearch-found-label">Encontrada</span>}</div><button type="button" className="wordsearch-audio" aria-label={`Ouvir ${word.word}`} onClick={() => speak(word)}><SpeakerIcon /></button></li>)}</ul>
       <p className="wordsearch-progress" role="status">{found.length} de {level.words.length} palavras encontradas</p>
       <progress value={found.length} max={level.words.length} aria-label="Palavras encontradas" />
       <p className="wordsearch-status" role="status">{audioMessage}</p>
@@ -134,6 +137,8 @@ export default function WordSearchGame({ progressService } = {}) {
           const foundCell = marked.has(index)
           const clue = hint === index
           return <button type="button" key={index} ref={index === 0 ? firstCell : undefined} data-cell={index}
+            data-found-color={foundCell ? marked.get(index).join(' ') : undefined}
+            style={foundCell && marked.get(index).length > 1 ? { backgroundImage: `linear-gradient(135deg, ${marked.get(index).flatMap((color, at, colors) => [`var(--word-color-${color}) ${at / colors.length * 100}%`, `var(--word-color-${color}) ${(at + 1) / colors.length * 100}%`]).join(', ')})` } : undefined}
             className={`wordsearch-cell${selected ? ' wordsearch-cell--selected' : ''}${foundCell ? ' wordsearch-cell--found' : ''}${clue ? ' wordsearch-cell--hint' : ''}`}
             aria-label={`Letra ${letter}, linha ${Math.floor(index / level.columns) + 1}, coluna ${index % level.columns + 1}${foundCell ? ', palavra encontrada' : ''}${clue ? ', pista: comece por aqui' : ''}`}
             aria-pressed={selected} aria-disabled={complete || !canExtendSelection(level, selection, index)} onClick={event => { if (event.detail > 0 && suppressClick.current) { suppressClick.current = false; return }; select(index) }}>
@@ -149,7 +154,7 @@ export default function WordSearchGame({ progressService } = {}) {
       {!complete && <div className="wordsearch-controls">
         <button type="button" className="wordsearch-action" disabled={!selection.length} onClick={() => { setSelection(current => current.slice(0, -1)); setMessage('') }}>Desfazer</button>
         <button type="button" className="wordsearch-action" disabled={!selection.length} onClick={() => { setSelection([]); setMessage('') }}>Limpar seleção</button>
-        <button type="button" className="wordsearch-action" onClick={help}>Preciso de ajuda</button>
+        <button type="button" className="wordsearch-action action-help" aria-label="Preciso de ajuda" onClick={help}>Preciso de ajuda</button>
         <button type="button" className="wordsearch-action wordsearch-restart" onClick={reset}>Reiniciar</button>
       </div>}
       <p className="wordsearch-status" role="status">{complete ? '' : !possible ? 'Tente outra sequência.' : message}</p>

@@ -1,6 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { bingoLevels, createBingoGame, findBingoLine } from '../data/bingoLevels'
-import { pictogramCredit } from '../data/communicationOptions'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './BingoGame.css'
@@ -73,7 +72,7 @@ export default function BingoGame() {
       })}</div>
       {!complete && <>
         <div className="bingo-feedback" role="status">{state.correct ? <><strong>Muito bem!</strong><p>Você encontrou {target.word}.</p></> : state.retry ? 'Procure novamente.' : state.hint ? 'Procure por esta opção. A pista tem contorno tracejado e texto.' : ''}</div>
-        {state.correct ? <button type="button" className="bingo-action" onClick={next}>Próxima palavra</button> : <button type="button" className="bingo-action" onClick={() => dispatch({ type: 'help' })}>Preciso de ajuda</button>}
+        {state.correct ? <button type="button" className="bingo-action" onClick={next}>Próxima palavra</button> : <button type="button" className="bingo-action action-help" aria-label="Preciso de ajuda" onClick={() => dispatch({ type: 'help' })}>Preciso de ajuda</button>}
       </>}
     </section>
     {complete && <section className="bingo-success" aria-label="Conceitos da combinação vencedora">
@@ -85,6 +84,6 @@ export default function BingoGame() {
       <button type="button" className="bingo-action" onClick={restart}>Jogar novamente</button>
     </section>}
     <p className="bingo-audio-status" role="status">{audioMessage}</p>
-    <footer className="bingo-credit">Pictogramas: {pictogramCredit.author} · <a href={pictogramCredit.source}>ARASAAC</a> · {pictogramCredit.owner} · <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a></footer>
+
   </main>
 }

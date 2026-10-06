@@ -1,4 +1,5 @@
 import { pictogramCredit } from '../data/communicationOptions.js'
+import pictogramCredits from '../assets/pictograms/arasaac/CREDITS.md?url'
 import './ResponsibleGuidance.css'
 
 export default function ResponsibleGuidance() {
@@ -43,6 +44,7 @@ export default function ResponsibleGuidance() {
       <h2 id="guidance-pictograms">Sobre os pictogramas</h2>
       <p>Os pictogramas apoiam visualmente as atividades educativas e de comunicação.</p>
       <p>Pictogramas: {pictogramCredit.author} · {pictogramCredit.owner} · Fonte: <a href={pictogramCredit.source}>ARASAAC</a> · Licença: <a href={pictogramCredit.licenseUrl}>{pictogramCredit.license}</a>.</p>
+      <p><a href={pictogramCredits} target="_blank" rel="noopener noreferrer">Créditos detalhados dos pictogramas (arquivo de texto)</a></p>
     </section>
   </main>
 }
