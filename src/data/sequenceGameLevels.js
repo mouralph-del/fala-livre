@@ -13,14 +13,16 @@ import deitar from '../assets/pictograms/arasaac/deitar.png'
 import dormir from '../assets/pictograms/arasaac/dormir.png'
 import comer from '../assets/pictograms/arasaac/comer.png'
 import brincar from '../assets/pictograms/arasaac/brincar.png'
-import banheiro from '../assets/pictograms/arasaac/banheiro.png'
+import fecharVelcro from '../assets/pictograms/arasaac/fechar-velcro.png'
+import tomarBanho from '../assets/pictograms/arasaac/tomar-banho.png'
+import sentarMesa from '../assets/pictograms/arasaac/sentar-mesa.png'
+import pegarTalheres from '../assets/pictograms/arasaac/pegar-talheres.png'
+import pendurarMochila from '../assets/pictograms/arasaac/pendurar-mochila-cadeira.png'
 import escovaObjeto from '../assets/where-belongs/objects/escova-dentes.png'
 import sapato from '../assets/find-image/sapato.png'
 import camisa from '../assets/find-image/camisa.png'
 import mochila from '../assets/memory/mochila.png'
-import brinquedo from '../assets/where-belongs/objects/brinquedo.png'
-import caixaBrinquedos from '../assets/where-belongs/destinations/caixa-brinquedos.png'
-import refeicao from '../assets/scenes/situacao-refeicao.png'
+import guardarBrinquedos from '../assets/pictograms/arasaac/guardar-brinquedos.png'
 
 const step = (id, word, image, options = {}) => ({ id, word, speechText: word, image, ...options })
 const codeStep = (id, word, visualType, options = {}) => step(id, word, null, { visualType, ...options })
@@ -57,7 +59,7 @@ export const sequenceGameLevels = [
         steps: [
           sapatoPegar,
           step('calcar-sapato', 'CALÇAR SAPATO', calcarSapato),
-          step('ajustar-sapato', 'AJUSTAR/FECHAR SAPATO', sapato, { visualVariant: 'fasten' }),
+          step('ajustar-sapato', 'FECHAR O VELCRO', fecharVelcro, { arasaacId: 37934 }),
         ],
       },
     ],
@@ -75,7 +77,7 @@ export const sequenceGameLevels = [
       },
       {
         id: 'hora-comer', title: 'Hora de comer', context: 'Organize as etapas da hora de comer.',
-        steps: [codeStep('sentar-mesa', 'SENTAR À MESA', 'table', { image: refeicao }), codeStep('pegar-talheres', 'PEGAR TALHERES', 'cutlery', { image: refeicao }), step('comer', 'COMER', comer), step('limpar-mesa', 'LIMPAR/ORGANIZAR', limparMesa)],
+        steps: [step('sentar-mesa', 'SENTAR À MESA', sentarMesa, { arasaacId: 38944 }), step('pegar-talheres', 'PEGAR TALHERES', pegarTalheres, { arasaacId: 36628 }), step('comer', 'COMER', comer), step('limpar-mesa', 'LIMPAR/ORGANIZAR', limparMesa)],
       },
     ],
   },
@@ -88,11 +90,11 @@ export const sequenceGameLevels = [
       },
       {
         id: 'voltando-casa', title: 'Voltando para casa', context: 'Organize as etapas ao voltar para casa.',
-        steps: [step('chegar-casa', 'CHEGAR EM CASA', chegarCasa), codeStep('guardar-mochila', 'GUARDAR MOCHILA', 'store-backpack', { image: mochila }), step('tirar-sapato', 'TIRAR SAPATO', tirarSapato), step('lavar-maos', 'LAVAR MÃOS', lavar), brincarDescansar],
+        steps: [step('chegar-casa', 'CHEGAR EM CASA', chegarCasa), step('guardar-mochila', 'PENDURAR A MOCHILA', pendurarMochila, { arasaacId: 37896 }), step('tirar-sapato', 'TIRAR SAPATO', tirarSapato), step('lavar-maos', 'LAVAR MÃOS', lavar), brincarDescansar],
       },
       {
         id: 'preparar-dormir-escola', title: 'Preparando-se para dormir', context: 'Organize as etapas antes de dormir.',
-        steps: [codeStep('guardar-brinquedos', 'GUARDAR BRINQUEDOS', 'store-toys', { images: [brinquedo, caixaBrinquedos] }), codeStep('tomar-banho', 'TOMAR BANHO', 'bath', { image: banheiro }), colocarPijama, escovarDentes, step('deitar-cama-escola', 'DEITAR NA CAMA', deitar)],
+        steps: [step('guardar-brinquedos', 'GUARDAR BRINQUEDOS', guardarBrinquedos, { arasaacId: 8680 }), step('tomar-banho', 'TOMAR BANHO', tomarBanho, { arasaacId: 2371 }), colocarPijama, escovarDentes, step('deitar-cama-escola', 'DEITAR NA CAMA', deitar)],
       },
     ],
   },

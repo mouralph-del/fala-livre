@@ -43,8 +43,6 @@
 .belongs-visual--book { background: #E8B35E; box-shadow: inset 12px 0 #C77D43; }
 .belongs-visual--book::before { inset: 12px 10px 12px 22px; border: 3px solid #FFF7DB; border-radius: 3px 8px 8px 3px; background: repeating-linear-gradient(0deg, #FFF7DB 0 8px, #D9B978 9px 10px); }
 .belongs-visual--book::after { top: 12px; bottom: 12px; left: 20px; border-left: 3px solid #9B5C37; }
-.belongs-visual--paper { width: 70%; height: 72%; margin: auto; border-color: #9AAAB3; background: #FFFFFF; box-shadow: 8px 8px 0 #DCE5EA; }
-.belongs-visual--paper::before { inset: 22% 12%; border-top: 3px solid #B9CBD3; border-bottom: 3px solid #B9CBD3; box-shadow: 0 14px #B9CBD3, 0 28px #B9CBD3; }
 .belongs-visual--towel { width: 78%; height: 70%; margin: auto; border-color: #5C9CAF; background: repeating-linear-gradient(0deg, #D7F0F3 0 12px, #A8D6DF 13px 16px); transform: rotate(-4deg); }
 .belongs-visual--towel::before { inset: 8px; border: 2px dashed #6BA9B7; border-radius: 8px; }
 .belongs-visual--pan { width: 66%; height: 52%; margin: 20% auto 0; border-color: #384A58; border-radius: 50%; background: #6C7C87; box-shadow: inset 0 0 0 8px #455761; }
@@ -64,11 +62,6 @@
 .belongs-visual--materials-pot { width: 64%; height: 62%; margin: auto; border-color: #5F7897; border-radius: 8px 8px 20px 20px; background: #8FB1D0; }
 .belongs-visual--materials-pot::before { left: 12%; right: 12%; top: -2px; height: 12px; border: 3px solid #5F7897; border-radius: 50%; background: #F2C46D; }
 .belongs-visual--materials-pot::after { top: 16%; left: 27%; width: 10px; height: 52%; background: #E16B5A; transform: rotate(12deg); box-shadow: 18px -6px #6FA77D, 36px 4px #D9A443; }
-.belongs-visual--folder { width: 78%; height: 58%; margin: auto; border-color: #B17731; border-radius: 4px 8px 8px 8px; background: #F1C66E; clip-path: polygon(0 18%, 34% 18%, 42% 0, 100% 0, 100% 100%, 0 100%); }
-.belongs-visual--folder::after { inset: 18% 10% 12%; border-top: 3px solid #D29A42; transform: skewY(-4deg); }
-.belongs-visual--backpack-hook { background: #E9EEF1; border-color: #8298A3; }
-.belongs-visual--backpack-hook::before { top: 20%; left: 50%; width: 14px; height: 52%; border-radius: 8px; background: #8298A3; transform: translateX(-50%); }
-.belongs-visual--backpack-hook::after { top: 60%; left: 50%; width: 54%; height: 20%; border: 5px solid #8298A3; border-top: 0; border-radius: 0 0 22px 22px; transform: translateX(-50%); }
 .belongs-association .belongs-visual { width: 34px; height: 38px; border-radius: 5px; }
 .belongs-success { padding: 32px 20px; text-align: center; background: var(--soft-green); }
 .belongs-success p { margin: 12px 0 20px; line-height: 1.5; }

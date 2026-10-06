@@ -16,6 +16,11 @@ import comida from '../assets/pictograms/arasaac/cafe-da-manha.png'
 import caderno from '../assets/memory/caderno.png'
 import mochila from '../assets/memory/mochila.png'
 import tesoura from '../assets/memory/tesoura.png'
+import livro from '../assets/pictograms/arasaac/livro.png'
+import papel from '../assets/pictograms/arasaac/papel.png'
+import estante from '../assets/pictograms/arasaac/estante.png'
+import pastaEscolar from '../assets/pictograms/arasaac/pasta-escolar.png'
+import cabideMochila from '../assets/pictograms/arasaac/cabide-mochila.png'
 
 export const whereBelongsLevels = [
   {
@@ -61,17 +66,17 @@ export const whereBelongsLevels = [
     destinations: [
       { id: 'estojo-escola', label: 'Estojo', image: estojo },
       { id: 'mochila-escola', label: 'Mochila', image: mochila },
-      { id: 'estante-escola', label: 'Estante', visualType: 'shelf' },
+      { id: 'estante-escola', label: 'Estante', image: estante, arasaacId: 2386 },
       { id: 'pote-materiais', label: 'Pote de materiais', visualType: 'materials-pot' },
-      { id: 'pasta', label: 'Pasta', visualType: 'folder' },
-      { id: 'cabide-mochila', label: 'Local da mochila', visualType: 'backpack-hook' },
+      { id: 'pasta', label: 'Pasta', image: pastaEscolar, arasaacId: 3233 },
+      { id: 'cabide-mochila', label: 'Local da mochila', image: cabideMochila, arasaacId: 3286 },
     ],
     rounds: [
       { id: 'lapis-escola', object: 'Lápis', image: lapis, prompt: 'Onde guardamos o lápis?', correctDestination: 'estojo-escola' },
       { id: 'caderno', object: 'Caderno', image: caderno, prompt: 'Onde guardamos o caderno?', correctDestination: 'mochila-escola' },
-      { id: 'livro-escola', object: 'Livro', visualType: 'book', prompt: 'Onde guardamos o livro?', correctDestination: 'estante-escola' },
+      { id: 'livro-escola', object: 'Livro', image: livro, arasaacId: 2450, prompt: 'Onde guardamos o livro?', correctDestination: 'estante-escola' },
       { id: 'tesoura', object: 'Tesoura', image: tesoura, prompt: 'Onde guardamos a tesoura?', correctDestination: 'pote-materiais' },
-      { id: 'papel', object: 'Papel', visualType: 'paper', prompt: 'Onde guardamos o papel?', correctDestination: 'pasta' },
+      { id: 'papel', object: 'Papel', image: papel, arasaacId: 8349, prompt: 'Onde guardamos o papel?', correctDestination: 'pasta' },
       { id: 'mochila', object: 'Mochila', image: mochila, prompt: 'Onde guardamos a mochila?', correctDestination: 'cabide-mochila' },
     ],
   },

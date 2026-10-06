@@ -1,5 +1,23 @@
 # Pictogramas ARASAAC
 
+## Pendências conhecidas — sequências antigas e Onde pertence? (escola)
+
+Autor: Sergio Palao. Proprietário: Governo de Aragão. Fonte: ARASAAC. Licença: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). PNGs oficiais na variante `_300.png`, com dimensão nativa de 298 × 298 px nos cinco arquivos, preservados sem alterações; apenas dimensionados por CSS. Metadados individuais consultados em `https://api.arasaac.org/v1/pictograms/es/{ID}`.
+
+| Arquivo local | ID | Nome oficial (es) | Página oficial | PNG oficial |
+| --- | --- | --- | --- | --- |
+| guardar-brinquedos.png | 8680 | recoger los juguetes | https://arasaac.org/pictograms/es/8680 | https://static.arasaac.org/pictograms/8680/8680_300.png |
+| livro.png | 2450 | libro | https://arasaac.org/pictograms/es/2450 | https://static.arasaac.org/pictograms/2450/2450_300.png |
+| papel.png | 8349 | papel; folio | https://arasaac.org/pictograms/es/8349 | https://static.arasaac.org/pictograms/8349/8349_300.png |
+| estante.png | 2386 | estantería | https://arasaac.org/pictograms/es/2386 | https://static.arasaac.org/pictograms/2386/2386_300.png |
+| pasta-escolar.png | 3233 | carpeta | https://arasaac.org/pictograms/es/3233 | https://static.arasaac.org/pictograms/3233/3233_300.png |
+| fechar-velcro.png | 37934 | poner velcro; poner zapatilla con velcro; poner zapato con velcro | https://arasaac.org/pictograms/es/37934 | https://static.arasaac.org/pictograms/37934/37934_300.png |
+| tomar-banho.png | 2371 | duchar | https://arasaac.org/pictograms/es/2371 | https://static.arasaac.org/pictograms/2371/2371_300.png |
+| sentar-mesa.png | 38944 | esperar la comida; sentado en la mesa | https://arasaac.org/pictograms/es/38944 | https://static.arasaac.org/pictograms/38944/38944_300.png |
+| pegar-talheres.png | 36628 | coger el cuchillo; coger cuchillo y tenedor; tomar el cuchillo | https://arasaac.org/pictograms/es/36628 | https://static.arasaac.org/pictograms/36628/36628_300.png |
+| pendurar-mochila-cadeira.png | 37896 | colgar; colgar la mochila | https://arasaac.org/pictograms/es/37896 | https://static.arasaac.org/pictograms/37896/37896_300.png |
+| cabide-mochila.png | 3286 | percha; perchero | https://arasaac.org/pictograms/es/3286 | https://static.arasaac.org/pictograms/3286/3286_300.png |
+
 ## Meu Dia a Dia — Emoções (Etapa 08E.3)
 
 Autor: Sergio Palao. Proprietário: Governo de Aragão. Fonte: ARASAAC. Licença: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). PNGs oficiais preservados sem modificações; apenas dimensionados na interface. CALMO/CALMA e CONFUSO/CONFUSA compartilham imagens, com escolha linguística explícita.

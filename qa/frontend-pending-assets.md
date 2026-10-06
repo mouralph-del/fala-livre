@@ -1,33 +1,59 @@
-# Pendências conhecidas de assets — correções finais
+# Assets ARASAAC pendentes — conceitos conhecidos
 
-Base: `82b8027`. Conferência limitada aos itens solicitados; sem nova auditoria ou expansão de catálogo.
+Base: main, HEAD a510271. Os cinco assets anteriores foram preservados; seis escolhas adicionais foram aprovadas pelo usuário. Escopo restrito aos 17 conceitos já definidos. Sem mudança de progresso, regras, redesign ou backend.
 
-## Resolvido com arquivos existentes
+## Resolvidos
 
-- Personagens: as duas ilustrações da Home podem ser usadas em Aprender e Jogar, nas quatro combinações. São as mesmas imagens completas: menina com materiais de aprendizagem e menino com brinquedos. Não existem versões adicionais específicas de menino estudando/menina jogando na pasta de ilustrações; elas não são necessárias para escolher o personagem com os assets atuais. Menino/menina da Memória não foram reutilizados.
-- Sequências antigas: colocar pasta na escova, calçar/colocar sapato, abrir porta, sair de casa, chegar em casa, tirar sapato e limpar/organizar mesa agora usam os respectivos PNGs ARASAAC existentes. IDs, ordem esperada, áudio e créditos preservados.
-- As oito rotinas atuais de Meu Dia a Dia já utilizavam os pictogramas próprios, inclusive `colocar-pasta-escova.png` (30086).
-- Comer, beber, escrever e passear no conteúdo atual já têm imagens existentes. Almoçar/jantar no modo antigo compartilham a representação de refeição, com frase contextual; não foi criado token nem alterado conceito.
+PNGs oficiais da variante _300.png, armazenados sem edição em src/assets/pictograms/arasaac/. IDs nos catálogos; nomes oficiais, procedência, URLs individuais e licença no CREDITS.md existente.
 
-## Assets ainda ausentes para substituir representações antigas
+| Conceito | Nome oficial (es) / ID | Arquivo local | Aplicação |
+| --- | --- | --- | --- |
+| Guardar brinquedos | recoger los juguetes — 8680 | guardar-brinquedos.png | Sequências antigas, preparar-dormir-escola |
+| Livro | libro — 2450 | livro.png | Onde pertence?, escola, livro-escola |
+| Papel | papel; folio — 8349 | papel.png | Onde pertence?, escola, papel |
+| Estante | estantería — 2386 | estante.png | Onde pertence?, escola, estante-escola |
+| Pasta escolar | carpeta — 3233 | pasta-escolar.png | Onde pertence?, escola, pasta |
+| Ajustar/fechar sapato | poner velcro; poner zapatilla/zapato con velcro — 37934 | fechar-velcro.png | Sequências antigas, calcar-sapato, ajustar-sapato |
+| Tomar banho | duchar — 2371 | tomar-banho.png | Sequências antigas, preparar-dormir-escola, tomar-banho |
+| Sentar à mesa | esperar la comida; sentado en la mesa — 38944 | sentar-mesa.png | Sequências antigas, hora-comer, sentar-mesa |
+| Pegar talheres | coger el cuchillo; coger cuchillo y tenedor; tomar el cuchillo — 36628 | pegar-talheres.png | Sequências antigas, hora-comer, pegar-talheres |
+| Guardar mochila / pendurar a mochila | colgar; colgar la mochila — 37896 | pendurar-mochila-cadeira.png | Sequências antigas, voltando-casa, guardar-mochila |
+| Local da mochila | percha; perchero — 3286 | cabide-mochila.png | Exclusivamente Onde pertence?, escola, cabide-mochila |
 
-Não foi criado nem baixado qualquer arquivo. As representações antigas permanecem até haver asset apropriado; esta lista registra o que impede a substituição, sem mudar o significado.
+Os cinco anteriores permanecem como implementados. No novo conjunto foram usados somente os seis IDs aprovados; não foram usados 38706, 36629, 17302 ou outra variante não aprovada. Local da mochila continua sendo destino/objeto, não ação.
 
-| Área existente | Conceito sem asset próprio adequado |
-| --- | --- |
-| Sequências antigas — calçar sapato | Ajustar/fechar sapato. Amarrar cadarço existe, mas não é equivalente a todo tipo de fechamento. |
-| Sequências antigas — preparar-se para dormir | Colocar pijama; tomar banho. Camiseta e vaso sanitário existentes não representam essas ações. |
-| Sequências antigas — hora de comer | Sentar à mesa; pegar talheres. Há cena de refeição e sentar na cadeira, mas não a representação específica dessas ações. |
-| Sequências antigas — escola/retorno | Chegar à escola; guardar mochila; guardar brinquedos; se arrumar. Ir à escola e pendurar mochila existentes não foram tratados como sinônimos automáticos. |
-| Sequências antigas — lavar mãos | Molhar mãos e enxaguar como etapas distintas: atualmente reutilizam a imagem de lavar mãos com tratamentos CSS. |
-| Onde pertence? — escola | Livro, papel, estante, pote de materiais, pasta escolar e local/cabide da mochila. Atualmente representados por CSS; não há arquivos oficiais desses conceitos no repositório. |
+### Ajustes textuais autorizados
 
-Os conceitos acima precisam de imagens oficiais correspondentes, com procedência/créditos, para substituir as representações antigas. Não há falta de arquivo que impeça carregar os pictogramas atuais das oito rotinas aprovadas. Nenhum novo asset foi introduzido.
+- Sequências antigas, rotina Calçar o sapato: etapa de ID ajustar-sapato, AJUSTAR/FECHAR SAPATO → FECHAR O VELCRO. Rótulo e speechText correspondentes.
+- Sequências antigas, rotina Voltando para casa: etapa de ID guardar-mochila, GUARDAR MOCHILA → PENDURAR A MOCHILA. Rótulo e speechText correspondentes.
+- Mantidos os IDs, posições, demais etapas, ordem esperada e funcionamento do áudio. Nenhuma outra ocorrência de guardar mochila alterada.
 
-## Verificação curta
+Removido apenas o CSS sem consumidores após estas substituições: paper/folder/backpack-hook de Onde pertence?; store-toys/fasten/table/cutlery/store-backpack/bath de Sequências. Os estilos compartilhados ou de outras representações continuam como antes; book/shelf de N2 permanecem usados. Não houve limpeza geral.
 
-- Frases naturais atuais e confirmação por composição esperada já corretas; Comunicar continua exploratório. No modo antigo, corrigida fala da frase esperada para não substituir uma montagem diferente/vazia.
-- Quebra-cabeça gato + cachorro: montagem/ajuda/conclusão/desbloqueio conferidos; somente a pista visual foi ocultada após conclusão.
-- Preferências: quatro combinações, Home, refresh e restauração testados; restauração mantém progresso e rotação.
-- Testes existentes `communication.test.mjs`, `routines.test.mjs`, `communication.browser.mjs`, `responsibleGuidance.browser.mjs` passaram. Conferência de páginas citadas em Chrome headless, 390 px; Configurações em 768 px e Home em 1366 px. Lint/build/diff passaram. Sem leitor de tela ou teste físico de áudio/stylus.
-- Redesign de 12.2 preservado; sem backend, push, deploy ou início de nova etapa.
+## Pendentes por falta de correspondência específica
+
+- Molhar mãos.
+- Enxaguar mãos.
+
+Os IDs 8975 e 8977 são oficialmente identificados como lavar mãos. Não foi encontrada distinção oficial suficientemente segura que associe cada ID às duas etapas diferentes. Não foram usados para inventar essa distinção; implementação atual temporariamente preservada.
+
+Referências auxiliares não substituem a identificação individual:
+[rotina oficial de lavagem de mãos](https://static.arasaac.org/materials/2798/es/3_Carteles_Higiene_y_Desinfeccion_Manos.pdf);
+[material que separa enjuagar las manos](https://static.arasaac.org/materials/2277/es/Sintomas_rutinas_y_prevencion_Coronavirus__Mayusculas.pdf).
+
+## Sem asset adequado identificado
+
+- Colocar pijama: 2522 é pijama-objeto; 2781 vestir mostra camiseta. Não identificado pictograma individual seguro da ação com pijama.
+- Chegar à escola: 16807 llegar mostra casa; 36473 ir al colegio indica deslocamento. Não identificado pictograma individual da chegada à escola.
+- Se arrumar: variantes de vestir representam ação mais estreita; prepararse de 17000/17004/37794 mostra largada de corrida. Não identificado pictograma da preparação pessoal completa.
+- Pote de materiais escolares: 3322/39114 representam recipientes com tampa; 2440 lapicero é lápis. Não identificado recipiente correspondente ao destino escolar da tesoura.
+
+Não se afirma inexistência em todo o catálogo: nenhum asset adequado foi identificado para esses quatro conceitos nas consultas anteriores. Não houve nova pesquisa nem download de imagens genéricas nesta continuação. Atividades preservadas.
+
+## Testes e entrega
+
+Comandos: node qa/arasaacPending.test.mjs; node qa/arasaacPending.browser.mjs; node qa/routines.test.mjs; npm run lint; npm run build; git diff --check.
+
+O teste de catálogo compara com a510271, permitindo somente alterações de representação e os dois rótulos autorizados. Mantém textos restantes, IDs, ordem, demais conceitos e dados educativos iguais à base. O teste de navegador usa perfil isolado; percorre níveis anteriores somente para chegar à escola em N3, verifica os PNGs e as associações, seleção e conclusão das sequências afetadas. Sem acessar progresso do usuário.
+
+Conferência visual dirigida em Chrome headless, 390 px. Sem auditoria geral, leitor de tela, áudio físico ou stylus físico. Resultados finais e SHA do commit na resposta de entrega.
