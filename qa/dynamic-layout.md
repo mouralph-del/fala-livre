@@ -30,3 +30,11 @@ Sem mudanças funcionais: rotas, quatro áreas de Aprender, seis jogos, tabuleir
 - npm run lint; npm run build; git diff --check.
 
 Testes aprovados e conferência visual direcionada concluída. Sem teste final geral do projeto.
+
+## Logo oficial aprovado
+
+Integrado src/assets/illustrations/fala-livre-logo.png no header compartilhado, substituindo o SVG antigo e os textos visuais adjacentes. PNG original renomeado com verificação SHA-256, sem recorte, conversão ou recompressão. Proporção 2043 × 770 preservada, width responsivo de até 340 px, height auto e object-fit contain. No tablet/mobile usa o mesmo arquivo e a navegação pode ficar abaixo; em largura mínima o logo se ajusta ao espaço disponível. Home tem somente a marca do header, preservando saudação, personagens e ações.
+
+Nome acessível único: “Fala Livre — Comunicar, Aprender e Conectar”. A marca continua não clicável, como antes; navegação e foco dos links permanecem iguais. Favicon preservado: public/favicon.svg ainda representa os balões da marca anterior. Pendência visual explícita para etapa posterior, dependente de asset compacto aprovado; o PNG horizontal não foi recortado nem aplicado como favicon.
+
+Regressões direcionadas de header/Home e navegação passaram nas oito larguras, Normal/Grande, zoom 125% e Reduzir movimentos. Logo único, proporção, contenção no header, ausência de sobreposição com controles e alvos 48/56 px verificados no navegador. Lint, build e diff check aprovados.

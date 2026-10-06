@@ -1,4 +1,5 @@
 import './App.css'
+import officialLogo from './assets/illustrations/fala-livre-logo.png'
 
 import ActivityIllustration from './components/ActivityIllustration'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
@@ -62,17 +63,7 @@ function Icon({ name }) {
 function Brand() {
   return (
     <div className="brand">
-      <svg className="brand-mark" viewBox="0 0 56 52" aria-hidden="true">
-        <path d="M22 18h20c7 0 12 5 12 12v15l-10-5H32c-7 0-10-4-10-10Z" fill="#78A6A3" />
-        <path d="M3 14C3 7 8 3 15 3h17c7 0 12 4 12 11v10c0 7-5 11-12 11H17L6 43V32c-2-2-3-5-3-8Z" fill="#4F7CAC" />
-        <circle cx="16" cy="15" r="2" fill="white" />
-        <circle cx="30" cy="15" r="2" fill="white" />
-        <path d="M17 23q6 6 12 0" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-      <div className="brand-copy">
-        <span className="brand-name">Fala Livre</span>
-        <p>Comunicar • Aprender • Conectar</p>
-      </div>
+      <img className="brand-logo" src={officialLogo} alt="Fala Livre — Comunicar, Aprender e Conectar" width="2043" height="770" />
     </div>
   )
 }
