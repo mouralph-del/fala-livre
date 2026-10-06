@@ -19,6 +19,7 @@ import MyDayEmotions from './pages/MyDayEmotions'
 import SequenceGame from './pages/SequenceGame'
 import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
 import './visualIdentity.css'
+import './dynamicLayout.css'
 import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {
