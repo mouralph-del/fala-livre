@@ -3,7 +3,7 @@ import './ResponsibleGuidance.css'
 
 export default function ResponsibleGuidance() {
   return <main id="conteudo" className="responsible-guidance" tabIndex={-1}>
-    <a href="#/">Voltar ao início</a>
+    <a className="navigation-return" href="#/">Voltar ao início</a>
     <h1>Responsáveis</h1>
     <p>Orientações para pais, responsáveis e cuidadores que acompanham o uso do Fala Livre, e para professores durante demonstrações do MVP.</p>
 

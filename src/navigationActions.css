@@ -1,0 +1,51 @@
+/* Navigation remains semantic links; only explicit actions/returns opt in.
+   Existing page back classes and game completion returns share this pattern. */
+main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.emotions-back), a.puzzle-action, a.wordsearch-action, a.memory-action, a.findimage-action, a.belongs-action, a.sequence-action, a.interactive-action) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--target);
+  max-width: 100%;
+  padding: 12px 18px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--primary);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color var(--duration-ui), border-color var(--duration-ui);
+}
+main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.emotions-back), a.puzzle-action, a.wordsearch-action, a.memory-action, a.findimage-action, a.belongs-action, a.sequence-action, a.interactive-action):hover {
+  background: var(--soft-blue);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.emotions-back), a.puzzle-action, a.wordsearch-action, a.memory-action, a.findimage-action, a.belongs-action, a.sequence-action, a.interactive-action):active {
+  background: var(--selected);
+  border-color: var(--focus);
+}
+main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.emotions-back), a.puzzle-action, a.wordsearch-action, a.memory-action, a.findimage-action, a.belongs-action, a.sequence-action, a.interactive-action):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+/* Match the established primary action without broad link selectors. */
+main a.navigation-action--primary { background: var(--primary); border-color: var(--primary); color: white; }
+main a.navigation-action--primary:hover,
+main a.navigation-action--primary:active { background: var(--focus); border-color: var(--focus); color: white; }
+.home .progress-entry a.navigation-action { flex-shrink: 0; padding: 12px 18px; }
+:root[data-element-size='large'] main :is(.navigation-action, a.navigation-return, :is(a[class$='-back'], button.emotions-back), a.puzzle-action, a.wordsearch-action, a.memory-action, a.findimage-action, a.belongs-action, a.sequence-action, a.interactive-action) {
+  min-height: var(--target-large);
+  font-size: 1.125rem;
+}
+@media (max-width: 600px) {
+  .home .progress-entry a.navigation-action { width: 100%; }
+  .my-progress .records-links { gap: 12px; }
+  .my-progress .records-links .navigation-action { flex: 1 1 160px; }
+}

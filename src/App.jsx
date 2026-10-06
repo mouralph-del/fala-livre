@@ -21,6 +21,7 @@ import SequenceGame from './pages/SequenceGame'
 import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
 import './visualIdentity.css'
 import './dynamicLayout.css'
+import './navigationActions.css'
 import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {
@@ -137,7 +138,7 @@ function App() {
             <div className="section-heading">
               <h2 id="progress-title"><Icon name="activities" />Meu Progresso</h2>
             </div>
-            <div className="progress-entry"><p>Veja as atividades registradas neste navegador.</p><a href="#/meu-progresso">Ver meu progresso</a></div>
+            <div className="progress-entry"><p>Veja as atividades registradas neste navegador.</p><a className="navigation-action navigation-action--primary" href="#/meu-progresso">Ver meu progresso</a></div>
           </section>
           <p className="positive-message"><Icon name="growth" /><span>Cada pequeno passo é uma grande conquista!</span></p>
         </main>}

@@ -33,7 +33,7 @@ export default function MyProgress({ progressService, transitionDismissed = fals
   const showRecords = !loading && summary.valid && summary.hasEvidence
   const c = summary.counts
   return <main id="conteudo" className="my-progress" tabIndex={-1}>
-    <a href="#/">Voltar ao início</a>
+    <a className="navigation-return" href="#/">Voltar ao início</a>
     <h1>Meu Progresso</h1>
     <p className="records-subtitle">Registros deste navegador</p>
     <p>Estes registros ficam neste navegador. Eles podem reunir atividades de mais de uma pessoa que usa este dispositivo.</p>
@@ -44,8 +44,8 @@ export default function MyProgress({ progressService, transitionDismissed = fals
     </div>
     {empty && <section className="records-empty">
       <p>Seus registros de atividades vão aparecer aqui conforme você explorar o Fala Livre.</p>
-      <div className="records-links"><a href="#/aprender">Explorar Aprender</a><a href="#/jogar">Ver jogos</a></div>
-      {!dismissed && !transitionDismissed && <aside><p>{transition}</p><button type="button" onClick={() => { setDismissed(true); onDismissTransition?.() }}>Entendi</button></aside>}
+      <div className="records-links"><a className="navigation-action navigation-action--secondary" href="#/aprender">Explorar Aprender</a><a className="navigation-action navigation-action--secondary" href="#/jogar">Ver jogos</a></div>
+      {!dismissed && !transitionDismissed && <aside><p>{transition}</p><button className="navigation-action navigation-action--secondary" type="button" onClick={() => { setDismissed(true); onDismissTransition?.() }}>Entendi</button></aside>}
     </section>}
     {showRecords && <>
       <section aria-labelledby="records-summary"><h2 id="records-summary">Atividades registradas</h2>
