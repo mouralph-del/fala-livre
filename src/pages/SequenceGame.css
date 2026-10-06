@@ -22,6 +22,8 @@
 .sequence-select img { width: 120px; height: 120px; max-width: 100%; object-fit: contain; padding: 4px; border-radius: 10px; background: white; }
 .sequence-visual { position: relative; display: grid; place-items: center; width: 120px; height: 120px; max-width: 100%; overflow: hidden; padding: 4px; border: 1px solid #D6E4EF; border-radius: 10px; background: white; }
 .sequence-visual img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; padding: 0; border-radius: 6px; background: transparent; }
+.sequence-visual--unavailable { background: var(--surface-page); color: var(--muted); border-style: dashed; font-size: .75rem; font-weight: 400; line-height: 1.4; text-align: center; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .sequence-visual--unavailable { font-size: .65rem; } }
 .sequence-visual--getting-ready img { position: absolute; width: 48%; height: 48%; padding: 2px; }
 .sequence-visual--getting-ready img:nth-child(1) { left: 4%; top: 8%; }
 .sequence-visual--getting-ready img:nth-child(2) { right: 4%; top: 8%; }

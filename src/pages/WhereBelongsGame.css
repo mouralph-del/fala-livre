@@ -40,6 +40,7 @@
 .belongs-drag .belongs-visual { width: 100%; height: 100%; }
 .belongs-visual { position: relative; display: block; overflow: hidden; width: 100%; height: 100%; border: 2px solid var(--focus); border-radius: var(--radius-control); background: #F8FBFD; }
 .belongs-visual::before, .belongs-visual::after { position: absolute; content: ''; }
+.belongs-visual--unavailable { display: grid; place-items: center; padding: 4px; background: var(--surface-page); color: var(--muted); border: 1px dashed var(--border-control); font-size: .75rem; font-weight: 400; line-height: 1.4; text-align: center; overflow-wrap: anywhere; }
 .belongs-visual--book { background: #E8B35E; box-shadow: inset 12px 0 #C77D43; }
 .belongs-visual--book::before { inset: 12px 10px 12px 22px; border: 3px solid #FFF7DB; border-radius: 3px 8px 8px 3px; background: repeating-linear-gradient(0deg, #FFF7DB 0 8px, #D9B978 9px 10px); }
 .belongs-visual--book::after { top: 12px; bottom: 12px; left: 20px; border-left: 3px solid #9B5C37; }
@@ -63,6 +64,7 @@
 .belongs-visual--materials-pot::before { left: 12%; right: 12%; top: -2px; height: 12px; border: 3px solid #5F7897; border-radius: 50%; background: #F2C46D; }
 .belongs-visual--materials-pot::after { top: 16%; left: 27%; width: 10px; height: 52%; background: #E16B5A; transform: rotate(12deg); box-shadow: 18px -6px #6FA77D, 36px 4px #D9A443; }
 .belongs-association .belongs-visual { width: 34px; height: 38px; border-radius: 5px; }
+.belongs-association .belongs-visual--unavailable { font-size: .6rem; line-height: 1.2; padding: 0; }
 .belongs-success { padding: 32px 20px; text-align: center; background: var(--soft-green); }
 .belongs-success p { margin: 12px 0 20px; line-height: 1.5; }
 .belongs-audio-status:not(:empty) { margin-top: 12px; color: var(--muted); line-height: 1.5; }

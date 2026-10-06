@@ -27,6 +27,9 @@ function reducer(state, action) {
 }
 
 function VisualRepresentation({ item, className = '', alt = '' }) {
+  if (item.id === 'pote-materiais' || item.id === 'comida') {
+    return <span className={`belongs-visual belongs-visual--unavailable ${className}`} aria-hidden="true">Sem imagem</span>
+  }
   if (item.image) return <img className={className} src={item.image} alt={alt} width="246" height="328" draggable="false" />
   return <span className={`belongs-visual belongs-visual--${item.visualType} ${className}`} aria-hidden="true" />
 }

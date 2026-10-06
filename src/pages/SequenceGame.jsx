@@ -47,6 +47,9 @@ function reducer(state, action) {
 }
 
 function SequenceVisual({ step }) {
+  if (['molhar-maos', 'enxaguar', 'enxaguar-maos', 'colocar-pijama', 'se-arrumar', 'chegar-escola'].includes(step.id)) {
+    return <span className="sequence-visual sequence-visual--unavailable" aria-hidden="true">Sem imagem</span>
+  }
   const images = step.images || [step.image].filter(Boolean)
   return <span className={`sequence-visual sequence-visual--${step.visualType || 'asset'}${step.visualVariant ? ` sequence-visual--${step.visualVariant}` : ''}`} aria-hidden="true">
     {images.map((image, index) => <img key={index} src={image} alt="" draggable="false" />)}

@@ -32,16 +32,30 @@ try {
   const A=await connect(targets.find(t=>t.type==='page'))
   await A.cdp('Page.navigate',{url:'http://127.0.0.1:4202/__audit#/jogar/onde-pertence'});await ready(A)
   await A.cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false})
-  const click=async selector=>{await A.evaluate('document.querySelector('+JSON.stringify(selector)+').click()');await pause(100)}
+  const click=async selector=>{assert.ok(await A.evaluate('!!document.querySelector('+JSON.stringify(selector)+')'),'selector exists: '+selector);await A.evaluate('document.querySelector('+JSON.stringify(selector)+').click()');await pause(100)}
   const levels=await A.evaluate("(async()=>{const m=await import('/src/data/whereBelongsLevels.js');return m.whereBelongsLevels})()")
   const screenshots=path.join(os.tmpdir(),'falalivre-arasaac-review');fs.mkdirSync(screenshots,{recursive:true})
   const capture=async name=>{await A.evaluate('document.querySelector("main").scrollIntoView()');const s=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:65});fs.writeFileSync(path.join(screenshots,name+'.jpg'),Buffer.from(s.data,'base64'))}
+  const checkAbsence=async selector=>{
+    assert.equal(await A.evaluate(`document.querySelector(${JSON.stringify(selector)}).textContent.trim()`),'Sem imagem')
+    assert.equal(await A.evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelectorAll('img').length`),0)
+    for(const width of [320,390,768,1366])for(const large of [false,true])for(const zoom of [1,1.25]){
+      await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
+      await A.evaluate(`document.documentElement.dataset.elementSize='${large?'large':'normal'}';document.documentElement.style.zoom=${zoom}`)
+      assert.ok(await A.evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'))
+      assert.ok(await A.evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});return e.scrollWidth<=e.clientWidth+1&&e.scrollHeight<=e.clientHeight+1})()`),'absence label fits '+selector)
+    }
+    await A.evaluate("document.documentElement.dataset.elementSize='normal';document.documentElement.style.zoom=1")
+    await A.cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false})
+  }
   const seen=[]
   for(let level=0;level<3;level++){
     await A.evaluate('document.querySelectorAll(".belongs-level")['+level+'].click()');await pause(100)
     for(let count=0;count<levels[level].rounds.length;count++){
       const id=await A.evaluate('document.querySelector(".belongs-play").dataset.round')
       const round=levels[level].rounds.find(r=>r.id===id)
+      if(id==='comida'){await checkAbsence('.belongs-object .belongs-visual--unavailable');await capture('comida-sem-imagem')}
+      if(level===2&&round.correctDestination==='pote-materiais'){await checkAbsence('[data-destination="pote-materiais"] .belongs-visual--unavailable');await capture('pote-sem-imagem')}
       if(level===2){
         for(const [selector,item] of [['.belongs-object',round],...levels[level].destinations.filter(d=>[2386,3233,3286].includes(d.arasaacId)).map(d=>['[data-destination="'+d.id+'"]',d])]){
           if(item.arasaacId && await A.evaluate('!!document.querySelector('+JSON.stringify(selector)+')')){
@@ -65,6 +79,10 @@ try {
   await A.evaluate('document.querySelectorAll(".sequence-level")['+level+'].click()');await pause(100)
   const activities=catalog.activities
   for(const activity of activities){
+    for(const step of activity.steps.filter(item=>['molhar-maos','enxaguar','colocar-pijama','se-arrumar','chegar-escola'].includes(item.id))){
+      const selector=await A.evaluate('Array.from(document.querySelectorAll(".sequence-select")).findIndex(b=>b.querySelector("strong").textContent==='+JSON.stringify(step.word)+')')
+      await checkAbsence('.sequence-slot:nth-child('+(selector+1)+') .sequence-visual--unavailable');await capture(step.id+'-sem-imagem')
+    }
     for(const [position,step] of activity.steps.entries()){
       if(step.arasaacId){
         const actual=await A.evaluate('Array.from(document.querySelectorAll(".sequence-select")).find(b=>b.querySelector("strong").textContent==='+JSON.stringify(step.word)+').querySelector("img").getAttribute("src")')
@@ -84,6 +102,18 @@ try {
   assert.ok(await A.evaluate('!!document.querySelector(".sequence-success")'))
   }
   assert.deepEqual([...new Set(sequenceSeen)].sort((a,b)=>a-b),[2371,8680,36628,37896,37934,38944])
+  await A.evaluate("location.hash='/jogar/quebra-cabeca'");await pause(100)
+  for(let level=0;level<3;level++){
+    await click('.puzzle-levels button:nth-child('+(level+1)+')')
+    await A.evaluate("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='Preciso de ajuda').click()");await pause(50)
+    assert.equal(await A.evaluate("getComputedStyle(document.querySelector('.puzzle-slot--hint'),'::after').pointerEvents"),'none')
+    const count=await A.evaluate('document.querySelectorAll(".puzzle-board [data-slot]").length')
+    // Help already places the first piece; the remaining pieces stay in the tray.
+    for(let piece=1;piece<count;piece++){await click('[aria-label="Selecionar peça '+(piece+1)+'"]');await click('[data-slot="'+piece+'"]')}
+    assert.ok(await A.evaluate('!!document.querySelector(".puzzle-success")'))
+    assert.ok(await A.evaluate("Array.from(document.querySelectorAll('.puzzle-board .puzzle-badge')).every(e=>getComputedStyle(e).display==='none')"))
+    await capture('puzzle-'+level+'-concluido')
+  }
   assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
   console.log('PASS: eleven approved PNGs rendered, six school associations and affected legacy sequences selected/completed; no console errors/warnings. Screenshots: '+screenshots)
