@@ -4,7 +4,76 @@ Data: 6 de outubro de 2026. Resultado: **APROVADO COM RESSALVAS**.
 
 O frontend funciona no escopo local aprovado do MVP. Não foi encontrado problema bloqueante reproduzível na execução descrita abaixo. As ressalvas são limitações conhecidas de escopo e de cobertura, não justificam implementar backend ou alterar decisões pedagógicas.
 
-## Base, escopo e alterações
+## Fechamento consolidado do estado atual
+
+Precheck deste fechamento: `main`, HEAD `9664428` (`Resolve remaining visual asset issues`), árvore limpa, histórico esperado e ausência de remoto confirmados. Somente este relatório foi alterado no fechamento. As seções históricas abaixo mantêm os resultados iniciais; a evidência atual inclui os trabalhos posteriores.
+
+| Etapa | Commit / base | Resultado |
+| --- | --- | --- |
+| Validação inicial | `82772de` — Complete final frontend validation | 29 execuções finais aprovadas, detalhadas na seção histórica |
+| Preparação do repositório | `456c410` — Prepare repository for GitHub | README atualizado; `.env`/`.env.*` protegidos, exceção para `.env.example`; créditos preservados; verificação de arquivos/histórico sem possível segredo identificado; lint/build/diff check aprovados |
+| Acabamento visual aprovado | `c9eb2fa` — Complete approved visual decorations | Fundos, ornamentos, cards e molduras; quatro scripts direcionados aprovados; evidência em `qa/dynamic-layout.md` |
+| Apresentação de assets | `9664428` — Resolve remaining visual asset issues | Avisos neutros e correção semântica de Comida; sete scripts direcionados aprovados; evidência em `qa/frontend-pending-assets.md` |
+| Regressão funcional histórica | Base `9664428`, sem novo commit | 21 scripts e duas verificações complementares aprovados; nenhum defeito funcional reproduzível; nenhuma alteração |
+| Fechamento atual | Base `9664428` → Update final frontend validation | Atualização deste documento, com regressões das áreas alteradas após `82772de` |
+
+### Visual e assets atuais
+
+`c9eb2fa` aplicou curvas pastel, fundos suaves, ornamentos infantis discretos em CSS, personagens integrados e profundidade suave nos cards. Aprender conserva seus quatro cards; Jogar conserva seis jogos/18 níveis; demais páginas foram harmonizadas e as cenas receberam molduras suaves. Não foram reincorporados pontos ou conquistas dos mockups. Logo horizontal `fala-livre-logo.png`, favicon compacto `fala-livre-icon.png`, paleta, tipografia e header atuais permanecem aplicados e não foram alterados neste fechamento.
+
+Decoração com `aria-hidden="true"`, sem controles focáveis e com `pointer-events: none`. Não interfere nas atividades nem recebe clique/toque. Não há parallax ou animação contínua; Reduzir movimentos e a preferência do sistema continuam removendo transições. Mobile reduz curvas e oculta ornamentos/detalhes quando necessário. Tabuleiros não receberam decoração interna.
+
+`9664428` substituiu apenas a apresentação das seis lacunas conhecidas por **Sem imagem**: Molhar mãos, Enxaguar mãos, Colocar pijama, Chegar à escola, Se arrumar e Pote de materiais escolares. Sem `img` inválido, imagem quebrada ou alt enganoso; rótulos pedagógicos permanecem acessíveis. Nenhum asset foi improvisado, pesquisado ou baixado. Catálogos/metadados foram preservados, mas seus assets genéricos não são exibidos para esses IDs pendentes.
+
+Comida, em Onde pertence? / N2, também mostra **Sem imagem**: não utiliza mais uma cena completa de café da manhã como objeto individual. Sua representação específica permanece pendente, mantendo a associação com geladeira. Os onze assets ARASAAC previamente aprovados, IDs e créditos foram preservados.
+
+Refeição, brincadeira e descanso permanecem nos contextos narrativos existentes, separados dos pictogramas funcionais. Proporção, imagens inteiras e `object-fit: contain` preservados, com as molduras novas. Nenhuma cena foi inserida em outro contexto para preencher lacunas.
+
+### Resultado da regressão funcional imediatamente anterior
+
+Nenhum defeito funcional reproduzível após `9664428`. **BRINCAR** está correta na grade N3 do Caça-palavras; PASSEAR não a sobrescreve e o nível pode ser concluído. Diagonal é regra intencional do N3, confirmada expressamente pelo usuário na regressão; permanece bloqueada nos N1/N2. Saltos e zigue-zague são bloqueados. Não se tratou diagonal do N3 como bug nem se alterou a grade.
+
+- Seis jogos × três níveis = **18 níveis**: Caminho, Quebra-cabeça, Caça-palavras, Memória, Encontre a Imagem e Onde Pertence? aprovados em interação, ajuda quando aplicável, conclusão, reinício, desbloqueios independentes e persistência. CASA, GATO e GATO + CACHORRO permanecem corretos; pistas não interceptam interação nem cobrem a imagem concluída.
+- Comunicar: exploratório, seleção separada de fala, áudio manual, ouvir a composição atual, limpar e feedback correspondente. Palavras e Frases: 12 palavras em Conhecer/Montar/Usar na frase, com conclusão explícita e registro correspondente.
+- Escrever: alfabeto, áudio manual por letra, apagar, limpar e limite da atividade aprovados. Canvas por mouse nativo, toque/caneta emulados via CDP, desfazer, limpar e preservação proporcional no resize aprovados. Sem teste físico de caneta, OCR, microfone, reconhecimento de voz ou avaliação automática.
+- Meu Dia a Dia: oito Rotinas, dez exercícios de Comunicação e Emoções aprovados, com frases/áudio corretos e lacunas neutras. Escolhas pessoais de sentimentos/necessidades não são salvas como progresso.
+- Configurações: quatro combinações de personagens, persistência/Home, voz automática/manual, exemplo, Normal/Grande, Reduzir movimentos, limite diário, Responsáveis e Restaurar aprovados. Qualidade/timbre/disponibilidade de vozes dependem do navegador/dispositivo.
+- Limite diário: Sem limite, 15/30/45 minutos, 1 hora e Personalizado; preferência persistida, consumo somente em Jogar visível, esgotamento inclusive em rota direta, Aprender disponível, virada do dia com preferência preservada. Restaurar volta para Sem limite sem apagar consumo registrado. Recurso local, não controle parental seguro.
+- Meu Progresso: registros, separação dos domínios, reload, atualização entre abas, fallback e persistência local, incluindo seis jogos/18 níveis. Sem pontos, XP, ranking, medalhas, troféus, streak, porcentagem geral, avaliação clínica ou comparação entre pessoas.
+- **25 rotas atuais/legadas** verificadas: as 24 da validação inicial mais `#/aprender/situacoes`. Navegação normal, hash direto, reload, voltar/avançar e rota desconhecida passaram. Nenhuma rota legada foi removida.
+
+Os 21 scripts anteriores foram: lógica — corrections, gameProgress, learningProgress, gameTime, progress, progressStorage, progressSummary, routines, communication, emotions e speechVoices (`.test.mjs`); navegador — corrections, gameProgress, learningProgress, gameTime, myProgress, responsibleGuidance, speechVoices, communication, routines e emotions (`.browser.mjs`). Todos aprovados, sem ignorados. As duas verificações complementares de rotas/canvas e toque/teclado do quebra-cabeça foram temporárias, sem novos arquivos versionados. Ajustes de sintaxe/eventos/assertions do harness não foram defeitos do produto. Logs em `%TEMP%/falalivre-historical-regression`.
+
+### Responsividade e acessibilidade posteriores
+
+A camada de `c9eb2fa` foi verificada em **320/360/390/430/768/1024/1366/1440 px**, Normal/Grande, zoom CSS 125% e Reduzir movimentos: 15 telas, 480 combinações. As apresentações neutras foram verificadas em 320/390/768/1366 px, Normal/Grande e zoom CSS 125%. Sem quebra de imagem, corte do aviso ou overflow nas verificações documentadas. Essas evidências complementam a matriz histórica inicial; não se afirma que suas 768 combinações foram repetidas após os commits visuais.
+
+Teclado, foco visível, nomes acessíveis, contraste, alternativas textuais, Normal/Grande e redução de movimentos permaneceram aprovados. Decoração não participa da tabulação/interação e ausência de asset não cria descrição falsa. Não há certificação WCAG, teste físico mobile ou teste real com leitor de tela. Toque e caneta foram emulados no Chrome.
+
+### Testes específicos deste fechamento
+
+Somente as dez entradas relacionadas às alterações posteriores, sem repetir integralmente os 21 scripts anteriores:
+
+| Comando | Resultado final |
+| --- | --- |
+| `node qa/arasaacPending.test.mjs` | PASS |
+| `node qa/routines.test.mjs` | PASS |
+| `node qa/communication.test.mjs` | PASS |
+| `node qa/visualIdentity.browser.mjs` | PASS |
+| `node qa/dynamicLayout.browser.mjs` | PASS |
+| `node qa/arasaacPending.browser.mjs` | PASS |
+| `node qa/routines.browser.mjs` | PASS |
+| `node qa/communication.browser.mjs` | PASS |
+| `node qa/corrections.browser.mjs` | PASS |
+| `node qa/responsibleGuidance.browser.mjs` | PASS |
+
+**Neste fechamento:** dez scripts executados/aprovados, zero falhas e zero ignorados. `npm run lint`, `npm run build` e `git diff --check` também passaram. Não existe teste automatizado específico deste relatório entre os scripts QA consultados. Logs em `%TEMP%/falalivre-final-closure`. Perfis isolados; capturas versionadas repostas aos bytes anteriores após os testes. Nenhuma assertion foi removida/enfraquecida nem defeito do produto ocultado.
+
+## Evidência histórica da validação inicial — entrega 82772de
+
+As seções seguintes preservam os resultados iniciais e sua base. Estado atual e correções posteriores estão consolidados acima.
+
+## Base, escopo e alterações da validação inicial
 
 - Precheck: `main`, HEAD inicial `19317ae` (`Apply approved Fala Livre favicon`), árvore limpa; histórico dos cinco commits mais recentes conferido.
 - Escopo: frontend existente, rotas públicas e legadas, atividades, jogos, armazenamento local, configurações, áudio, identidade, responsividade e acessibilidade.
@@ -13,7 +82,7 @@ O frontend funciona no escopo local aprovado do MVP. Não foi encontrado problem
 - Capturas geradas pelos testes existentes foram preservadas: seus bytes anteriores foram repostos ao concluir a execução, sem incluir mudanças de screenshots no commit.
 - Backend, autenticação, banco, novos assets, redesign, push e deploy ficaram fora da execução.
 
-## Ambiente e método
+## Ambiente e método da validação inicial
 
 Windows, Node.js, React 19, Vite 8 e Chrome headless via Chrome DevTools Protocol (CDP). Os testes de navegador usam perfis temporários isolados; não acessam o perfil ou o progresso pessoal do usuário. A maior parte dos testes controla a síntese de fala para verificar chamadas e parâmetros. Uma execução adicional usa as vozes reais disponíveis no Chrome.
 
@@ -21,7 +90,7 @@ Foram executados os 27 scripts QA existentes: 12 de lógica/estado e 15 de naveg
 
 **Contagem final:** 28 arquivos de teste distintos, 29 execuções finais aprovadas, 0 falhas finais, 0 ignorados. Lint, build e diff check são verificações adicionais, fora dessa contagem. Durante a construção do teste complementar houve duas tentativas malsucedidas do próprio harness: espera insuficiente após reload e seletor que procurava “Limpar desenho” em vez do botão existente “Limpar”. Ambas foram corrigidas no novo teste; não eram defeitos do frontend.
 
-### Scripts existentes executados
+### Scripts executados na validação inicial
 
 Cada arquivo foi executado com `node qa/<arquivo>`; a duração abaixo corresponde aos testes de navegador na execução integral.
 
@@ -51,7 +120,7 @@ Verificações finais: `npm run lint`, `npm run build` e `git diff --check` — 
 
 Logs individuais e `results.json` desta execução ficam em `%TEMP%/falalivre-final-validation`. As capturas complementares ficam no subdiretório `screenshots`; são evidências locais temporárias, não arquivos distribuídos no repositório. O relatório e os scripts versionados permitem reproduzir a verificação.
 
-## Rotas, identidade e runtime
+## Rotas, identidade e runtime — evidência inicial
 
 O teste complementar abriu e recarregou diretamente as 24 rotas existentes: Home; Aprender; Comunicar; Palavras e Frases; Escrever, Teclado e Caderno; Meu Dia a Dia, Rotinas, Comunicação e Emoções; Jogar; Caminho, Quebra-cabeça, Caça-palavras, Memória, Encontre a Imagem e Onde Pertence; legadas Bingo, Sequências e Situações Interativas; Meu Progresso; Configurações; Responsáveis.
 
@@ -117,10 +186,10 @@ Cobertura: Chrome no Windows, viewport móvel emulado e toque CDP. O zoom foi ap
 | Requisito | Evidência real e limite da afirmação |
 | --- | --- |
 | Arquitetura da solução | SPA React/Vite com navegação por hash em `src/App.jsx`, páginas/componentes, catálogos em `src/data` e utilitários em `src/utils`. Preferências, progresso, rotação, áudio e tempo têm responsabilidades separadas. Conceito futuro: Usuário → Frontend React → camada futura de integração/API → Backend → Banco de dados. Backend é responsabilidade de outro integrante segundo o escopo informado; não foi implementado nem integrado nesta validação. |
-| Desenvolvimento colaborativo | O escopo informado separa frontend e backend entre integrantes. O histórico local observado tem um autor (`mouralph-del`, 31 commits antes desta entrega). Não há evidência verificável neste checkout de múltiplos autores, PRs ou revisões remotas; não se afirma colaboração em commits sem comprovação. |
-| Controle de versões | Branch `main`, evolução incremental: identidade `82b8027`, pendências `a510271`, ARASAAC `cca1c6c`, tempo diário `965cc37`, layout `e084080`, logo `589236a`, vozes `eb1e58b`, favicon `19317ae`. Esta validação acrescenta um único commit local `Complete final frontend validation`. |
-| Git e GitHub | Git local verificado por status/log/shortlog. `git remote -v` não retorna remoto configurado. Não há comprovação de publicação no GitHub nesta cópia; links de templates no README não comprovam repositório remoto do projeto. Nenhum push/deploy foi feito. |
-| Testes | 12 scripts de lógica/estado e 15 de navegador existentes; complemento sobre a entrada real; variante com vozes disponíveis. Testes de persistência, falhas simuladas, abas, regras de conclusão e interação; lint, build de produção e diff check. Contagem e resultados acima. |
+| Desenvolvimento colaborativo | O escopo informado separa frontend e backend entre integrantes. Histórico local com um autor (`mouralph-del`): 31 commits antes da entrega inicial, 35 antes deste fechamento. Não há evidência verificável neste checkout de múltiplos autores, PRs ou revisões remotas; não se afirma colaboração em commits sem comprovação. |
+| Controle de versões | Branch `main`, evolução incremental: identidade `82b8027`, pendências `a510271`, ARASAAC `cca1c6c`, tempo diário `965cc37`, layout `e084080`, logo `589236a`, vozes `eb1e58b`, favicon `19317ae`, validação inicial `82772de`, preparação `456c410`, acabamento `c9eb2fa` e assets `9664428`. Este fechamento acrescenta somente `Update final frontend validation`. |
+| Git e GitHub | Git local verificado por status/log/shortlog. Preparação segura em `456c410`: README real, proteção de ambientes locais e checagem sem possível segredo identificado, mantendo CREDITS. `git remote -v` não retorna remoto; não há comprovação de publicação no GitHub nesta cópia. README agora documenta o projeto, sem inventar remoto. Nenhum push/deploy foi feito. |
+| Testes | Validação inicial: 29 execuções finais. Regressão histórica anterior: 21 scripts e duas verificações complementares. Fechamento: dez scripts diretamente relacionados às mudanças posteriores, com resultados separados acima; não se somam execuções repetidas como testes únicos. Lógica, estado, falhas simuladas, abas, componentes reais/interação, lint, build e diff check. |
 | Boas práticas de programação | Componentes e utilitários separados, dados/catalogação separados da apresentação, validação de estado local, geração/revisão de progresso, fallback explícito, fala centralizada, persistência independente, QA versionado e lint. Nenhuma refatoração estética foi acrescentada. |
 | Acessibilidade no desenvolvimento | Labels e nomes acessíveis, foco/teclado, estados e feedback textual, contraste testado, Normal/Grande, redução de movimentos, áudio manual e alvos de toque. Evidência e limites de cobertura descritos na seção anterior. |
 
@@ -130,11 +199,11 @@ Cobertura: Chrome no Windows, viewport móvel emulado e toque CDP. O zoom foi ap
 2. Dados e preferências são locais deste navegador/origem, sujeitos a limpeza, quota e indisponibilidade. Fallback de sessão não equivale a gravação durável. Não existe identidade separada de crianças usando o mesmo navegador.
 3. Limite diário local depende do relógio e armazenamento do dispositivo e pode ser alterado pelo usuário. Não é controle parental seguro; não se promete controle transacional do consumo simultâneo entre abas.
 4. Vozes e disponibilidade dependem de navegador/dispositivo; vozes remotas podem exigir rede. Naturalidade, idade, gênero e reprodução física não foram certificados.
-5. Seis conceitos ARASAAC continuam sem substituição aprovada: **Molhar mãos, Enxaguar mãos, Colocar pijama, Chegar à escola, Se arrumar e Pote de materiais escolares**. A distinção das duas etapas das mãos permanece sem correspondência oficial suficientemente segura; os outros quatro não têm asset adequado identificado. As representações temporárias já aprovadas foram preservadas. Não foram geradas ou baixadas imagens nesta validação.
+5. Seis conceitos ARASAAC continuam sem substituição aprovada: **Molhar mãos, Enxaguar mãos, Colocar pijama, Chegar à escola, Se arrumar e Pote de materiais escolares**. A distinção das etapas das mãos permanece sem correspondência oficial suficientemente segura; os outros quatro não têm asset adequado identificado. Todos usam apresentação neutra **Sem imagem**, sem falha de execução. Comida, em Onde pertence?, também mantém apresentação neutra até haver representação específica de alimento individual, conforme `9664428`. Nenhuma imagem foi improvisada, gerada ou baixada neste fechamento.
 6. Não houve teste físico de dispositivos móveis, leitores de tela ou caneta; as verificações são automatizadas no Chrome e acompanhadas de conferência visual direcionada. Canvas não possui OCR nem avaliação automática.
 
 ## Conclusão e entrega
 
-**APROVADO COM RESSALVAS:** todos os testes finais descritos passaram e nenhuma correção funcional foi necessária. O frontend está pronto para preparação de deploy/entrega do MVP dentro do escopo local aprovado, com as limitações acima explicitadas. Integração com backend e validação em dispositivos assistivos/físicos não são resultados desta execução.
+**APROVADO COM RESSALVAS:** frontend fechado para publicação/entrega do MVP no escopo local aprovado, com as limitações não bloqueadoras acima. As correções visuais posteriores foram incorporadas à evidência; a regressão histórica não encontrou defeito funcional reproduzível. Nenhuma correção adicional da aplicação foi necessária neste fechamento. Integração com backend, certificação formal de acessibilidade e validação física de dispositivos não são resultados deste trabalho.
 
-Commit local de entrega: `Complete final frontend validation`, na branch `main`. O hash final é informado pelo `git log -1 --oneline` após o commit, evitando gravar no documento uma referência circular ao próprio commit. Sem push ou deploy.
+Commit local deste fechamento: `Update final frontend validation`, na branch `main`, sobre `9664428`. O hash final é informado pelo `git log -1 --oneline` após o commit, evitando gravar no documento uma referência circular ao próprio commit. README, `.gitignore`, assets, implementação e testes permanecem inalterados nesta etapa. Sem remoto, criação de repositório remoto, push ou deploy.
