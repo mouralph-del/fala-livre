@@ -116,7 +116,13 @@ function App() {
         </div>
       </header>
       <div className="home-surround">
-        <div className="home-decoration" aria-hidden="true"><span /></div>
+        <div className="home-decoration" aria-hidden="true">
+          <span />
+          <i className="decor-motif decor-book" />
+          <i className="decor-motif decor-puzzle" />
+          <i className="decor-motif decor-bubble" />
+          <i className="decor-motif decor-plant" />
+        </div>
         {route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
             <h1 id="welcome-title">Olá!</h1>

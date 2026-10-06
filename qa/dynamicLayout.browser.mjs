@@ -34,13 +34,18 @@ try {
   await A.cdp('Page.navigate',{url:'http://127.0.0.1:4205/__audit#/'});await ready(A)
   const route=async hash=>{await A.evaluate('location.hash='+JSON.stringify(hash));await pause(50)}
   const screenshots=path.join(os.tmpdir(),'falalivre-dynamic-review');fs.mkdirSync(screenshots,{recursive:true})
-  const routes=[['home','/'],['learn','/aprender'],['games','/jogar'],['communication','/aprender/comunicar'],['settings','/perfil'],['guidance','/responsaveis']]
+  const routes=[['home','/'],['learn','/aprender'],['games','/jogar'],['communication','/aprender/comunicar'],['settings','/perfil'],['guidance','/responsaveis'],['words','/aprender/palavras-frases'],['writing','/aprender/escrever'],['notebook','/aprender/escrever/caderno'],['my-day','/aprender/meu-dia-a-dia'],['routines','/aprender/meu-dia-a-dia/rotinas'],['daily-communication','/aprender/meu-dia-a-dia/comunicacao'],['emotions','/aprender/meu-dia-a-dia/emocoes'],['progress','/meu-progresso'],['scenes','/jogar/situacoes-interativas']]
   for(const width of [320,360,390,430,768,1024,1366,1440]){
     await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
     for(const large of [false,true])for(const zoom of [1,1.25]){
       await A.evaluate(`document.documentElement.dataset.elementSize='${large?'large':'normal'}';document.documentElement.dataset.reduceMotion='true';document.documentElement.style.zoom=${zoom}`)
       for(const [name,hash] of routes){
         await route(hash)
+        const ornaments=await A.evaluate(`(()=>{const layer=document.querySelector('.home-decoration');return {hidden:layer.getAttribute('aria-hidden'),pointer:getComputedStyle(layer).pointerEvents,focusable:layer.querySelectorAll('a,button,input,select,[tabindex]').length,motifs:Array.from(layer.querySelectorAll('.decor-motif'),e=>({display:getComputedStyle(e).display,pointer:getComputedStyle(e).pointerEvents,animation:getComputedStyle(e).animationName}))}})()`)
+        assert.equal(ornaments.hidden,'true');assert.equal(ornaments.pointer,'none');assert.equal(ornaments.focusable,0)
+        assert.equal(ornaments.motifs.length,4)
+        assert.ok(ornaments.motifs.every(item=>item.pointer==='none'&&item.animation==='none'))
+        assert.ok(ornaments.motifs.every(item=>item.display===(name==='home'&&width>700?'block':'none')))
         const size=await A.evaluate('({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth})')
         assert.ok(size.scroll<=size.client+1,JSON.stringify({name,width,large,zoom,size}))
         assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])
@@ -71,8 +76,23 @@ try {
   await route('/aprender');assert.equal(await A.evaluate('document.querySelectorAll(".learning-card").length'),4)
   await A.evaluate('document.querySelector(".learning-start").focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9})
   assert.equal(await A.evaluate('getComputedStyle(document.activeElement.closest(".learning-card")).outlineStyle'),'solid')
+  await route('/jogar/situacoes-interativas')
+  await A.evaluate('document.querySelector(".interactive-level-card").click()');await pause(100)
+  for(const scene of ['situacao-refeicao.png','situacao-brincar.png','situacao-descanso.png']){
+    assert.ok(await A.evaluate(`document.querySelector('.interactive-scene img').src.endsWith(${JSON.stringify(scene)})`),'existing context '+scene)
+    assert.equal(await A.evaluate('getComputedStyle(document.querySelector(".interactive-scene img")).objectFit'),'contain')
+    for(const width of [390,1440]){
+      await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await pause(100)
+      assert.ok(await A.evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'))
+      const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:65,captureBeyondViewport:true});fs.writeFileSync(path.join(screenshots,scene.replace('.png','')+'-'+width+'.jpg'),Buffer.from(shot.data,'base64'))
+    }
+    const labels=await A.evaluate("(async()=>{const {interactiveSituations}=await import('/src/data/interactiveSituations.js');const id=document.querySelector('.interactive-game').dataset.situation,situation=interactiveSituations[0].situations.find(item=>item.id===id);return situation.expectedTokens.map(token=>situation.options.find(item=>item.id===token).word)})()")
+    for(const label of labels){await A.evaluate(`Array.from(document.querySelectorAll('.interactive-select')).find(button=>button.getAttribute('aria-label')===${JSON.stringify('Selecionar '+label)}).click()`);await pause(40)}
+    await A.evaluate("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='Confirmar frase').click()");await pause(50)
+    await A.evaluate("document.querySelector('.interactive-response .interactive-controls button').click()");await pause(100)
+  }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS 8 widths, Normal/Grande, 125% zoom, six affected screens, no overflow/image-text overlap, 48/56px targets, keyboard/focus, reduced motion, four learning routes and six games. Screenshots: '+screenshots)
+  console.log('PASS 8 widths, Normal/Grande, 125% zoom, '+routes.length+' affected screens, noninteractive aria-hidden decorations hidden on mobile/activity screens, no overflow/image-text overlap, 48/56px targets, keyboard/focus, reduced motion, four learning routes and six games. Screenshots: '+screenshots)
 
 } finally {
   for(const socket of sockets)socket.close();chrome.kill();await server.close();await pause(500)
