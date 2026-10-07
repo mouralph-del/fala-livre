@@ -45,7 +45,7 @@ try {
       assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),hash+' overflow');
       const buttons=await ev('Array.from(document.querySelectorAll('+JSON.stringify(selector)+'),e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {text:e.textContent.trim(),height:r.height,scroll:e.scrollWidth,width:e.clientWidth,bg:s.backgroundColor,color:s.color,border:s.borderTopWidth,underline:s.textDecorationLine,primary:e.classList.contains("navigation-action--primary")}})');
       for(const b of buttons){assert.ok(b.text);assert.ok(b.height>=(large?55:47)*zoom,JSON.stringify({hash,width,large,b}));assert.ok(b.scroll<=b.width+1);assert.equal(b.underline,'none');assert.ok(parseFloat(b.border)>=0.79);assert.equal(b.bg,b.primary?'rgb(49, 95, 140)':'rgb(255, 255, 255)');assert.equal(b.color,b.primary?'rgb(255, 255, 255)':'rgb(49, 95, 140)');}
-      if(buttons.length){await ev('document.querySelector('+JSON.stringify(selector)+').focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+      if(buttons.length){await ev('document.querySelector("main").focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
         const focused=await ev('Array.from(document.querySelectorAll('+JSON.stringify(selector)+'),e=>{e.focus();const s=getComputedStyle(e);return {text:e.textContent.trim(),outline:s.outlineStyle,width:s.outlineWidth,clipped:e.scrollHeight>e.clientHeight+1}})');
         for(const action of focused){assert.equal(action.outline,'solid',action.text);assert.ok(parseFloat(action.width)*zoom>=2.99,action.text);assert.equal(action.clipped,false,action.text);}
       }
@@ -54,7 +54,7 @@ try {
   }
   await ev('document.documentElement.style.zoom=""');
   await route('/');const href=await ev('document.querySelector(".progress-entry a").getAttribute("href")');assert.equal(href,'#/meu-progresso');
-  await ev('document.querySelector(".progress-entry a").focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+  await ev('document.querySelector("main").focus()');await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
   // Native keyboard activation of the semantic anchor and focus ring.
   await ev('document.querySelector(".progress-entry a").focus()');assert.equal(await ev('getComputedStyle(document.activeElement).outlineStyle'),'solid');assert.equal(await ev('getComputedStyle(document.activeElement).outlineWidth'),'3px');
   await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await pause(100);assert.equal(await ev('location.hash'),href);

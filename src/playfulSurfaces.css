@@ -1,0 +1,103 @@
+/* Ambient identity stays behind every route, never inside educational images. */
+.home-surround {
+  min-height: calc(100svh - 100px);
+  background: radial-gradient(ellipse at 6% 12%, #E4EFF8 0, transparent 46%),
+    radial-gradient(ellipse at 96% 42%, #E5F1E9 0, transparent 48%),
+    radial-gradient(ellipse at 25% 90%, #FAEFD7 0, transparent 42%), #F7F8F4;
+}
+.home-decoration { opacity: 1; }
+.home-decoration > span { opacity: .5; }
+.home-decoration::before { left: -140px; bottom: 22%; width: 300px; height: 280px; background: #DCE9F5; opacity: .5; }
+.home-decoration::after { right: -140px; bottom: 2%; width: 350px; height: 240px; background: #DFEEE5; opacity: .6; }
+.page-sprinkles { position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle at 28px 40px, #D8A14840 0 3px, transparent 4px),
+    radial-gradient(circle at 180px 180px, #315F8C25 0 4px, transparent 5px),
+    radial-gradient(circle at 310px 80px, #A53D4322 0 3px, transparent 4px),
+    radial-gradient(circle at 80px 280px, #39756830 0 3px, transparent 4px);
+  background-size: 380px 340px;
+}
+.home-surround .decor-motif { display: block; opacity: .2; }
+.home-surround .decor-book { top: 22%; right: 2%; transform: rotate(12deg); }
+.home-surround .decor-puzzle { top: 65%; left: 2%; right: auto; background: #D8A148; }
+.home-surround .decor-bubble { top: 12%; left: 1%; }
+.home-surround .decor-plant { bottom: 10%; right: 1%; }
+
+/* Compact proportions: existing characters support the action instead of a hero. */
+.home { padding-block: 16px 28px; }
+.home .welcome { padding: 0 0 8px; margin-bottom: 12px; }
+.home .welcome h1 { font-size: 1.75rem; }
+.home .activity-grid { gap: 20px; }
+.home .activity-card, :root[data-element-size='large'] .home .activity-card {
+  grid-template-columns: minmax(0, .3fr) minmax(0, .7fr); min-height: 196px;
+  padding: 18px 20px 18px 12px; gap: 14px; text-align: left; border-radius: 28px 28px 20px 28px;
+  background: linear-gradient(110deg, #E4EFF8, #F6FAFD); box-shadow: 0 4px 0 #DCE9F5, var(--shadow-sm);
+}
+.home .activity-card--play { background: linear-gradient(110deg, #DFEEE5, #F6FAF7); box-shadow: 0 4px 0 #DFEEE5, var(--shadow-sm); }
+.home .activity-card::before, :root[data-element-size='large'] .home .activity-card::before { inset: 12px 72% 12px 8px; height: auto; }
+.home .activity-illustration { width: 100%; max-width: 148px; align-self: center; }
+.home .activity-content { align-items: flex-start; min-height: 0; justify-content: center; }
+.home .activity-card p { margin-block: 6px 12px; line-height: 1.4; }
+.home .activity-card h2 { font-size: 1.375rem; }
+.home .activity-card .start-button { margin-top: 0; }
+.home .progress { margin-block: 22px 0; }
+.home .progress-entry { padding: 12px 16px; background: #FFFFFF99; }
+.home .positive-message { margin-top: 16px; padding: 12px 16px; }
+
+.learn-page .learning-card { min-height: 0; padding: 16px; gap: 14px; grid-template-columns: 84px minmax(0, 1fr); }
+.learn-page .learning-card .learning-illustration { width: 84px; }
+.learn-page .learning-content { height: auto; }
+.learn-page .learning-content p { margin-block: 6px 10px; }
+.learn-page .learning-content h2 { font-size: 1.125rem; }
+.learn-page .learning-start { margin-top: 4px; }
+.learn-page .learning-grid { align-items: stretch; gap: 16px; }
+.games-page .game-card { padding: 16px; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+.games-page .game-card .game-icon { width: 64px; height: 64px; padding: 7px; }
+.games-page .game-card h2 { font-size: 1.125rem; }
+.games-page .games-grid { gap: 16px; }
+.entry-character { width: 56px; height: 56px; top: 0; right: 8px; }
+main[id='conteudo'] :is(.learn-intro, .games-intro) { padding-right: 72px; }
+main:is(.learn-page, .games-page) { padding-top: 4px; }
+
+/* Adult information stays quiet, with compact titles rather than large banners. */
+main:is(.my-progress, .responsible-guidance) > h1,
+main[id='conteudo'] :is(.profile-intro, .situations-intro) {
+  padding: 0; margin-block: 8px 12px; border: 0; border-radius: 0; box-shadow: none; background: transparent;
+}
+main:is(.my-progress, .responsible-guidance) > h1,
+main[id='conteudo'] :is(.profile-intro, .situations-intro) h1 { font-size: clamp(24px, 2.2vw, 30px); line-height: 1.2; }
+.profile-page .profile-section, .responsible-guidance section { padding: 18px; }
+.communication-page .sentence-panel { padding: 16px; }
+.communication-page .sentence-empty { padding-block: 8px; }
+main[id='conteudo'] > :is(.navigation-return, a[class$='-back']) { padding: 4px 10px; margin-block: 0 4px; border-radius: 999px; }
+.header-menu-label { display: block; padding: 6px 12px 2px; font-size: .8125rem; color: var(--muted); font-weight: 600; }
+.header-account-section { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 4px; }
+.app-header .header-popover { max-height: min(calc(100svh - 116px), 60svh); overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 1050px) {
+  .learn-page .learning-card { grid-template-columns: 72px minmax(0, 1fr); }
+  .learn-page .learning-card .learning-illustration { width: 72px; }
+}
+@media (max-width: 1199px) {
+  .home-surround:has(main[id='conteudo']) .decor-motif { display: none; }
+}
+@media (max-width: 700px) {
+  .app-header .header-popover { width: min(240px, calc(100vw - 96px)); }
+  .home-surround { min-height: calc(100svh - 80px); }
+  .home-surround .decor-motif { display: none; }
+  .page-sprinkles { background-size: 440px 480px; opacity: .55; }
+  .home-decoration::before, .home-decoration::after { width: 200px; height: 200px; opacity: .3; }
+  .home { padding-top: 12px; }
+  .home .activity-grid { gap: 14px; }
+  .home .activity-card, :root[data-element-size='large'] .home .activity-card { grid-template-columns: 84px minmax(0, 1fr); padding: 14px 14px 14px 8px; gap: 10px; min-height: 0; }
+  .home .activity-content, :root[data-element-size='large'] .home .activity-content { min-height: 0; align-items: flex-start; }
+  .home .activity-card::before, :root[data-element-size='large'] .home .activity-card::before { inset: 12px auto 12px 4px; width: 84px; height: auto; }
+  .home .activity-illustration { width: 84px; }
+  .home .activity-card p { font-size: .9375rem; }
+  .home .activity-card h2 { font-size: 1.125rem; }
+  .learn-page .learning-card, :root[data-element-size='large'] .learn-page .learning-card { min-height: 0; padding: 12px; gap: 10px; grid-template-columns: 64px minmax(0, 1fr); }
+  .learn-page .learning-card .learning-illustration { width: 64px; height: 64px; }
+  .learn-page .learning-start { margin-top: 8px; }
+  .games-page .game-card { padding: 12px; gap: 6px 10px; grid-template-columns: 64px minmax(0, 1fr); }
+  .games-page .game-card .game-icon { width: 64px; height: 64px; }
+  main[id='conteudo'] :is(.learn-intro, .games-intro) { padding-right: 0; }
+  .profile-page .profile-section, .responsible-guidance section { padding: 14px; }
+}

@@ -29,9 +29,15 @@ export default function HeaderNavigation({ route }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
       </button>
       <nav id="header-navigation" className="header-navigation header-popover" aria-label="Navegação principal" hidden={!open}>
+        <span className="header-menu-label">Explorar</span>
         <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined} onClick={() => setOpen(false)}>Meu Progresso</a>
         <a href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined} onClick={() => setOpen(false)}>Configurações</a>
         <a href="#/responsaveis" aria-current={route === 'responsibleGuidance' ? 'page' : undefined} onClick={() => setOpen(false)}>Responsáveis / Sobre o Fala Livre</a>
+        <div className="header-account-section">
+          <span className="header-menu-label">Conta do responsável</span>
+          <a href="#/entrar" aria-current={route === 'signIn' ? 'page' : undefined} onClick={() => setOpen(false)}>Entrar</a>
+          <a href="#/criar-conta" aria-current={route === 'createAccount' ? 'page' : undefined} onClick={() => setOpen(false)}>Criar conta</a>
+        </div>
       </nav>
     </div>
   </div>

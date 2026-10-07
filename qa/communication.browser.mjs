@@ -298,7 +298,7 @@ try {
   // Test configured voice through instrumented synthesis; no sound is claimed.
   await evaluate(`localStorage.setItem('falalivre.preferences',JSON.stringify({voice:'QA Português',elementSize:'normal'}))`)
   await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`window.SpeechSynthesisUtterance=class{constructor(text){this.text=text}};speechSynthesis.getVoices=()=>[{name:'QA Português',voiceURI:'qa-pt-br',lang:'pt-BR',default:true}];window.__spoken=[];speechSynthesis.speak=u=>window.__spoken.push({text:u.text,lang:u.lang,voice:u.voice?.name});speechSynthesis.cancel=()=>{}`})
-  await cdp('Page.navigate',{url:'http://127.0.0.1:4183/#'+route});await cdp('Page.reload');await wait(`speechSynthesis.getVoices()[0]?.name==='QA Português' && document.querySelector('[data-situation]')`)
+  await navigate(route);await wait(`document.querySelector('[data-situation]')`);await cdp('Page.reload');await wait(`speechSynthesis.getVoices()[0]?.name==='QA Português' && document.querySelector('[data-situation]')`)
   assert.equal(await evaluate('window.__spoken.length'),0)
   await click('[aria-label="Ouvir EU"]');assert.deepEqual(await evaluate('window.__spoken.at(-1)'),{text:'Eu',lang:'pt-BR',voice:'QA Português'})
   await evaluate(`window.SpeechSynthesisUtterance=undefined`);await click('[aria-label="Ouvir EU"]');assert.match(await evaluate(`document.querySelector('.interactive-audio-status').textContent`),/indisponível/)

@@ -6,7 +6,7 @@ export default function ResponsibleGuidance() {
   return <main id="conteudo" className="responsible-guidance" tabIndex={-1}>
     <a className="navigation-return" href="#/">Voltar ao início</a>
     <h1>Responsáveis</h1>
-    <p>Orientações para pais, responsáveis e cuidadores que acompanham o uso do Fala Livre, e para professores durante demonstrações do MVP.</p>
+    <p>Orientações para pais, responsáveis e cuidadores que acompanham o uso do Fala Livre.</p>
 
     <section aria-labelledby="guidance-about">
       <h2 id="guidance-about">Sobre o Fala Livre</h2>
@@ -36,7 +36,7 @@ export default function ResponsibleGuidance() {
     </section>
 
     <section aria-labelledby="guidance-privacy">
-      <h2 id="guidance-privacy">Privacidade no MVP</h2>
+      <h2 id="guidance-privacy">Privacidade e dados</h2>
       <p>Neste navegador, o Fala Livre pode guardar registros educativos, preferências e a organização da sequência de conteúdos. Alguns registros podem ficar disponíveis apenas durante a sessão. Frases produzidas, sentimentos escolhidos, necessidades pessoais, desenhos, áudio, erros, tentativas e tempo não são salvos como progresso. Os registros não são vinculados a uma pessoa ou conta.</p>
     </section>
 

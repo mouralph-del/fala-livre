@@ -39,10 +39,10 @@ try{
  let targets;for(let i=0;i<100;i++){try{targets=await(await fetch('http://127.0.0.1:9364/json/list')).json();if(targets.some(t=>t.type==='page'))break}catch{}await pause(100)}
  const A=await connect(targets.find(t=>t.type==='page')),ev=A.evaluate
  await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('falaLivre_progress_v1',${JSON.stringify(JSON.stringify(seed))});localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}));speechSynthesis.speak=()=>{};speechSynthesis.cancel=()=>{}`})
- const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...Object.keys(gameCatalog).map(id=>'/jogar/'+id),'/jogar/bingo','/jogar/sequencias','/jogar/situacoes-interativas','/meu-progresso','/perfil','/responsaveis']
+ const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...Object.keys(gameCatalog).map(id=>'/jogar/'+id),'/jogar/bingo','/jogar/sequencias','/jogar/situacoes-interativas','/meu-progresso','/perfil','/responsaveis','/entrar','/criar-conta']
  const check=async label=>{
   assert.equal(await ev('document.querySelectorAll('+JSON.stringify('[class*="-qa-"],[data-debug],[data-fixture]')+').length'),0,label+' technical DOM')
-  assert.equal(await ev('/\\bQA\\b|\\bdebug\\b|fixture|rota..o normal|voltar . rota..o|for.ar (conte.do|conclus.o|desbloqueio)/i.test(document.body.textContent)'),false,label+' technical text')
+  assert.equal(await ev('/\\bQA\\b|\\bdebug\\b|fixture|\\bMVP\\b|prot[oó]tipo|demonstra[çc][ãa]o|demonstra[çc][õo]es|rota..o normal|voltar . rota..o|for.ar (conte.do|conclus.o|desbloqueio)/i.test(document.body.textContent)'),false,label+' technical text')
  }
  for(const base of ['http://127.0.0.1:4214/__audit','http://127.0.0.1:4215/']){
   await A.cdp('Page.navigate',{url:base+'#/'});await ready(A)
@@ -53,5 +53,5 @@ try{
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
- console.log('PASS public QA cleanup: static defaults, 25 public/legacy routes and all 18 game levels in DEV and production; no technical controls/text/DOM; real levels/settings preserved.')
+ console.log('PASS public QA cleanup: static defaults, 27 public/legacy routes and all 18 game levels in DEV and production; no technical controls/text/DOM; real levels/settings preserved.')
 }finally{for(const socket of sockets)socket.close();chrome.kill();await server.close();await new Promise(resolve=>production.httpServer.close(resolve));await pause(500);const resolved=path.resolve(profile);if(path.dirname(resolved)!==tempRoot||!path.basename(resolved).startsWith('falalivre-public-qa-'))throw Error('unsafe temporary path');try{fs.rmSync(resolved,{recursive:true,force:true,maxRetries:5,retryDelay:200})}catch{}}

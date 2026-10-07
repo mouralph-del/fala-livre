@@ -92,7 +92,7 @@ export default function Profile() {
       </div>
       <section className="profile-section profile-guidance" aria-labelledby="profile-guidance-title">
         <h2 id="profile-guidance-title">Orientações para responsáveis</h2>
-        <p>Conheça o Fala Livre, como interpretar os registros educativos e as informações de privacidade do MVP.</p>
+        <p>Conheça o Fala Livre, como interpretar os registros educativos e as informações de privacidade e dados.</p>
         <a className="profile-action" href="#/responsaveis">Ver orientações</a>
       </section>
       <div className="profile-restore"><button className="profile-action" type="button" onClick={restore}>Restaurar configurações padrão</button><p className="profile-feedback" role="status">{message}</p></div>

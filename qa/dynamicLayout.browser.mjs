@@ -45,12 +45,12 @@ try {
         assert.equal(ornaments.hidden,'true');assert.equal(ornaments.pointer,'none');assert.equal(ornaments.focusable,0)
         assert.equal(ornaments.motifs.length,4)
         assert.ok(ornaments.motifs.every(item=>item.pointer==='none'&&item.animation==='none'))
-        const visibleMotifs=name==='home'&&width>700?[0,1,2,3]:width>=1024&&['learn','my-day'].includes(name)?[0,2]:width>=1024&&name==='games'?[1]:[]
+        const visibleMotifs=width>=1200?[0,1,2,3]:[]
         ornaments.motifs.forEach((item,index)=>assert.equal(item.display,visibleMotifs.includes(index)?'block':'none'))
         const size=await A.evaluate('({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth})')
         assert.ok(size.scroll<=size.client+1,JSON.stringify({name,width,large,zoom,size}))
         assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])
-        assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'),3)
+        assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'),5)
         const logo=await A.evaluate(`(()=>{const image=document.querySelector('.brand-logo'),r=image.getBoundingClientRect(),header=document.querySelector('.header-content').getBoundingClientRect(),nav=document.querySelector('.header-menu-toggle').getBoundingClientRect();return {alt:image.alt,count:document.querySelectorAll('.brand-logo').length,old:document.querySelectorAll('.brand-copy,.brand-mark').length,ratio:r.width/r.height,natural:image.naturalWidth/image.naturalHeight,fit:getComputedStyle(image).objectFit,inside:r.left>=header.left-1&&r.right<=header.right+1&&r.top>=header.top-1&&r.bottom<=header.bottom+1,overlap:r.left<nav.right-1&&r.right>nav.left+1&&r.top<nav.bottom-1&&r.bottom>nav.top+1}})()`)
         assert.equal(logo.alt,'Fala Livre — Comunicar, Aprender e Conectar');assert.equal(logo.count,1);assert.equal(logo.old,0)
         assert.ok(Math.abs(logo.ratio-logo.natural)<.02);assert.equal(logo.fit,'contain');assert.equal(logo.inside,true);assert.equal(logo.overlap,false)
@@ -93,7 +93,7 @@ try {
     await A.evaluate("document.querySelector('.interactive-response .interactive-controls button').click()");await pause(100)
   }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS 8 widths, Normal/Grande, 125% zoom, '+routes.length+' affected screens, noninteractive aria-hidden decorations hidden on mobile/activity screens, no overflow/image-text overlap, 48/56px targets, keyboard/focus, reduced motion, four learning routes and six games. Screenshots: '+screenshots)
+  console.log('PASS 8 widths, Normal/Grande, 125% zoom, '+routes.length+' affected screens, static aria-hidden decorations reduced on smaller screens, no overflow/image-text overlap, 48/56px targets, keyboard/focus, reduced motion, four learning routes and six games. Screenshots: '+screenshots)
 
 } finally {
   for(const socket of sockets)socket.close();chrome.kill();await server.close();await pause(500)

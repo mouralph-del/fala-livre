@@ -51,9 +51,9 @@ try {
   const click = async selector => { await A.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await pause(80) }
   assert.equal(await A.evaluate('document.querySelector("h1").textContent'), 'Configurações')
   assert.equal(await A.evaluate('document.title'), 'Configurações | Fala Livre')
-  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a"),a=>a.textContent)'), ['Meu Progresso', 'Configurações'])
-  assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 2)
-  assert.equal(await A.evaluate(`document.querySelector('.header-navigation a[href="#/responsaveis"]') !== null`), false)
+  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a"),a=>a.textContent)'), ['Meu Progresso', 'Configurações', 'Responsáveis / Sobre o Fala Livre', 'Entrar', 'Criar conta'])
+  assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 5)
+  assert.equal(await A.evaluate(`document.querySelector('.header-navigation a[href="#/responsaveis"]') !== null`), true)
   assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("input[name=learnCharacter],input[name=gameCharacter]"),i=>({value:i.value,disabled:i.disabled,checked:i.checked}))'), [
     {value:'girl',disabled:false,checked:true},{value:'boy',disabled:false,checked:false},{value:'girl',disabled:false,checked:false},{value:'boy',disabled:false,checked:true},
   ])
@@ -116,7 +116,7 @@ try {
   assert.equal(await A.evaluate('location.hash'), '#/responsaveis')
   assert.equal(await A.evaluate('document.title'), 'Responsáveis | Fala Livre')
   assert.equal(await A.evaluate('document.querySelector("h1").textContent'), 'Responsáveis')
-  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("main h2"),h=>h.textContent)'), ['Sobre o Fala Livre','Acompanhar atividades','Preferências e acessibilidade','Tempo de jogos','Privacidade no MVP','Sobre os pictogramas'])
+  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("main h2"),h=>h.textContent)'), ['Sobre o Fala Livre','Acompanhar atividades','Preferências e acessibilidade','Tempo de jogos','Privacidade e dados','Sobre os pictogramas'])
   for (const pattern of [/aplicação educativa/, /Não medem domínio/, /diferentes pessoas neste navegador/, /não registram emoções ou necessidades pessoais/, /não são salvos como progresso/, /não são vinculados a uma pessoa ou conta/, /Sergio Palao/, /Governo de Aragão/]) assert.match(await text(), pattern)
   assert.equal(await A.evaluate(`document.querySelector('main a[href="https://arasaac.org"]').textContent`), 'ARASAAC')
   assert.equal(await A.evaluate(`document.querySelector('main a[href="https://creativecommons.org/licenses/by-nc-sa/4.0/"]').textContent`), 'CC BY-NC-SA 4.0')
@@ -142,7 +142,7 @@ try {
         for (const zoom of ['1','1.25']) {
           await A.evaluate(`document.documentElement.style.zoom='${zoom}'`)
           assert.equal(await A.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), true, `${hash} ${width} ${size} zoom ${zoom}`)
-          assert.equal(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a,main a"),a=>a.getBoundingClientRect()).every(r=>r.width>0&&r.left>=-1&&r.right<=innerWidth+1)'), true, `links ${hash} ${width} ${size} ${zoom}`)
+          assert.equal(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a,main a")).filter(a=>a.getClientRects().length).map(a=>a.getBoundingClientRect()).every(r=>r.width>0&&r.left>=-1&&r.right<=innerWidth+1)'), true, `links ${hash} ${width} ${size} ${zoom}`)
         }
         await A.evaluate('document.documentElement.style.zoom=""')
       }
