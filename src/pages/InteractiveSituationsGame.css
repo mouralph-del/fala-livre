@@ -5,6 +5,30 @@
   padding: 20px 0 32px;
 }
 
+/* Daily communication: situation and composition together, vocabulary full width.
+   Legacy activities retain their existing layout and drag handles. */
+.interactive-page--daily .interactive-game { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 20px; padding: 20px; }
+.interactive-page--daily .interactive-builder { display: contents; }
+.interactive-page--daily .interactive-scene { grid-column: 1; grid-row: 1; padding: 0; }
+.interactive-page--daily .interactive-scene img { max-height: 240px; }
+.interactive-page--daily .interactive-phrase { grid-column: 1; grid-row: 2; margin: 0; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+.interactive-page--daily .interactive-mission { grid-column: 2; grid-row: 1 / span 2; border: 1px solid var(--border); border-radius: 18px; padding: 18px; }
+.interactive-page--daily .interactive-narrative { font-size: clamp(20px, 2vw, 26px); font-weight: 700; color: var(--text); margin: 0 0 12px; }
+.interactive-page--daily .interactive-mission h2 { font-size: clamp(18px, 1.6vw, 22px); }
+.interactive-page--daily .interactive-instructions { margin-top: 12px; }
+.interactive-page--daily .interactive-builder > :not(.interactive-phrase) { grid-column: 1 / -1; }
+.interactive-page--daily .interactive-vocabulary-title { margin: 12px 0 0; }
+.interactive-page--daily .interactive-options { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0; gap: 12px; }
+.interactive-page--daily .interactive-option-tools { justify-content: center; }
+@media (max-width: 899px) {
+  .interactive-page--daily .interactive-game { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .interactive-page--daily .interactive-mission { grid-column: 1; grid-row: 1; padding: 14px; }
+  .interactive-page--daily .interactive-scene { grid-row: 2; }
+  .interactive-page--daily .interactive-scene img { max-height: 180px; }
+  .interactive-page--daily .interactive-phrase { grid-row: 3; }
+  .interactive-page--daily .interactive-options { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+}
+
 .interactive-intro {
   display: flex;
   flex-wrap: wrap;

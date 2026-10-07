@@ -121,17 +121,13 @@ try {
   await button('Preciso de ajuda');await button('Preciso de ajuda');assert.match(await evaluate(`document.querySelector('.interactive-hint-status').textContent`),/opcional/)
   assert.deepEqual(await saved(),untouched)
   await button('Limpar frase')
-  // Actual mouse drag and Escape while pointer capture is active.
-  const mouseDrag=async cancel=>{
-    await evaluate(`document.querySelector('[aria-label="Arrastar EU"]').scrollIntoView({block:'center'})`)
-    const coords=await evaluate(`(()=>{const a=document.querySelector('[aria-label="Arrastar EU"]').getBoundingClientRect(),b=document.querySelector('[data-slot="0"]').getBoundingClientRect();return{x:a.x+a.width/2,y:a.y+a.height/2,dx:b.x+b.width/2,dy:b.y+b.height/2}})()`)
-    await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,x:coords.x,y:coords.y})
-    await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',button:'left',buttons:1,x:coords.dx,y:coords.dy})
-    if(cancel)await press('Escape')
-    await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,x:coords.dx,y:coords.dy});await pause(40)
-  }
-  await mouseDrag(true);assert.deepEqual(await phrase(),[])
-  await mouseDrag(false);assert.deepEqual(await phrase(),['EU'])
+  // Public daily communication cards remain selectable without a drag handle.
+  assert.equal(await evaluate("document.querySelectorAll('.interactive-handle').length"),0)
+  await evaluate(`document.querySelector('[aria-label="Selecionar EU"]').scrollIntoView({block:'center'})`)
+  const mousePoint=await evaluate(`(()=>{const r=document.querySelector('[aria-label="Selecionar EU"]').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
+  await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...mousePoint})
+  await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...mousePoint});await pause(40)
+  assert.deepEqual(await phrase(),['EU'])
   await button('Limpar frase')
   await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1})
   await evaluate(`document.querySelector('[aria-label="Selecionar EU"]').scrollIntoView({block:'center'})`)
@@ -306,7 +302,7 @@ try {
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false})
   const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),'falalivre-communication-390.png'),Buffer.from(shot.data,'base64'))
   assert.equal(errors.length,0,JSON.stringify(errors))
-  console.log('UI variants, faithful speech, help, explicit advance, refresh/return, double click, mouse drag/cancel, emulated touch, keyboard, socials four sets, menus/routes and isolated storage PASS')
+  console.log('UI variants, faithful speech, help, explicit advance, refresh/return, double click, mouse selection, emulated touch, keyboard, socials four sets, menus/routes and isolated storage PASS')
 } finally {
   socket?.close();chrome.kill();server.close()
 }

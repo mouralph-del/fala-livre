@@ -376,7 +376,22 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
     </main>
   }
 
-  return <main id="conteudo" className="interactive-page" tabIndex={-1} onKeyDown={escape}>
+  const compositionInstructions = <>
+    {!state.confirmed && (
+      <p className="interactive-instructions">{continuous ? 'Toque para preencher. Para substituir, selecione um espaço e um pictograma.' : 'Toque para preencher ou arraste pela alça. Para substituir, selecione um espaço e um pictograma.'}</p>
+    )}
+    {continuous && currentSituation.complements.length > 0 && <p className="interactive-instructions">O último espaço é opcional. Sua mensagem também está completa sem uma expressão social.</p>}
+  </>
+  const phraseControls = <div className="interactive-controls">
+    <button type="button" className="interactive-action" disabled={disablePhraseAudio} aria-label={`Ouvir frase${phraseSpeech ? ' ' + phraseSpeech : ''}`} onClick={() => speak(phraseSpeech)}>
+      <SpeakerIcon />Ouvir frase
+    </button>
+    {!state.confirmed && (
+      <button type="button" className="interactive-action" disabled={!state.phrase.some(Boolean)} onClick={() => change({ type: 'clear' })}>Limpar frase</button>
+    )}
+  </div>
+
+  return <main id="conteudo" className={`interactive-page${continuous ? ' interactive-page--daily' : ''}`} tabIndex={-1} onKeyDown={escape}>
     <header className="interactive-intro">
       <a className="interactive-back" href={embedded ? '#/aprender/meu-dia-a-dia' : '#/jogar'}>{embedded ? '← Meu Dia a Dia' : '← Jogos'}</a>
       <h1>{embedded ? 'Comunicação' : 'Situações Interativas'}</h1>
@@ -413,18 +428,18 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
 
         <div className="interactive-mission">
           <p className="interactive-context">{continuous ? currentSituation.title : <>{currentLevelLabel} · Situação {state.situationIndex + 1} de {currentLevel.situations.length}</>}</p>
+          {continuous && currentSituation.context && <p className="interactive-narrative">{currentSituation.context}</p>}
           <h2 id="interactive-mission" ref={!state.confirmed ? heading : undefined} tabIndex={-1}>{currentSituation.prompt}</h2>
-          {currentSituation.context && <p className="interactive-narrative">{currentSituation.context}</p>}
+          {!continuous && currentSituation.context && <p className="interactive-narrative">{currentSituation.context}</p>}
           <button type="button" className="interactive-action interactive-question-audio" aria-label="Ouvir missão" onClick={() => speak(currentSituation.prompt)}>
             <SpeakerIcon />Ouvir missão
           </button>
+          {continuous && compositionInstructions}
+          {continuous && phraseControls}
         </div>
 
         <div className="interactive-builder">
-          {!state.confirmed && (
-            <p className="interactive-instructions">Toque para preencher ou arraste pela alça. Para substituir, selecione um espaço e um pictograma.</p>
-          )}
-          {continuous && currentSituation.complements.length > 0 && <p className="interactive-instructions">O último espaço é opcional. Sua mensagem também está completa sem uma expressão social.</p>}
+          {!continuous && compositionInstructions}
 
           <ol className="interactive-phrase" ref={board} aria-label="Frase construída">
             {state.phrase.map((id, position) => {
@@ -469,16 +484,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
             })}
           </ol>
 
-          <div className="interactive-controls">
-            <button type="button" className="interactive-action" disabled={disablePhraseAudio} aria-label={`Ouvir frase${phraseSpeech ? ' ' + phraseSpeech : ''}`} onClick={() => speak(phraseSpeech)}>
-              <SpeakerIcon />Ouvir frase
-            </button>
-            {!state.confirmed && (
-              <button type="button" className="interactive-action" disabled={!state.phrase.some(Boolean)} onClick={() => change({ type: 'clear' })}>
-                Limpar frase
-              </button>
-            )}
-          </div>
+          {!continuous && phraseControls}
 
           {!state.confirmed && (
             <>
@@ -486,6 +492,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                 {state.editing !== null ? `Escolha um pictograma para a posição ${state.editing + 1}.` : state.announcement}
               </p>
 
+              {continuous && <h3 className="interactive-vocabulary-title">Vocabulário disponível</h3>}
               <div className="interactive-options">
                 {currentSituation.options.map(option => {
                   const optionIsHint = !continuous && state.hint !== null && currentSituation.expectedTokens[state.hint] === option.id
@@ -502,7 +509,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                         <strong>{option.word}</strong>
                       </button>
                       <div className="interactive-option-tools">
-                        <button
+                        {!continuous && <button
                           type="button"
                           className="interactive-handle"
                           aria-label={`Arrastar ${option.word}`}
@@ -514,7 +521,7 @@ export default function InteractiveSituationsGame({ embedded = false, initialLev
                           onClick={event => selectPictogram(event, option.id)}
                         >
                           <span aria-hidden="true">≡</span>
-                        </button>
+                        </button>}
                         <button type="button" className="interactive-action interactive-option-audio" aria-label={`Ouvir ${option.word}`} onClick={() => speak(option.speechText)}>
                           <SpeakerIcon /><span>Ouvir</span>
                         </button>
