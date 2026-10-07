@@ -59,7 +59,7 @@ try {
   await act(A, "await a.mount('session')")
   assert.equal(await A.evaluate('document.querySelectorAll("em").length'), 1)
   assert.match(await text(), /apenas nesta sessão/)
-  assert.equal(await A.evaluate('document.querySelector(".record-list li").textContent.includes("Montar: Realizado — Nesta sessão")'), true)
+  assert.equal(await A.evaluate('document.querySelector(".record-list li").textContent.includes("Reconhecer: Realizado — Nesta sessão")'), true)
   assert.equal(await A.evaluate('document.querySelector(".record-list li").textContent.includes("Conhecer: Realizado — Nesta sessão")'), false)
   await act(A, "a.set(a.states.full);await a.pause()")
   assert.match(await text(), /18 de 18 níveis/)
@@ -110,11 +110,11 @@ try {
   assert.equal(await A.evaluate('document.querySelectorAll("em").length'), 0)
   for (let i = 0; i < 5; i++) { await act(A, 'await a.unmount()'); assert.equal(await act(A, 'return a.counts().subscriptions'), 0); await act(A, 'await a.mount("real")'); assert.equal(await act(A, 'return a.counts().subscriptions'), 1) }
   await act(A, 'await a.mount("realSession");await a.sessionStore.recordActivityPerformed("wordsAndPhrases","casa",["build"]);await a.pause()')
-  assert.match(await text(), /Montar: Realizado — Nesta sessão/)
+  assert.match(await text(), /Reconhecer: Realizado — Nesta sessão/)
   assert.doesNotMatch(await text(), /Conhecer: Realizado — Nesta sessão/)
   assert.equal(await A.evaluate('localStorage.getItem(window.audit.key)'), afterRecord)
   await A.cdp('Page.reload'); await pause(300); await ready(A); await act(A, 'await a.mount("real")')
-  assert.doesNotMatch(await text(), /Montar: Realizado|Nesta sessão/)
+  assert.doesNotMatch(await text(), /Reconhecer: Realizado|Nesta sessão/)
   assert.equal(await A.evaluate('localStorage.getItem(window.audit.key)'), afterRecord)
   // App routes and session dismissal across navigation.
   await A.evaluate('localStorage.removeItem(window.audit.key);location.hash="/"')
@@ -125,6 +125,7 @@ try {
     assert.equal(await A.evaluate('location.hash'), expected)
     await A.evaluate('location.hash="/"'); await pause(100)
   }
+  await A.evaluate('document.querySelector(".header-menu-toggle").click()'); await pause(100)
   await A.evaluate('document.querySelector(".header-navigation a").focus()')
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await pause(100)
@@ -135,7 +136,7 @@ try {
     for (const route of ['/', '/meu-progresso', '/perfil']) {
       await A.evaluate(`location.hash='${route}'`); await pause(100)
       assert.equal(await A.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'), true, `App ${route} ${width}`)
-      assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 2)
+      assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 5)
     }
   }
   await A.evaluate('location.hash="/meu-progresso"'); await pause(100)

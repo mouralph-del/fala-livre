@@ -71,7 +71,7 @@ export const communicationSets = [
   {
     id: 'state',
     label: 'COMO ESTOU',
-    tokenIds: ['eu', 'estou', 'fome', 'dor'],
+    tokenIds: ['eu', 'estou', 'fome', 'dor', 'feliz', 'triste', 'com-raiva', 'com-medo', 'calmo', 'calma', 'confuso', 'confusa'],
     quickResponseIds: [],
   },
   {
@@ -91,6 +91,7 @@ export const communicationNaturalPhrases = {
   'eu,quero,dormir': 'Eu quero dormir.',
   'eu,preciso,ajuda': 'Eu preciso de ajuda.',
   'eu,preciso,banheiro': 'Eu preciso ir ao banheiro.',
+  'eu,preciso,ajuda,banheiro': 'Eu preciso de ajuda para ir ao banheiro.',
   'eu,estou,fome': 'Eu estou com fome.',
   'eu,estou,dor': 'Eu estou com dor.',
   'eu,nao,quero,comer': 'Eu não quero comer.',

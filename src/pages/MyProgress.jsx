@@ -61,7 +61,7 @@ export default function MyProgress({ progressService, transitionDismissed = fals
       <details><summary>Aprender</summary>
         <h2>Comunicar</h2><Evidence value={summary.communication} label="Exploração de comunicação" /><a href="#/aprender/comunicar">Abrir Comunicar</a>
         <h2>Palavras e Frases</h2><a href="#/aprender/palavras-frases">Abrir Palavras e Frases</a>
-        <ul className="record-list">{summary.words.map(item => <li key={item.id}><h3>{learningWords.find(word => word.id === item.id).word}</h3><Evidence value={item.explored} label="Conhecer" /><Evidence value={item.build} label="Montar" /><Evidence value={item.sentence} label="Usar na frase" /><Completion value={item.complete} /></li>)}</ul>
+        <ul className="record-list">{summary.words.map(item => <li key={item.id}><h3>{learningWords.find(word => word.id === item.id).word}</h3><Evidence value={item.explored} label="Conhecer" /><Evidence value={item.build} label="Reconhecer" /><Evidence value={item.sentence} label="Usar na frase" /><Completion value={item.complete} /></li>)}</ul>
         <h2>Escrever</h2><p>O registro do caderno indica que a prática foi encerrada.</p><a href="#/aprender/escrever">Abrir Escrever</a>
         <ul className="record-list">{summary.writing.map(item => <li key={item.id}><h3>{learningWords.find(word => word.id === item.id).word}</h3><Evidence value={item.typing} label="Digitar" /><Evidence value={item.notebook} label="Prática no caderno encerrada" /><Completion value={item.complete} /></li>)}</ul>
       </details>

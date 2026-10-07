@@ -65,13 +65,9 @@ function privacy() {
 }
 async function completeWord(word, recording = true) {
   await click('Continuar')
-  // Fill an incorrect arrangement first; it must not register build.
-  for (const button of [...document.querySelectorAll('.words-letter-button')]) { button.click(); await pause() }
-  await click('Conferir')
+  await click([...document.querySelectorAll('.words-option')].find(button => button.textContent !== word.word).textContent)
   check(fixture.calls.length === (recording ? 1 : 0), 'incorrect build has no evidence')
-  await click('Reorganizar')
-  for (const letter of word.letters) { const button = [...document.querySelectorAll('.words-letter-button')].find(button => button.textContent === letter && !button.disabled); button.click(); await pause() }
-  await click('Conferir', 2); await click('Continuar')
+  await click(word.word, 2); await click('Continuar')
   await click(word.sentenceOptions.find(option => option !== word.sentenceAnswer)); await click('Conferir')
   check(fixture.calls.length === (recording ? 2 : 0), 'incorrect sentence has no evidence')
   await click(word.sentenceAnswer); await click('Conferir', 2); await settle()

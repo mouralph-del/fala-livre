@@ -14,6 +14,8 @@ export default function EducationalKeyboard({
   onAdvance,
 }) {
   const target = learningWords.find(item => item.id === targetWordId) ?? learningWords[0]
+  // Accented forms are writing aids, not additional letters of the alphabet.
+  const accentedLetters = [...new Set(['Á', ...target.letters.filter(letter => /^[ÁÉÍÓÚÀÂÊÔÜÇ]$/.test(letter))])]
   const limit = mode === 'practice' ? target.letters.length : 12
   const [letters, setLetters] = useState([])
   const [message, setMessage] = useState('')
@@ -177,6 +179,14 @@ export default function EducationalKeyboard({
             <button type="button" aria-label={`Ouvir letra ${letter}`} onClick={() => speakText(audioText)}><SpeakerIcon /></button>
           </div>
         ))}
+      </div>
+
+      <h3>Letras com acento</h3>
+      <div className="writing-keyboard" aria-label="Letras com acento">
+        {accentedLetters.map(letter => <div className="writing-key" key={letter}>
+          <button type="button" className="writing-letter" aria-label={`Inserir letra ${letter}`} aria-disabled={mode === 'practice' && full} onClick={() => insertLetter(letter)}>{letter}</button>
+          <button type="button" aria-label={`Ouvir letra ${letter}`} onClick={() => speakText(letter)}><SpeakerIcon /></button>
+        </div>)}
       </div>
 
       <p role="status" aria-live="polite" className="writing-audio-message">{message || statusMessage}</p>

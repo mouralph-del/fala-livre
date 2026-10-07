@@ -1,22 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { learningWords } from '../data/learningWords'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import { falar, stopSpeaking } from '../utils/speech'
 import './WordsAndPhrases.css'
+import { recognitionOptions } from '../utils/wordRecognition'
 import { useLearningProgress } from '../hooks/useLearningProgress'
 
 const moduleId = 'wordsAndPhrases'
 const officialWordIds = ['casa', 'cama', 'sofa', 'gato', 'cachorro', 'peixe', 'bola', 'blocos', 'carrinho', 'lapis', 'estojo', 'mochila']
-const phaseTitles = { know: 'Conhecer', build: 'Montar', sentence: 'Usar na frase' }
+const phaseTitles = { know: 'Conhecer', build: 'Reconhecer', sentence: 'Usar na frase' }
 
 export default function WordsAndPhrases({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation(moduleId, officialWordIds))
   const [qaWordId, setQaWordId] = useState('')
   const progress = useLearningProgress(!qaWordId, progressService)
   const [phase, setPhase] = useState('know')
-  const [buildSelection, setBuildSelection] = useState([])
+  const [recognitionSelection, setRecognitionSelection] = useState('')
   const [buildFeedback, setBuildFeedback] = useState('')
   const [buildSucceeded, setBuildSucceeded] = useState(false)
   const [sentenceSelection, setSentenceSelection] = useState('')
@@ -28,12 +29,7 @@ export default function WordsAndPhrases({ progressService, qaControls = false } 
 
   const currentWordId = qaWordId || getCurrentTheme(rotation)
   const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
-  const buildSlots = currentWord.letters.length
-  const buildLetters = currentWord.scrambleOrder.map(index => ({
-    id: `${currentWord.id}-letter-${index}`,
-    value: currentWord.letters[index],
-  }))
-  const buildMap = Object.fromEntries(buildLetters.map(item => [item.id, item.value]))
+  const choices = useMemo(() => recognitionOptions(currentWord.id, learningWords), [currentWord.id])
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true })
@@ -55,7 +51,7 @@ export default function WordsAndPhrases({ progressService, qaControls = false } 
     stopSpeaking()
     setAudioMessage('')
     setPhase('know')
-    setBuildSelection([])
+    setRecognitionSelection('')
     setBuildFeedback('')
     setBuildSucceeded(false)
     setSentenceFeedback('')
@@ -63,35 +59,16 @@ export default function WordsAndPhrases({ progressService, qaControls = false } 
     setSentenceSucceeded(false)
   }
 
-  function addBuildLetter(letterId) {
-    if (buildSelection.includes(letterId) || buildSelection.length >= buildSlots) return
-    setBuildSelection(current => [...current, letterId])
-    setBuildFeedback('')
-    setBuildSucceeded(false)
-  }
-
-  function removeBuildLetter(position) {
-    setBuildSelection(current => current.filter((_, index) => index !== position))
-    setBuildFeedback('')
-    setBuildSucceeded(false)
-  }
-
-  function clearBuildSelection() {
-    setBuildSelection([])
-    setBuildFeedback('')
-    setBuildSucceeded(false)
-  }
-
-  function checkBuildWord() {
-    const assembled = buildSelection.map(id => buildMap[id]).join('')
-    if (assembled === currentWord.word) {
+  function recognize(wordId) {
+    setRecognitionSelection(wordId)
+    if (wordId === currentWord.id) {
       if (!buildSucceeded) progress.recordActivityPerformed(moduleId, currentWord.id, ['build'])
-      setBuildFeedback(`Muito bem! Você montou ${currentWord.word}.`)
+      setBuildFeedback('Muito bem!')
       setBuildSucceeded(true)
-      return
+    } else {
+      setBuildFeedback('Tente novamente.')
+      setBuildSucceeded(false)
     }
-    setBuildFeedback('Quase! Confira a palavra e tente novamente.')
-    setBuildSucceeded(false)
   }
 
   function continueToSentence() {
@@ -164,43 +141,16 @@ export default function WordsAndPhrases({ progressService, qaControls = false } 
         {phase === 'build' && (
           <>
             <h2 id="words-heading" ref={headingRef} tabIndex={-1}>{phaseTitles[phase]}</h2>
-            <img className="words-picture words-picture--small" src={currentWord.image} alt="" width="300" height="300" />
-            <p className="words-name">{currentWord.word}</p>
-            <div className="words-slots" aria-label={`Montando a palavra ${currentWord.word}`}>
-              {Array.from({ length: buildSlots }, (_, index) => (
-                <button
-                  key={`slot-${currentWord.id}-${index}`}
-                  type="button"
-                  className="words-slot"
-                  onClick={() => removeBuildLetter(index)}
-                  aria-label={buildSelection[index] ? `Remover letra ${buildMap[buildSelection[index]]} da posição ${index + 1}` : `Posição ${index + 1} vazia`}
-                >
-                  {buildSelection[index] ? buildMap[buildSelection[index]] : '_'}
-                </button>
-              ))}
+            <img className="words-picture words-picture--small" src={currentWord.image} alt={`Pictograma de ${currentWord.word.toLocaleLowerCase('pt-BR')}`} width="300" height="300" />
+            <p className="words-sentence-prompt">Qual palavra combina com esta imagem?</p>
+            <div className="words-options" aria-label="Palavras para reconhecer">
+              {choices.map(option => <button key={option.id} type="button"
+                className={`words-option${recognitionSelection === option.id ? ' words-option--selected' : ''}`}
+                aria-pressed={recognitionSelection === option.id}
+                onClick={() => recognize(option.id)}>{option.word}</button>)}
             </div>
-
-            <p className="words-hint">Toque nas letras para montar a palavra.</p>
-
-            <div className="words-letters">
-              {buildLetters.map(letter => (
-                <button
-                  key={letter.id}
-                  type="button"
-                  className="words-letter-button"
-                  aria-label={`Selecionar letra ${letter.value}`}
-                  onClick={() => addBuildLetter(letter.id)}
-                  disabled={buildSelection.includes(letter.id) || buildSelection.length >= buildSlots}
-                >
-                  {letter.value}
-                </button>
-              ))}
-            </div>
-
             <div className="words-actions">
               <button type="button" aria-label={`Ouvir ${currentWord.word}`} onClick={() => speak(currentWord.audioText)}><SpeakerIcon />Ouvir palavra</button>
-              <button type="button" onClick={clearBuildSelection} disabled={!buildSelection.length}>Reorganizar</button>
-              <button className="action-primary" type="button" onClick={checkBuildWord} disabled={buildSelection.length !== buildSlots}>Conferir</button>
             </div>
 
             <div className="words-feedback" role="status" aria-live="polite">

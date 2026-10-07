@@ -8,13 +8,14 @@ import {
 } from '../data/communicationOptions'
 import { learningConcepts } from '../data/learningConcepts'
 import { socialExpressions } from '../data/socialExpressions'
-import { constructedSpeech } from '../utils/myDayCommunication'
+import { emotionVocabulary, emotionNaturalPhrases } from '../data/myDayEmotions'
+import { communicationPhrase } from '../utils/communicationPhrase'
 import { getCurrentTheme } from '../utils/contentRotation'
 import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotationStorage'
 import './Communication.css'
 import { useLearningProgress } from '../hooks/useLearningProgress'
 
-const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ...socialExpressions }).map(([id, concept]) => [id, {
+const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ...emotionVocabulary, ...socialExpressions }).map(([id, concept]) => [id, {
   id,
   label: concept.label,
   audioText: concept.speech,
@@ -22,11 +23,7 @@ const tokenCatalog = Object.fromEntries(Object.entries({ ...learningConcepts, ..
 }]))
 
 function getNaturalPhrase(tokens) {
-  const phrases = { ...communicationNaturalPhrases }
-  for (const [key, speech] of Object.entries(communicationNaturalPhrases)) {
-    for (const item of Object.values(socialExpressions)) phrases[`${key},${item.id}`] = `${speech.slice(0, -1)}, ${item.speech.toLocaleLowerCase('pt-BR')}`
-  }
-  return constructedSpeech(tokens, phrases, tokenCatalog)
+  return communicationPhrase(tokens, { ...communicationNaturalPhrases, ...emotionNaturalPhrases }, socialExpressions)
 }
 
 export default function Communication({ progressService, qaControls = false } = {}) {
@@ -171,6 +168,7 @@ export default function Communication({ progressService, qaControls = false } = 
         {naturalPhrase && (
           <p className="sentence-natural" aria-live="polite">{naturalPhrase}</p>
         )}
+        {phrase.length > 0 && !naturalPhrase && <p className="communication-status" role="status">Escolha ou reorganize os pictogramas para formar uma frase.</p>}
 
         {offerPlease && <div className="communication-please" aria-labelledby="please-title">
           <p id="please-title">Quer completar a frase?</p>
