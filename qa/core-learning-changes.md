@@ -27,11 +27,10 @@ removido da interface, junto à captura global de digitação. Os botões das le
 continuam acessíveis por Tab e Enter/Espaço. Escrever mantém o fluxo de teclado
 e caderno, sem alteração dos registros `typing`, `notebook` e `complete`.
 
-Decisão de produto para implementação futura: acesso gratuito planejado para
-Comunicar e Escrever, formas fundamentais de expressão. Acesso Premium planejado
-para Palavras e Frases (aprendizagem/reconhecimento mais estruturado), Meu Dia a
-Dia, Jogos e demais recursos que forem definidos posteriormente. Esta decisão
-não implementa planos, bloqueios, pagamentos ou alterações de rotas.
+Comunicar e Escrever permanecem gratuitos, como formas fundamentais de expressão.
+Palavras e Frases, Meu Dia a Dia e Jogos possuem bloqueios Premium no frontend,
+conforme `plans.md`. O plano público continua gratuito, inclusive na conta demo;
+a apresentação de planos não implementa assinatura ou pagamento.
 
 As duas áreas usam `falar` e a preferência global de voz, sem novo serviço,
 armazenamento de áudio ou mudanças nos parâmetros. Timbre e qualidade dependem

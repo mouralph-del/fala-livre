@@ -32,5 +32,6 @@ Na integração real, remover/substituir a implementação demo desse serviço,
 mantendo o contrato de acesso, leitura/assinatura de sessão e saída usado pelas
 telas. O backend deverá definir autenticação, sessão segura e tratamento de
 erros e será a fonte de verdade dos dados de responsável e usuário;
-nenhum endpoint ou schema definitivo de banco é presumido aqui. Não existem
-planos, assinaturas, pagamentos ou bloqueios Premium nesta implementação.
+nenhum endpoint ou schema definitivo de banco é presumido aqui. Existem apresentação
+de planos e bloqueios Premium somente no frontend, documentados em `plans.md`.
+A conta demo continua no plano gratuito; não há assinatura ou pagamento funcional.
