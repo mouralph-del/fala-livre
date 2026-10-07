@@ -191,7 +191,7 @@ export default function SequenceGame({ embedded = false, progressService }) {
     dispatch({ type: 'restart', starts: nextLevel.activities.map(activity => shuffleSequence(activity)) })
   }
 
-  return <main id="conteudo" className="sequence-page" tabIndex={-1} onKeyDown={escape}>
+  return <main id="conteudo" className={`sequence-page${continuous ? ' sequence-page--routines' : ''}`} tabIndex={-1} onKeyDown={escape}>
     <header className="sequence-intro"><a className="sequence-back" href={embedded ? '#/aprender/meu-dia-a-dia' : '#/jogar'}>{embedded ? '← Meu Dia a Dia' : '← Jogos'}</a><h1>{embedded ? 'Rotinas' : 'Sequências'}</h1></header>
     {!embedded && <nav className="sequence-levels" aria-label="Escolher nível">
       {sequenceGameLevels.map((item, index) => <button key={item.id} type="button" className={`sequence-level${item.id === level.id ? ' sequence-level--active' : ''}`} aria-pressed={item.id === level.id} onClick={() => changeLevel(item)}>Nível {index + 1}</button>)}
@@ -200,7 +200,7 @@ export default function SequenceGame({ embedded = false, progressService }) {
       {!continuous && <p className="sequence-round">Atividade {state.activityIndex + 1} de {level.activities.length}</p>}
       <h2 id="sequence-title" ref={heading} tabIndex={-1}>{activity.title}</h2>
       <p className="sequence-context">{activity.context}</p>
-      <p className="sequence-instruction">Arraste pela alça ou selecione um cartão e depois uma posição.</p>
+      <p className="sequence-instruction">{continuous ? 'Selecione um cartão e depois uma posição.' : 'Arraste pela alça ou selecione um cartão e depois uma posição.'}</p>
       <ol className="sequence-grid" ref={board}>{state.order.map((id, position) => {
         const currentStep = activity.steps.find(item => item.id === id)
         const selected = state.selected === id
@@ -212,9 +212,9 @@ export default function SequenceGame({ embedded = false, progressService }) {
               <SequenceVisual step={currentStep} /><strong>{currentStep.word}</strong>
             </button>
             <div className="sequence-tools">
-              <button type="button" className="sequence-handle" aria-label={'Arrastar ou selecionar ' + currentStep.word} disabled={state.complete}
+              {!continuous && <button type="button" className="sequence-handle" aria-label={'Arrastar ou selecionar ' + currentStep.word} disabled={state.complete}
                 onPointerDown={event => pointerDown(event, position)} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={event => pointerEnd(event, true)} onLostPointerCapture={event => pointerEnd(event, true)}
-                onClick={event => guardedClick(event, () => dispatch({ type: 'select', id }))}><span aria-hidden="true">≡</span></button>
+                onClick={event => guardedClick(event, () => dispatch({ type: 'select', id }))}><span aria-hidden="true">≡</span></button>}
             <button type="button" className="sequence-action sequence-audio" aria-label={`Ouvir ${currentStep.word}`} onClick={() => speak(currentStep)}><SpeakerIcon /><span>Ouvir</span></button></div>
           </div>
         </li>

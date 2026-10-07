@@ -20,7 +20,11 @@ for (const [index,routine] of routines.entries()) {
   assert.equal(new Set(order).size, order.length)
   for (const step of routine.steps) {
     assert.equal(step.speechText, step.word)
-    assert.ok(fs.existsSync(new URL(step.image, new URL('../src/data/myDayRoutines.js', import.meta.url))))
+    if (step.id === 'colocar-pijama') {
+      assert.equal(step.word, 'COLOCAR PIJAMA')
+      assert.equal(step.image, null)
+      assert.equal(step.arasaacId, undefined)
+    } else assert.ok(fs.existsSync(new URL(step.image, new URL('../src/data/myDayRoutines.js', import.meta.url))))
   }
   let accepted = 0
   for (const candidate of permutations(order)) {

@@ -5,6 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { routines, loadCatalog } from './routines.test.mjs'
+const routinesOnly = process.argv.includes('--routines-only')
 
 const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png'}
 const root = path.resolve('dist')
@@ -103,20 +104,18 @@ try {
   assert.deepEqual(await saved(),initial)
   await evaluate(`window.__audioCalls=0; speechSynthesis.speak=()=>{window.__audioCalls++}`)
 
-  // Mouse drag, pointer capture, and cancellation on a real browser.
-  const drag=async (cancel=false)=>{
-    const coords=await evaluate(`(()=>{const a=document.querySelector('.sequence-handle').getBoundingClientRect(); const b=document.querySelector('[data-position="1"]').getBoundingClientRect(); return {x:a.x+a.width/2,y:a.y+a.height/2,dx:b.x+b.width/2,dy:b.y+b.height/2}})()`)
-    await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',x:coords.x,y:coords.y})
-    await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,x:coords.x,y:coords.y})
-    await cdp('Input.dispatchMouseEvent',{type:'mouseMoved',button:'left',buttons:1,x:coords.dx,y:coords.dy})
-    if(cancel) await press('Escape')
-    await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,x:coords.dx,y:coords.dy})
-    await pause(40)
+  // Public routine cards use selection + position, with no drag handle in the DOM.
+  const mouseClick=async selector=>{
+    const coords=await evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2}})()`)
+    await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...coords})
+    await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...coords}); await pause(40)
   }
-  let before=await order()
-  await drag(true)
+  assert.equal(await evaluate(`document.querySelectorAll('.sequence-handle').length`),0)
+  assert.equal(await evaluate(`document.querySelector('.sequence-grid').textContent.includes('≡')`),false)
+  const before=await order()
+  await mouseClick('.sequence-select'); await press('Escape')
   assert.deepEqual(await order(),before)
-  await drag()
+  await mouseClick('.sequence-select'); await mouseClick('[data-position="1"] .sequence-position')
   const swapped=[...before]; [swapped[0],swapped[1]]=[swapped[1],swapped[0]]
   assert.deepEqual(await order(),swapped)
   assert.equal(await evaluate(`!!document.querySelector('.sequence-drag')`),false)
@@ -174,7 +173,7 @@ try {
   for(const cycle of cycles)assert.equal(new Set(cycle).size,8)
   assert.equal(cycles[0][0],currentId)
   assert.equal(await evaluate('window.__audioCalls'),0)
-  console.log('Browser: help, retry, manual audio, Escape, drag, touch emulation, keyboard, focus, refresh, return, double advance, two cycles PASS')
+  console.log('Browser routines: no handles, help, retry, audio, Escape, mouse/touch selection, keyboard ordering, focus, refresh, double advance, two cycles PASS')
 
   // Seed each routine for layout checks without disturbing previous module states.
   const layout=[]
@@ -185,21 +184,34 @@ try {
       await evaluate(`(()=>{const data=JSON.parse(localStorage.getItem('${key}')); data.modules.myDayRoutines={order:${JSON.stringify([routine.id,...routines.filter(r=>r.id!==routine.id).map(r=>r.id)])},currentIndex:0,cycle:1,lastThemeId:null};localStorage.setItem('${key}',JSON.stringify(data))})()`)
       await navigate('/aprender/meu-dia-a-dia/rotinas')
       await wait(`document.querySelector('#sequence-title')?.textContent===${JSON.stringify(routine.title)}`)
-      for(const size of ['standard','large']) {
+      assert.equal(await evaluate(`document.querySelectorAll('.sequence-handle').length`),0)
+      if (routine.id === 'preparar-dormir') {
+        assert.ok(await evaluate(`(()=>{const card=[...document.querySelectorAll('.sequence-card')].find(c=>c.textContent.includes('COLOCAR PIJAMA'));return !!card&&card.textContent.includes('Sem imagem')&&!card.querySelector('img')})()`))
+        assert.equal(await evaluate(`document.querySelector('.sequence-grid').textContent.includes('VESTIR CAMISETA')`),false)
+        assert.equal(await evaluate(`document.querySelectorAll('.sequence-position').length`),4)
+      }
+      for(const size of ['normal','large']) {
         await evaluate(`document.documentElement.dataset.elementSize='${size}'`)
         const metrics=await evaluate(`(()=>{const buttons=[...document.querySelectorAll('.sequence-grid button')];const rects=buttons.map(b=>b.getBoundingClientRect());const overlap=rects.some((a,i)=>rects.slice(i+1).some(b=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1 && Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1));return {overflow:document.documentElement.scrollWidth>innerWidth,overlap,images:[...document.querySelectorAll('.sequence-grid img')].every(i=>i.complete&&i.naturalWidth>0),text:[...document.querySelectorAll('.sequence-select strong')].every(el=>el.scrollWidth<=el.clientWidth+1)}})()`)
         assert.deepEqual(metrics,{overflow:false,overlap:false,images:true,text:true},`${width}px ${routine.id} ${size}`)
       }
     }
-    layout.push(`${width}px: eight routines, standard/large PASS`)
+    layout.push(`${width}px: eight routines, Normal/Grande PASS`)
   }
   console.log(layout.join('\n'))
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:false})
   await navigate('/aprender/meu-dia-a-dia')
-  await evaluate(`document.documentElement.dataset.elementSize='standard'`)
+  await evaluate(`(()=>{const data=JSON.parse(localStorage.getItem('${key}'));data.modules.myDayRoutines={order:${JSON.stringify(['preparar-dormir',...routines.filter(r=>r.id!=='preparar-dormir').map(r=>r.id)])},currentIndex:0,cycle:1,lastThemeId:null};localStorage.setItem('${key}',JSON.stringify(data))})()`)
+  await evaluate(`document.documentElement.dataset.elementSize='normal'`)
   await navigate('/aprender/meu-dia-a-dia/rotinas')
+  await wait(`document.querySelector('#sequence-title')?.textContent==='Preparar-se para dormir.'`)
+  await evaluate(`speechSynthesis.speak=utterance=>{window.__routineSpeech=utterance.text}`)
+  await click('.sequence-audio[aria-label="Ouvir COLOCAR PIJAMA"]')
+  assert.equal(await evaluate('window.__routineSpeech'), 'COLOCAR PIJAMA')
+  await evaluate('window.scrollTo(0,0)')
   const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true})
-  fs.writeFileSync('qa/routines-390.png',Buffer.from(shot.data,'base64'))
+  fs.writeFileSync(path.join(os.tmpdir(),'falalivre-routines-390.png'),Buffer.from(shot.data,'base64'))
+  if (!routinesOnly) {
   await navigate('/aprender')
   assert.equal(await evaluate(`document.querySelectorAll('.learning-card').length`),4)
   await navigate('/jogar')
@@ -263,6 +275,8 @@ try {
   for(const module of Object.keys(allModules.modules).filter(module=>module!=='myDayRoutines')) assert.deepEqual(afterModules.modules[module],allModules.modules[module])
   assert.equal(errors.length,0,JSON.stringify(errors))
   console.log('Menus, all nine legacy activities, seven independent module rotations, current My Day communication/emotions initialization, no browser runtime errors PASS')
+  }
+  assert.equal(errors.length,0,JSON.stringify(errors))
 } finally {
   socket?.close()
   chrome.kill()

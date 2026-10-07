@@ -61,6 +61,7 @@
 .sequence-handle { width: 48px; padding: 4px; flex-shrink: 0; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
 .sequence-handle span { font-size: 25px; line-height: 1; pointer-events: none; }
 .sequence-audio { background: white; }
+.sequence-page--routines .sequence-tools { align-items: center; flex-direction: row; }
 .sequence-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
 .sequence-selection:not(:empty), .sequence-feedback:not(:empty) { margin-bottom: 10px; padding: 10px; background: var(--soft-green); color: var(--secondary); border-radius: var(--radius-control); line-height: 1.4; }
 .sequence-selection { font-size: 14px; }

@@ -28,7 +28,7 @@ const cards = {
   'secar-maos': { id: 'secar-maos', word: 'SECAR AS MÃOS', speechText: 'SECAR AS MÃOS', image: image4, arasaacId: 2566 },
   'calcar-sapato': { id: 'calcar-sapato', word: 'CALÇAR SAPATO', speechText: 'CALÇAR SAPATO', image: image5, arasaacId: 14534 },
   'amarrar-cadarco': { id: 'amarrar-cadarco', word: 'AMARRAR CADARÇO', speechText: 'AMARRAR CADARÇO', image: image6, arasaacId: 17026 },
-  'vestir-camiseta': { id: 'vestir-camiseta', word: 'VESTIR CAMISETA', speechText: 'VESTIR CAMISETA', image: image7, arasaacId: 2781 },
+  'colocar-pijama': { id: 'colocar-pijama', word: 'COLOCAR PIJAMA', speechText: 'COLOCAR PIJAMA', image: null },
   'deitar-cama': { id: 'deitar-cama', word: 'DEITAR NA CAMA', speechText: 'DEITAR NA CAMA', image: image8, arasaacId: 4553 },
   'dormir': { id: 'dormir', word: 'DORMIR', speechText: 'DORMIR', image: image9, arasaacId: 2369 },
   'colocar-mochila': { id: 'colocar-mochila', word: 'COLOCAR MOCHILA NAS COSTAS', speechText: 'COLOCAR MOCHILA NAS COSTAS', image: image10, arasaacId: 38265 },
@@ -71,9 +71,9 @@ export const myDayRoutines = [
   {
     id: 'preparar-dormir',
     title: 'Preparar-se para dormir.',
-    context: 'Neste exemplo, você veste uma camiseta, cuida dos dentes e depois vai dormir.',
-    steps: [cards['vestir-camiseta'], cards['escovar-dentes'], cards['deitar-cama'], cards['dormir']],
-    dependencies: [["vestir-camiseta","deitar-cama"],["escovar-dentes","deitar-cama"],["deitar-cama","dormir"]],
+    context: 'Neste exemplo, você coloca o pijama, cuida dos dentes e depois vai dormir.',
+    steps: [cards['colocar-pijama'], cards['escovar-dentes'], cards['deitar-cama'], cards['dormir']],
+    dependencies: [["colocar-pijama","deitar-cama"],["escovar-dentes","deitar-cama"],["deitar-cama","dormir"]],
   },
   {
     id: 'preparar-sair',
