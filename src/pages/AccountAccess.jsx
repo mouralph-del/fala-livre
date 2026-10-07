@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { AccountServiceUnavailable, requestAccountAccess } from '../services/accountAccess'
+import { AccountServiceUnavailable, InvalidAccountCredentials, requestAccountAccess } from '../services/accountAccess'
 import './AccountAccess.css'
 
 export default function AccountAccess({ mode, submitAccount = requestAccountAccess }) {
@@ -31,23 +31,26 @@ export default function AccountAccess({ mode, submitAccount = requestAccountAcce
     setErrors(next); setMessage('')
     if (Object.keys(next).length) { inputs.current[Object.keys(next)[0]]?.focus(); return }
     lock.current = true; setPending(true)
+    let signedIn = false
     try {
       await submitAccount(mode, { ...(create ? { name: values.name.trim() } : {}), email: values.email.trim(), password: values.password })
+      signedIn = !create
     } catch (error) {
-      setMessage(error instanceof AccountServiceUnavailable
+      setMessage(error instanceof InvalidAccountCredentials ? 'E-mail ou senha incorretos.' : error instanceof AccountServiceUnavailable
         ? 'O acesso à conta ainda não está disponível. Você pode continuar usando as atividades neste navegador.'
         : 'Não foi possível enviar sua solicitação. Tente novamente mais tarde.')
     } finally {
       setValues(current => ({ ...current, password: '', confirmation: '' }))
       setPending(false); lock.current = false
     }
+    if (signedIn) window.location.hash = '#/'
   }
   return <main id="conteudo" className="account-page" tabIndex={-1}>
     <a className="navigation-return" href="#/">← Início</a>
     <header className="account-intro"><h1>{create ? 'Criar conta' : 'Entrar'}</h1><p>Um espaço para quem acompanha o uso do Fala Livre.</p></header>
     <section className="account-panel" aria-labelledby="account-form-title">
       <h2 id="account-form-title">{create ? 'Dados do responsável' : 'Acesso à conta'}</h2>
-      <p className="account-availability">O serviço de contas ainda não está conectado. As atividades continuam disponíveis neste navegador.</p>
+      <p className="account-availability">{create ? 'O serviço de contas ainda não está conectado. As atividades continuam disponíveis neste navegador.' : 'Use a conta de demonstração.'}</p>
       <form noValidate onSubmit={submit}>
         {fields.map(field => <div className="account-field" key={field.id}>
           <label htmlFor={'account-' + field.id}>{field.label}</label>

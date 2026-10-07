@@ -60,7 +60,9 @@ try {
     await ev('document.querySelector(".account-show-password input").click()')
     assert.equal(await ev('document.querySelector("#account-password").type'), 'password')
     await submit()
-    assert.ok(await ev('document.querySelector(".account-status").textContent.includes("ainda não está disponível")'))
+    assert.ok(await ev(hash === '/entrar'
+      ? 'document.querySelector(".account-status").textContent === "E-mail ou senha incorretos."'
+      : 'document.querySelector(".account-status").textContent.includes("ainda não está disponível")'))
     assert.equal(await ev('document.querySelector("#account-password").value'), '')
     assert.deepEqual(await ev('window.__accountRequests'), [])
     assert.equal(await storage(), before, 'account flow writes no credentials or other local state')
@@ -69,6 +71,54 @@ try {
     await fill('password', 'OnlyInMemory#123'); await route(transition)
     assert.equal(await ev('document.querySelector("#account-password").value'), '', 'route transition clears the form')
   }
+  // Demo access changes only its own session key, including across a reload.
+  await route('/entrar')
+  await ev(`(async()=>{localStorage.setItem('falalivre.preferences', JSON.stringify({elementSize:'normal',reduceMotion:true,gameTimeLimit:'30'}));
+    localStorage.setItem('falaLivre_gameTime_v1', JSON.stringify({day:(await import('/src/utils/gameTimeCore.js')).localDay(Date.now()),consumedMs:12345}));
+    localStorage.setItem('falaLivre_contentRotation_v1', JSON.stringify({preserved:true}));
+    localStorage.setItem('falaLivre_progress_v1', JSON.stringify((await import('/src/utils/progress.js')).createEmptyProgress('12345678-1234-4234-8234-123456789abc')))})()`)
+  const preserved = await storage()
+  await fill('email', 'teste@falalivre.com'); await fill('password', 'wrong-password'); await submit()
+  assert.equal(await ev('document.querySelector(".account-status").textContent'), 'E-mail ou senha incorretos.')
+  assert.equal(await storage(), preserved)
+  await fill('password', 'FalaLivre123'); await submit()
+  assert.equal(await ev('location.hash'), '#/')
+  const demoSession = await ev('JSON.parse(localStorage.getItem("falalivre.demo-session.v1"))')
+  assert.deepEqual(demoSession, { demo: true, name: 'Responsável' })
+  const withoutDemo = () => ev('JSON.stringify({local:Object.entries(localStorage).filter(([key])=>key!=="falalivre.demo-session.v1"),session:Object.entries(sessionStorage)})')
+  assert.equal(await withoutDemo(), preserved)
+  assert.equal((await storage()).includes('FalaLivre123'), false)
+  await ev('document.querySelector(".header-menu-toggle").click()')
+  assert.equal(await ev('document.querySelectorAll(".header-account-section a").length'), 0)
+  assert.equal(await ev('document.querySelector(".header-account-section .header-menu-label").textContent'), 'Responsável')
+  assert.equal(await ev('document.querySelector(".header-sign-out").textContent'), 'Sair')
+  await A.cdp('Page.reload'); await ready(A)
+  assert.equal(await withoutDemo(), preserved)
+  await ev('document.querySelector(".header-menu-toggle").click()')
+  assert.equal(await ev('document.querySelectorAll(".header-account-section a").length'), 0)
+  for (const width of [320, 768, 1366]) for (const size of ['normal', 'large']) {
+    await A.cdp('Emulation.setDeviceMetricsOverride', { width, height: 700, deviceScaleFactor: 1, mobile: false })
+    await ev(`document.documentElement.dataset.elementSize=${JSON.stringify(size)}`)
+    const layout = await ev(`(()=>{const menu=document.querySelector('.header-popover').getBoundingClientRect(),button=document.querySelector('.header-sign-out');return {inside:menu.left>=8&&menu.right<=innerWidth-8&&menu.bottom<=innerHeight-8,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,clipped:button.scrollWidth>button.clientWidth+1,height:button.getBoundingClientRect().height}})()`)
+    assert.ok(layout.inside, JSON.stringify({width,size,layout})); assert.equal(layout.overflow, false); assert.equal(layout.clipped, false)
+    assert.ok(layout.height >= (size === 'large' ? 56 : 48))
+  }
+  // Native keyboard activation and visible focus on the real logout button.
+  await ev('document.querySelector(".header-menu-toggle").focus()')
+  for (let i = 0; i < 4; i++) {
+    await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
+    await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
+  }
+  assert.equal(await ev('document.activeElement.className'), 'header-sign-out')
+  assert.equal(await ev('getComputedStyle(document.activeElement).outlineStyle'), 'solid')
+  await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
+  await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await pause(60)
+  assert.equal(await ev('localStorage.getItem("falalivre.demo-session.v1")'), null)
+  assert.equal(await storage(), preserved)
+  assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'), 'false')
+  await ev('document.querySelector(".header-menu-toggle").click()')
+  assert.deepEqual(await ev('Array.from(document.querySelectorAll(".header-account-section a"),a=>a.getAttribute("href"))'), ['#/entrar', '#/criar-conta'])
+  await ev('document.querySelector(".header-menu-toggle").click()')
   const shots = path.join(tempRoot, 'falalivre-account-review'); fs.mkdirSync(shots, { recursive: true })
   for (const width of [320, 360, 390, 430, 768, 1024, 1366]) for (const size of ['normal', 'large']) for (const zoom of [1, 1.25]) for (const hash of ['/entrar', '/criar-conta']) {
     await A.cdp('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false })
@@ -82,7 +132,7 @@ try {
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 }); await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
   for (const name of ['name', 'email', 'password', 'confirmation']) { await ev(`document.querySelector('[name="${name}"]').focus()`); assert.equal(await ev('getComputedStyle(document.activeElement).outlineStyle'), 'solid') }
   assert.deepEqual(errors, []); assert.deepEqual(warnings, [])
-  console.log('PASS accounts: required/email/minimum/matching validation, accessible errors/focus/show password; no network, storage or fake success; credentials cleared; seven widths Normal/Grande 125%. Screenshots: ' + shots)
+  console.log('PASS accounts: accessible validation/show password; correct/incorrect demo login, immediate menu, reload, keyboard logout, password never persisted, other storage preserved; signup unavailable; seven widths Normal/Grande 125%. Screenshots: ' + shots)
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

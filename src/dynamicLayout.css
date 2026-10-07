@@ -301,12 +301,12 @@ main :is(.puzzle-status, .path-hint-text, .memory-feedback, .findimage-feedback,
 .header-menu-toggle svg { width: 24px; height: 24px; }
 .app-header .header-popover { position: absolute; right: 0; top: calc(100% + 8px); z-index: 20; display: flex; flex-direction: column; width: 288px; max-width: calc(100vw - 32px); padding: 8px; gap: 4px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-md); }
 .app-header .header-popover[hidden] { display: none; }
-.app-header .header-popover a { display: flex; align-items: center; width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid transparent; border-radius: 12px; color: var(--primary); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
-.header-menu-toggle:hover, .app-header .header-popover a:hover { background: var(--soft-blue); border-color: var(--primary); }
-.header-menu-toggle:active, .app-header .header-popover a:active { background: var(--selected); }
-.header-menu-toggle:focus-visible, .app-header .header-popover a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.app-header .header-popover :is(a, .header-sign-out) { display: flex; align-items: center; width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid transparent; border-radius: 12px; color: var(--primary); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.header-menu-toggle:hover, .app-header .header-popover :is(a, .header-sign-out):hover { background: var(--soft-blue); border-color: var(--primary); }
+.header-menu-toggle:active, .app-header .header-popover :is(a, .header-sign-out):active { background: var(--selected); }
+.header-menu-toggle:focus-visible, .app-header .header-popover :is(a, .header-sign-out):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 :root[data-element-size='large'] .header-menu-toggle { width: 56px; height: 56px; }
-:root[data-element-size='large'] .app-header .header-popover a { min-height: 56px; }
+:root[data-element-size='large'] .app-header .header-popover :is(a, .header-sign-out) { min-height: 56px; }
 @media (max-width: 700px) {
   .app-header .header-content { min-height: 72px; padding-block: 8px; gap: 12px; }
   .app-header .brand { width: clamp(160px, 52vw, 220px); max-width: calc(100% - 72px); }

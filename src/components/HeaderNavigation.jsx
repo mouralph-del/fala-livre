@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { getCurrentSession, signOut, subscribeSession } from '../services/accountAccess'
 
 export default function HeaderNavigation({ route }) {
   const [open, setOpen] = useState(false)
+  const session = useSyncExternalStore(subscribeSession, getCurrentSession)
   const container = useRef(null)
   const trigger = useRef(null)
   useEffect(() => {
@@ -34,9 +36,13 @@ export default function HeaderNavigation({ route }) {
         <a href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined} onClick={() => setOpen(false)}>Configurações</a>
         <a href="#/responsaveis" aria-current={route === 'responsibleGuidance' ? 'page' : undefined} onClick={() => setOpen(false)}>Responsáveis / Sobre o Fala Livre</a>
         <div className="header-account-section">
-          <span className="header-menu-label">Conta do responsável</span>
+          <span className="header-menu-label">{session ? session.name : 'Conta do responsável'}</span>
+          {session ? <button type="button" className="header-sign-out" onClick={() => {
+            signOut(); setOpen(false); trigger.current?.focus()
+          }}>Sair</button> : <>
           <a href="#/entrar" aria-current={route === 'signIn' ? 'page' : undefined} onClick={() => setOpen(false)}>Entrar</a>
           <a href="#/criar-conta" aria-current={route === 'createAccount' ? 'page' : undefined} onClick={() => setOpen(false)}>Criar conta</a>
+          </>}
         </div>
       </nav>
     </div>

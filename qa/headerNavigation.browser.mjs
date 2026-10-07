@@ -31,6 +31,8 @@ try {
   for (let i=0;i<100;i++) { try { targets=await(await fetch('http://127.0.0.1:9362/json/list')).json(); if(targets.some(t=>t.type==='page'))break } catch {} await pause(100) }
   const A=await connect(targets.find(t=>t.type==='page')), ev=A.evaluate
   await A.cdp('Page.navigate',{url:'http://127.0.0.1:4212/__audit#/'}); await ready(A)
+  assert.ok(await ev('getComputedStyle(document.querySelector(".app-header")).backgroundImage.includes("linear-gradient")'))
+  const shots = path.join(tempRoot, 'falalivre-header-review'); fs.mkdirSync(shots, { recursive: true })
   const key=async (key,code=key,vk=key==='Tab'?9:key==='Escape'?27:13)=>{await A.cdp('Input.dispatchKeyEvent',{type:'keyDown',key,code,text:key==='Enter'?'\r':undefined,windowsVirtualKeyCode:vk});await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:vk});await pause(30)}
   const click=async selector=>{const r=await ev(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await A.cdp('Input.dispatchMouseEvent',{type:'mousePressed',...r,button:'left',clickCount:1});await A.cdp('Input.dispatchMouseEvent',{type:'mouseReleased',...r,button:'left',clickCount:1});await pause(40)}
   const opened=()=>ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")==="true"')
@@ -48,6 +50,11 @@ try {
     await click('.header-menu-toggle');await click('.brand-logo');assert.equal(await opened(),false)
     // Trusted touch on the trigger and outside, with no hover dependency.
     for(const selector of ['.header-menu-toggle','.brand-logo']) {const r=await ev(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await A.cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...r,id:1}]});await A.cdp('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pause(40);assert.equal(await opened(),selector==='.header-menu-toggle')}
+    if (zoom === 1) {
+      await ev('location.hash="#/"'); await pause(80)
+      const shot = await A.cdp('Page.captureScreenshot', { format:'jpeg', quality:75 })
+      fs.writeFileSync(path.join(shots, 'home-' + width + '-' + size + '.jpg'), Buffer.from(shot.data, 'base64'))
+    }
   }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
   console.log('PASS header: seven widths Normal/Grande; mouse/touch toggle/outside; three preserved routes and two account routes; Tab/Enter/Escape, focus, logo proportions and no overflow.')
