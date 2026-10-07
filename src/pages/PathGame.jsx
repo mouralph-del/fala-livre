@@ -97,7 +97,7 @@ export default function PathGame({ progressService } = {}) {
     </nav>
     <GameProgressFeedback progress={progress} firstLevel={pathGameLevels[0]} onChange={changeLevel} />
     {progress.activeAvailable && <>
-    <div className="path-adventure">
+    <div className="path-adventure game-surface game-surface--trail">
       <section className="path-situation" aria-labelledby="path-situation-title">
         <div className="path-mission-label"><img src={level.image} alt="" width="60" height="60" /><span>Sua missão</span></div>
         <h2 id="path-situation-title">{level.situation}</h2>

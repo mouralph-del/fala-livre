@@ -90,7 +90,7 @@ export default function FindImageGame({ progressService } = {}) {
     </nav>
     <GameProgressFeedback progress={progress} firstLevel={findImageLevels[0]} onChange={changeLevel} />
     {progress.activeAvailable && <>
-    {!complete ? <section className="findimage-play" aria-labelledby="findimage-target">
+    {!complete ? <section className="findimage-play game-surface game-surface--mission" aria-labelledby="findimage-target">
       <div className="findimage-target">
         <h2 id="findimage-target" ref={heading} tabIndex={-1}>{target.question}</h2>
         <button type="button" className="findimage-action findimage-audio" aria-label="Ouvir pergunta" onClick={speak}><SpeakerIcon /></button>

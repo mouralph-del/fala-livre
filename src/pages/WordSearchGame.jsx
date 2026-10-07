@@ -122,7 +122,7 @@ export default function WordSearchGame({ progressService } = {}) {
     </nav>
     <GameProgressFeedback progress={progress} firstLevel={wordSearchLevels[0]} onChange={changeLevel} />
     {progress.activeAvailable && <>
-    <div className="wordsearch-activity">
+    <div className="wordsearch-activity game-surface game-surface--notebook">
     <section className="wordsearch-vocabulary" aria-labelledby="wordsearch-words-title">
       <h2 id="wordsearch-words-title">{level.title.toUpperCase()}</h2>
       <ul>{level.words.map((word, index) => <li key={word.id} data-found-color={found.includes(word.id) ? index % 4 : undefined}><div><strong>{word.word}</strong>{found.includes(word.id) && <span className="wordsearch-found-label">Encontrada</span>}</div><button type="button" className="wordsearch-audio" aria-label={`Ouvir ${word.word}`} onClick={() => speak(word)}><SpeakerIcon /></button></li>)}</ul>

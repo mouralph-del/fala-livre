@@ -144,7 +144,7 @@ export default function WhereBelongsGame({ progressService } = {}) {
     {complete ? <section className="belongs-success">
       <h2 ref={heading} tabIndex={-1}>Muito bem!</h2><p>Você completou {level.label.toLowerCase()}.</p>
       <button type="button" className="belongs-action" onClick={restart}>Jogar novamente</button>
-    </section> : <section className="belongs-play" aria-labelledby="belongs-question" data-round={round.id}>
+    </section> : <section className="belongs-play game-surface game-surface--organize" aria-labelledby="belongs-question" data-round={round.id}>
       <div className="belongs-question"><h2 id="belongs-question" ref={heading} tabIndex={-1}>{round.prompt}</h2><button type="button" className="belongs-action belongs-audio" aria-label="Ouvir pergunta" onClick={speak}><SpeakerIcon /></button></div>
       <div className="belongs-origin">
         <button ref={source} type="button" className={'belongs-object' + (state.selected ? ' belongs-object--selected' : '') + (state.hint ? ' belongs-object--hint' : '')} aria-label={`Selecionar ${round.object}`} aria-describedby="belongs-instruction" aria-pressed={state.selected} aria-disabled={state.correct} tabIndex={state.correct ? -1 : 0} data-moving={Boolean(drag)} data-placed={state.correct}

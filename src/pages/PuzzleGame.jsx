@@ -161,7 +161,7 @@ export default function PuzzleGame({ progressService } = {}) {
     </nav>
     <GameProgressFeedback progress={progress} firstLevel={puzzleLevels[0]} onChange={changeLevel} />
     {progress.activeAvailable && <>
-    <div className="puzzle-adventure">
+    <div className="puzzle-adventure game-surface game-surface--assembly">
     <section ref={playArea} className="puzzle-activity" aria-labelledby="puzzle-word" style={{ '--columns': level.columns, '--rows': level.rows, '--image-ratio': level.imageAspectRatio, '--piece-ratio': level.imageAspectRatio * level.rows / level.columns }}>
       <div className="puzzle-reference">{level.composition ? <span className="puzzle-reference-composition" aria-label="Gato e cachorro"><img src={level.composition.images[0]} alt="Gato" /><img src={level.composition.images[1]} alt="Cachorro" /></span> : <img src={level.image} alt={`Imagem para montar: ${level.label.toLowerCase()}`} width="300" height="300" />}<div><h2 id="puzzle-word">Monte a {level.label}</h2><div className="puzzle-reference-meta"><span>{layout.pieces.length} peças</span><button type="button" className="puzzle-action" onClick={speak}><SpeakerIcon />Ouvir palavra</button></div></div></div>
       <p className="puzzle-instructions">Arraste uma peça até um espaço ou selecione a peça e depois o espaço. Para trocar, selecione duas peças do tabuleiro.</p>

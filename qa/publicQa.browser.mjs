@@ -55,6 +55,10 @@ try{
  await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('falaLivre_progress_v1',${JSON.stringify(JSON.stringify(seed))});localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}));speechSynthesis.speak=()=>{};speechSynthesis.cancel=()=>{}`})
  const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...Object.keys(gameCatalog).map(id=>'/jogar/'+id),'/jogar/bingo','/jogar/sequencias','/jogar/situacoes-interativas','/meu-progresso','/perfil','/responsaveis','/entrar','/criar-conta']
  const check=async label=>{
+  assert.equal(await ev('document.querySelectorAll(".scene-landscape").length'),1,label+' shared scene')
+  const family=await ev('document.querySelector(".home-surround").dataset.scene')
+  assert.ok(['home','learn','daily','play','care'].includes(family),label+' scene family')
+  assert.equal(await ev('document.querySelector(".page-scene").dataset.family'),family,label+' consistent scene')
   assert.equal(await ev('document.querySelectorAll('+JSON.stringify('[class*="-qa-"],[data-debug],[data-fixture]')+').length'),0,label+' technical DOM')
   assert.equal(await ev('/\\bQA\\b|\\bdebug\\b|fixture|\\bMVP\\b|prot[oó]tipo|demonstra[çc][ãa]o|demonstra[çc][õo]es|rota..o normal|voltar . rota..o|for.ar (conte.do|conclus.o|desbloqueio)/i.test(document.body.textContent)'),false,label+' technical text')
  }

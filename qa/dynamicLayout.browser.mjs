@@ -41,12 +41,12 @@ try {
       await A.evaluate(`document.documentElement.dataset.elementSize='${large?'large':'normal'}';document.documentElement.dataset.reduceMotion='true';document.documentElement.style.zoom=${zoom}`)
       for(const [name,hash] of routes){
         await route(hash)
-        const ornaments=await A.evaluate(`(()=>{const layer=document.querySelector('.home-decoration');return {hidden:layer.getAttribute('aria-hidden'),pointer:getComputedStyle(layer).pointerEvents,focusable:layer.querySelectorAll('a,button,input,select,[tabindex]').length,motifs:Array.from(layer.querySelectorAll('.decor-motif'),e=>({display:getComputedStyle(e).display,pointer:getComputedStyle(e).pointerEvents,animation:getComputedStyle(e).animationName}))}})()`)
+        const ornaments=await A.evaluate(`(()=>{const layer=document.querySelector('.home-decoration');return {hidden:layer.getAttribute('aria-hidden'),pointer:getComputedStyle(layer).pointerEvents,focusable:layer.querySelectorAll('a,button,input,select,[tabindex]').length,motifs:Array.from(layer.querySelectorAll('.scene-detail'),e=>({display:getComputedStyle(e).display,pointer:getComputedStyle(e).pointerEvents,animation:getComputedStyle(e).animationName}))}})()`)
         assert.equal(ornaments.hidden,'true');assert.equal(ornaments.pointer,'none');assert.equal(ornaments.focusable,0)
         assert.equal(ornaments.motifs.length,4)
         assert.ok(ornaments.motifs.every(item=>item.pointer==='none'&&item.animation==='none'))
-        const visibleMotifs=width>=1200?[0,1,2,3]:[]
-        ornaments.motifs.forEach((item,index)=>assert.equal(item.display,visibleMotifs.includes(index)?'block':'none'))
+        const visibleMotifs=width>=1200?[0,1,2,3]:width>700?[0,1]:[]
+        ornaments.motifs.forEach((item,index)=>assert.equal(item.display!=='none',visibleMotifs.includes(index)))
         const size=await A.evaluate('({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth})')
         assert.ok(size.scroll<=size.client+1,JSON.stringify({name,width,large,zoom,size}))
         assert.deepEqual(await A.evaluate('Array.from(document.images).filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)'),[])

@@ -1,0 +1,60 @@
+/* Distinct game surfaces; existing geometry and functional colors stay intact. */
+.home-surround[data-scene] main[id='conteudo'] .game-surface {
+  border: 2px solid var(--game-rim, #ABC4CD); border-radius: 28px;
+  box-shadow: 0 7px 0 var(--game-foot, #BED2D8), 0 12px 22px #24334210;
+}
+.home-surround[data-scene] main[id='conteudo'] .game-surface--trail {
+  --game-rim: #9DB798; --game-foot: #B3C9A6; background: #D5E4C6;
+}
+.home-surround[data-scene] .path-board {
+  background: radial-gradient(ellipse at bottom left, #E9E1BA, transparent 55%), #EAF2DD;
+  border-color: #97B08A; box-shadow: inset 0 0 0 7px #F8FBEC, 0 4px 0 #AFC59F;
+}
+.home-surround[data-scene] .path-situation { background: #F9F5DE; border-color: #C9B98B; border-radius: 18px 18px 6px 18px; }
+.home-surround[data-scene] .path-controls { background: #F6F9EB; }
+.home-surround[data-scene] .path-node--destination { border-color: #9BB591; background: #FFFBE9; }
+.home-surround[data-scene] .path-node--current { background: #D9EDDB; }
+.home-surround[data-scene] main[id='conteudo'] .game-surface--assembly {
+  --game-rim: #C5AD7E; --game-foot: #D3BD95;
+  background: repeating-linear-gradient(0deg, #E9DBBB 0 36px, #E5D5AE 36px 38px);
+}
+.home-surround[data-scene] .puzzle-work > section:first-child { background: #D4E5EE; box-shadow: 0 0 0 6px #D4E5EE; border-radius: 18px; }
+.home-surround[data-scene] .puzzle-work > section:last-child { background: #F9EFCF; box-shadow: 0 0 0 6px #F9EFCF; border-radius: 18px; }
+.home-surround[data-scene] .puzzle-work h2 { background: #FAFCF5; color: #315F8C; box-shadow: 0 3px 0 #BFCED0; }
+.home-surround[data-scene] .puzzle-reference { background: #FFFAE9; }
+.home-surround[data-scene] .puzzle-board { border-color: #8CA4B0; box-shadow: 0 5px 0 #A3BBC7; }
+.home-surround[data-scene] main[id='conteudo'] .game-surface--cards {
+  --game-rim: #82AAA6; --game-foot: #9DBEB7; background: #CCE0D9;
+}
+.home-surround[data-scene] .memory-grid {
+  background: #AFCFC4; border-radius: 24px;
+  box-shadow: 0 0 0 7px #AFCFC4, 0 0 0 9px #EEF5DA, inset 0 3px 12px #39756815;
+}
+.home-surround[data-scene] .memory-heading { background: #F5F8E8; border-radius: 12px; }
+.home-surround[data-scene] .memory-controls { background: #EAF3E8; }
+.home-surround[data-scene] main[id='conteudo'] .game-surface--notebook {
+  --game-rim: #B7BAA5; --game-foot: #D3D4BA;
+  background: repeating-linear-gradient(0deg, #FBF7E8 0 29px, #D5E3E650 29px 30px);
+}
+.home-surround[data-scene] .wordsearch-play { background: #E0ECF1; border-radius: 16px; box-shadow: 0 0 0 6px #E0ECF1, 0 3px 0 #AFCAD7; }
+.home-surround[data-scene] .wordsearch-vocabulary { background: #F2E5BE; box-shadow: inset 4px 0 0 #D1B572, 0 4px 0 #D8C595; }
+.home-surround[data-scene] .wordsearch-vocabulary h2 { background: #FFF9E6; }
+.home-surround[data-scene] .wordsearch-tools { background: #EFF4ED; border-radius: 16px; }
+.home-surround[data-scene] main[id='conteudo'] .game-surface--mission {
+  --game-rim: #93B5CB; --game-foot: #AACADD; background: #CEE3EF;
+}
+.home-surround[data-scene] .findimage-target { background: #FFF3CF; border-radius: 20px 20px 6px 20px; box-shadow: 0 4px 0 #DAC797; }
+.home-surround[data-scene] .findimage-grid { background: #AFCFDB55; box-shadow: 0 0 0 6px #AFCFDB55; }
+.home-surround[data-scene] .findimage-controls { background: #EEF6F8; }
+.home-surround[data-scene] main[id='conteudo'] .game-surface--organize {
+  --game-rim: #B9B494; --game-foot: #D1CAAA; background: #E6E6CB;
+}
+.home-surround[data-scene] .belongs-question { background: #F8FAED; }
+.home-surround[data-scene] .belongs-origin { background: #CDE3EA; border-radius: 20px; box-shadow: inset 0 0 0 2px #ADC9D0; }
+.home-surround[data-scene] .belongs-destinations { background: #D3DEC0; box-shadow: 0 0 0 6px #D3DEC0; border-radius: 20px; }
+.home-surround[data-scene] .belongs-controls { background: #F7F8E9; }
+@media (max-width: 700px) {
+  .home-surround[data-scene] main[id='conteudo'] .game-surface { border-radius: 20px; }
+  .home-surround[data-scene] :is(.memory-grid, .wordsearch-play, .findimage-grid, .belongs-destinations),
+  .home-surround[data-scene] .puzzle-work > section { box-shadow: none; }
+}

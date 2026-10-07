@@ -1,0 +1,70 @@
+/* Family compositions, not a single interchangeable pastel backdrop. */
+.home-surround[data-scene] {
+  --scene-base: #F4EFD9; --scene-shore: #D8EAF6; --scene-bank: #DFEBCF;
+  --scene-floor: #E5DCC0; --scene-ink: #557C94; --scene-paper: #FFF9E9; --scene-piece: #F0D699;
+  background: var(--scene-base);
+}
+.home-surround[data-scene='learn'] {
+  --scene-base: #DCEEF5; --scene-shore: #BFDDEB; --scene-bank: #C8E8E7;
+  --scene-floor: #C2DFE9; --scene-ink: #477D98; --scene-paper: #F3FCFE; --scene-piece: #E5D797;
+}
+.home-surround[data-scene='daily'] {
+  --scene-base: #E2EEDC; --scene-shore: #C6DFCF; --scene-bank: #C9E3EC;
+  --scene-floor: #C9DEBB; --scene-ink: #4C7D6F; --scene-paper: #F5FBEE; --scene-piece: #C4D8AE;
+}
+.home-surround[data-scene='play'] {
+  --scene-base: #E0EAF3; --scene-shore: #C4DBE9; --scene-bank: #D2E5CE;
+  --scene-floor: #F0DCA8; --scene-ink: #6F829E; --scene-paper: #FFF8E6; --scene-piece: #DDA7A0;
+}
+.home-surround[data-scene='care'] {
+  --scene-base: #EAF0ED; --scene-shore: #DCE7E5; --scene-bank: #E0E8DD;
+  --scene-floor: #E6E4D4; --scene-ink: #819793; --scene-paper: #F7FAF6; --scene-piece: #E7DDBD;
+}
+.home-surround[data-scene] > .page-scene::before,
+.home-surround[data-scene] > .page-scene::after { content: none; }
+.home-surround[data-scene] > .page-scene { display: block; opacity: 1; }
+.scene-landscape { position: absolute; top: 0; left: 0; width: 100%; height: 1000px; pointer-events: none; }
+.scene-shore { fill: var(--scene-shore); }
+.scene-bank { fill: var(--scene-bank); }
+.scene-bank--right { fill: var(--scene-shore); }
+.scene-floor { fill: var(--scene-floor); }
+.scene-line { fill: none; stroke: #FFFFFF85; stroke-width: 12; }
+.scene-route { fill: none; stroke: #A9946B70; stroke-width: 5; stroke-dasharray: 12 14; stroke-linecap: round; }
+.scene-detail { fill: none; stroke: var(--scene-ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; opacity: .55; pointer-events: none; }
+.home-surround[data-scene='care'] .scene-detail { opacity: .2; }
+
+/* The section plane sits between the scenery and the compact interactive cards. */
+.home-surround[data-scene] main[id='conteudo'] > :is(.welcome, .learn-intro, .games-intro, .my-day-intro, .communication-intro, .words-intro, .writing-intro, .emotions-intro) {
+  background: #FFFFFFB8; border-radius: 22px 22px 22px 6px;
+  box-shadow: -6px 0 0 var(--scene-ink), 0 4px 0 #FFFFFF55;
+  padding: 10px 14px; margin-bottom: 18px;
+}
+.home-surround[data-scene] .welcome { padding: 10px 14px; }
+.home-surround[data-scene] .entry-character { top: 7px; }
+@media (min-width: 701px) {
+  .home-surround[data-scene] main[id='conteudo'] > :is(.learn-intro, .games-intro) { padding-right: 80px; }
+}
+.home-surround[data-scene] :is(.activity-grid, .learning-grid, .games-grid, .my-day-options) {
+  border-radius: 30px; background: #FFFFFF35; box-shadow: 0 0 0 10px #FFFFFF35;
+}
+.home-surround[data-scene='learn'] :is(.sentence-panel, .words-activity, .writing-work) {
+  border-color: #93BACB; background: #F0F9FC;
+  box-shadow: 0 6px 0 #AFD1E0, 0 9px 20px #315F8C0C;
+}
+.home-surround[data-scene='daily'] :is(.sequence-grid, .interactive-panel, .emotions-builder, .emotions-exploration) {
+  background: #F0F6E7; border-radius: 22px; box-shadow: 0 0 0 6px #CFDFC375;
+}
+.home-surround[data-scene='care'] :is(.profile-section, .account-panel, .responsible-guidance section) { border-top: 4px solid #B8CCCA; }
+.home-surround[data-scene] .home .progress-entry { background: #FEF9E9; border-color: #D8CDAD; }
+.home-surround[data-scene] .home .positive-message { background: #E3EDD8; border-color: #C2D0AC; }
+@media (max-width: 1199px) {
+  .scene-detail--secondary { display: none; }
+  .scene-detail { opacity: .28; }
+}
+@media (max-width: 700px) {
+  .scene-landscape { width: 100%; height: 760px; }
+  .scene-detail, .scene-route { display: none; }
+  .scene-line { stroke-width: 6; }
+  .home-surround[data-scene] main[id='conteudo'] > :is(.welcome, .learn-intro, .games-intro, .my-day-intro, .communication-intro, .words-intro, .writing-intro, .emotions-intro) { padding: 8px 10px; border-radius: 16px 16px 16px 5px; margin-bottom: 14px; }
+  .home-surround[data-scene] :is(.activity-grid, .learning-grid, .games-grid, .my-day-options) { box-shadow: 0 0 0 5px #FFFFFF35; }
+}

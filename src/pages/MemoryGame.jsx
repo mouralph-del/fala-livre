@@ -91,7 +91,7 @@ export default function MemoryGame({ progressService } = {}) {
     </nav>
     <GameProgressFeedback progress={progress} firstLevel={memoryGameLevels[0]} onChange={selectLevel} />
     {progress.activeAvailable && <>
-    <section className="memory-play" aria-labelledby="memory-title">
+    <section className="memory-play game-surface game-surface--cards" aria-labelledby="memory-title">
       <div className="memory-heading"><h2 id="memory-title">{level.title}</h2><p role="status">{state.found.length} de {level.pairs.length} pares</p></div>
       <div className="memory-grid">{state.deck.map((card, index) => {
         const pair = level.pairs.find(item => item.id === card.pairId)
