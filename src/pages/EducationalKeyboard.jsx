@@ -60,45 +60,6 @@ export default function EducationalKeyboard({
     setStatusMessage('Tudo foi apagado.')
   }, [])
 
-  const updatePhysicalInput = useCallback((event) => {
-    const nextLetters = [...event.target.value.toLocaleUpperCase('pt-BR')]
-      .filter(letter => /^[A-ZÁÉÍÓÚÀÂÊÔÜÇ]$/.test(letter))
-      .slice(0, limit)
-    setLetters(nextLetters)
-    setFinishMessage('')
-    setStatusMessage('Texto atualizado pelo teclado físico.')
-  }, [limit])
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      const targetNode = event.target
-      if (targetNode instanceof HTMLElement && (targetNode.closest('button, a, input, textarea, select') || targetNode.isContentEditable)) return
-
-      const pressed = event.key.toUpperCase()
-      const normalized = pressed
-
-      if (/^[A-ZÁÉÍÓÚÀÂÊÔÜÇ]$/.test(normalized)) {
-        event.preventDefault()
-        insertLetter(normalized)
-        return
-      }
-
-      if (event.key === 'Backspace') {
-        event.preventDefault()
-        removeLastLetter()
-        return
-      }
-
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        setStatusMessage(mode === 'explore' ? 'Exploração pronta para continuar.' : 'Teclado pronto para continuar.')
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [insertLetter, mode, removeLastLetter])
-
   const confirmWord = useCallback(() => {
     if (mode !== 'practice') return
     if (assembled === target.word) {
@@ -139,21 +100,6 @@ export default function EducationalKeyboard({
         )}
       </div>
 
-      {mode === 'practice' && (
-        <label className="writing-physical-entry">
-          Digitar pelo teclado físico
-          <input
-            type="text"
-            value={letters.join('')}
-            maxLength={limit}
-            autoComplete="off"
-            spellCheck={false}
-            aria-label={`Digitar ${target.word} pelo teclado físico`}
-            onChange={updatePhysicalInput}
-          />
-        </label>
-      )}
-
       <div className="writing-controls">
         <button type="button" disabled={!letters.length} onClick={removeLastLetter}>Apagar</button>
         <button type="button" disabled={!letters.length} onClick={clearLetters}>Limpar</button>
@@ -161,7 +107,7 @@ export default function EducationalKeyboard({
         {mode === 'explore' && <button type="button" onClick={() => setFinishMessage('Exploração concluída.')}>Concluir exploração</button>}
       </div>
 
-      <div className="writing-feedback" role="status" aria-live="polite">
+      <div className={finishMessage ? 'writing-feedback' : undefined} role="status" aria-live="polite">
         {finishMessage ? <p>{finishMessage}</p> : null}
       </div>
 

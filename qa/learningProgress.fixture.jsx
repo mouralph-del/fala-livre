@@ -55,7 +55,7 @@ async function selector(selector) { const button = document.querySelector(select
 async function choose(text) { const button = buttons().find(button => button.getAttribute('aria-label') === 'Selecionar ' + text); check(button, 'choice missing: ' + text); button.click(); await pause() }
 async function settle() { await pause(); await fixture.service.loadProgress(); await pause() }
 function selectValue(selector, value) { const element = document.querySelector(selector); check(element, 'select missing'); element.value = value; element.dispatchEvent(new Event('change', { bubbles: true })) }
-function physicalInput(value) { const element = document.querySelector('.writing-physical-entry input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(element, value); element.dispatchEvent(new Event('input', { bubbles: true })) }
+async function virtualInput(value) { for (const letter of value) await selector('[aria-label="Inserir letra ' + letter + '"]') }
 function expectCalls(expected) { check(JSON.stringify(fixture.calls) === JSON.stringify(expected), 'unexpected evidence: ' + JSON.stringify(fixture.calls)) }
 function privacy() {
   const progress = fixture.progress(); check(progress && validateProgress(progress).valid, 'valid catalog-only progress')
@@ -107,8 +107,8 @@ try {
 
   for (const word of learningWords) {
     seed('writing', learningWords.map(word => word.id), word.id); await mount(Writing)
-    physicalInput('Z'); await pause(); await click('Conferir'); check(fixture.calls.length === 0, 'typing error has no evidence')
-    physicalInput(word.word); await pause(); await click('Conferir', 2); await click('Praticar no caderno')
+    await virtualInput('Z'); await pause(); await click('Conferir'); check(fixture.calls.length === 0, 'typing error has no evidence')
+    await click('Limpar'); await virtualInput(word.word); await pause(); await click('Conferir', 2); await click('Praticar no caderno')
     const canvas = document.querySelector('canvas')
     // Synthetic pointers cannot acquire native capture; mock capture only,
     // preserving the actual drawing handlers and canvas state.
@@ -117,10 +117,10 @@ try {
     check(fixture.calls.length === 1, 'canvas has no evidence')
     await click('Concluir prática', 2); await settle()
     expectCalls([['recordActivityPerformed', 'writing', word.id, ['typing']], ['recordActivityPerformed', 'writing', word.id, ['notebook', 'complete']]])
-    check(document.querySelector('.writing-phase-label').textContent === 'Digitar', 'practice advances even before persistence'); privacy()
+    check(document.querySelector('.writing-phase-label').textContent === 'Teclado', 'practice advances even before persistence'); privacy()
   }
   tests.push('Escrever: 12 IDs, erros/teclas sem registro, callback typing, canvas, lote final, duplo avanço')
-  await mount(Writing); selectValue('.writing-qa-selector select', 'casa'); await pause(); physicalInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); expectCalls([])
+  await mount(Writing); selectValue('.writing-qa-selector select', 'casa'); await pause(); await virtualInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); expectCalls([])
   tests.push('Escrever QA: fluxo completo sem registro')
 
   for (const routine of myDayRoutines) {
@@ -167,7 +167,7 @@ try {
     seed('wordsAndPhrases', learningWords.map(word => word.id), 'casa'); await mount(WordsAndPhrases, {}, mode); await completeWord(learningWords[0]); await click('Próxima palavra'); await settle()
     check(fixture.service.getProgressSnapshot().persistenceStatus === 'session-only', 'fallback session')
     check(document.querySelector('main').textContent.includes('pode não ficar salvo'), 'neutral fallback message'); privacy()
-    seed('writing', learningWords.map(word => word.id), 'casa'); await mount(Writing, {}, mode); physicalInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); check(document.querySelector('.writing-phase-label').textContent === 'Digitar', 'failed storage never blocks notebook'); privacy()
+    seed('writing', learningWords.map(word => word.id), 'casa'); await mount(Writing, {}, mode); await virtualInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); check(document.querySelector('.writing-phase-label').textContent === 'Teclado', 'failed storage never blocks notebook'); privacy()
     await mount(Communication, {}, mode); await click('Concluir exploração'); await settle(); privacy()
     await mount(MyDayEmotions, {}, mode); await selector('[aria-label="Abrir Conhecer emoções"]'); await click('Próximo conceito'); await settle(); privacy()
     const routine = myDayRoutines[0]
@@ -194,7 +194,7 @@ try {
   await mount(InteractiveSituationsGame, { initialLevelId: interactiveSituations[0].id })
   for (const token of interactiveSituations[0].situations[0].expectedTokens) await choose(interactiveSituations[0].situations[0].options.find(option => option.id === token).word)
   await click('Confirmar frase'); await click('Continuar'); await settle(); expectCalls([])
-  await mount(EducationalKeyboard); physicalInput('CASA'); await pause(); await click('Conferir'); await settle(); expectCalls([])
+  await mount(EducationalKeyboard); await virtualInput('CASA'); await pause(); await click('Conferir'); await settle(); expectCalls([])
   await mount(Notebook); await settle(); expectCalls([])
   tests.push('Legado e rotas auxiliares sem eventos novos')
 

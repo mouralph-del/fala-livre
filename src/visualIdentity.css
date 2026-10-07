@@ -80,8 +80,7 @@ main button.action-primary:active:not(:disabled) { background: var(--focus); }
 .emotions-functions section, .emotions-builder, .emotions-explore { background: var(--surface); }
 .interactive-mission { border-left: 3px solid var(--secondary); }
 .sequence-position { border-color: var(--border-control); font-weight: 700; }
-.writing-physical-entry input, .writing-notebook-word-picker select, .profile-option { border-color: var(--border-control); border-radius: var(--radius-control); }
-.writing-physical-entry input { font-size: 1.125rem; min-height: var(--target); }
+.writing-notebook-word-picker select, .profile-option { border-color: var(--border-control); border-radius: var(--radius-control); }
 
 .home-surround:has(.memory-page), .home-surround:has(.wordsearch-page) { background: var(--surface-page); }
 .memory-intro, .wordsearch-intro { background: var(--soft-green); border-radius: var(--radius-card); }

@@ -39,7 +39,7 @@ export default function Writing({ progressService, qaControls = false } = {}) {
     <a className="writing-back" href="#/aprender">← Aprender</a>
     <header className="writing-intro">
       <h1>Escrever</h1>
-      <p>{phase === 'typing' ? 'Digite a palavra e depois pratique no caderno.' : 'Pratique a palavra no caderno.'}</p>
+      <p><strong>Teclado:</strong> Use as letras para escrever a palavra.<br /><strong>Caderno:</strong> Escreva ou desenhe do seu jeito.</p>
     </header>
 
     {import.meta.env.DEV && qaControls && (
@@ -52,7 +52,7 @@ export default function Writing({ progressService, qaControls = false } = {}) {
       </label>
     )}
 
-    <p className="writing-phase-label" aria-live="polite">{phase === 'typing' ? 'Digitar' : 'Praticar no caderno'}</p>
+    {phase === 'typing' && <p className="writing-phase-label" aria-live="polite">Teclado</p>}
 
     {phase === 'typing' ? (
       <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onComplete={id => {

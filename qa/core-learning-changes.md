@@ -22,7 +22,16 @@ schema, das dependências ou dos registros de conclusão.
 
 O teclado mantém as 26 letras em “Letras do alfabeto”; Á fica em “Letras com
 acento”, junto às formas acentuadas necessárias à palavra-alvo. O teclado
-físico e a entrada de texto continuam aceitando os acentos existentes.
+virtual oferece essas formas separadamente. O campo de teclado físico foi
+removido da interface, junto à captura global de digitação. Os botões das letras
+continuam acessíveis por Tab e Enter/Espaço. Escrever mantém o fluxo de teclado
+e caderno, sem alteração dos registros `typing`, `notebook` e `complete`.
+
+Decisão de produto para implementação futura: acesso gratuito planejado para
+Comunicar e Escrever, formas fundamentais de expressão. Acesso Premium planejado
+para Palavras e Frases (aprendizagem/reconhecimento mais estruturado), Meu Dia a
+Dia, Jogos e demais recursos que forem definidos posteriormente. Esta decisão
+não implementa planos, bloqueios, pagamentos ou alterações de rotas.
 
 As duas áreas usam `falar` e a preferência global de voz, sem novo serviço,
 armazenamento de áudio ou mudanças nos parâmetros. Timbre e qualidade dependem
