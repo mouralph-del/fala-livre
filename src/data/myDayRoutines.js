@@ -28,7 +28,8 @@ const cards = {
   'secar-maos': { id: 'secar-maos', word: 'SECAR AS MÃOS', speechText: 'SECAR AS MÃOS', image: image4, arasaacId: 2566 },
   'calcar-sapato': { id: 'calcar-sapato', word: 'CALÇAR SAPATO', speechText: 'CALÇAR SAPATO', image: image5, arasaacId: 14534 },
   'amarrar-cadarco': { id: 'amarrar-cadarco', word: 'AMARRAR CADARÇO', speechText: 'AMARRAR CADARÇO', image: image6, arasaacId: 17026 },
-  'colocar-pijama': { id: 'colocar-pijama', word: 'COLOCAR PIJAMA', speechText: 'COLOCAR PIJAMA', image: null },
+  // User-approved reuse of the existing dressing image for bedtime clothing.
+  'colocar-pijama': { id: 'colocar-pijama', word: 'COLOCAR PIJAMA', speechText: 'Colocar pijama', image: image7, arasaacId: 2781, approvedGenericImage: true },
   'deitar-cama': { id: 'deitar-cama', word: 'DEITAR NA CAMA', speechText: 'DEITAR NA CAMA', image: image8, arasaacId: 4553 },
   'dormir': { id: 'dormir', word: 'DORMIR', speechText: 'DORMIR', image: image9, arasaacId: 2369 },
   'colocar-mochila': { id: 'colocar-mochila', word: 'COLOCAR MOCHILA NAS COSTAS', speechText: 'COLOCAR MOCHILA NAS COSTAS', image: image10, arasaacId: 38265 },

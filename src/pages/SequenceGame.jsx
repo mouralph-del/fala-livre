@@ -46,7 +46,7 @@ function reducer(state, action) {
 }
 
 function SequenceVisual({ step }) {
-  if (['molhar-maos', 'enxaguar', 'enxaguar-maos', 'colocar-pijama', 'se-arrumar', 'chegar-escola'].includes(step.id)) {
+  if (['molhar-maos', 'enxaguar', 'enxaguar-maos', 'colocar-pijama', 'se-arrumar', 'chegar-escola'].includes(step.id) && !step.approvedGenericImage) {
     return <span className="sequence-visual sequence-visual--unavailable" aria-hidden="true">Sem imagem</span>
   }
   const images = step.images || [step.image].filter(Boolean)

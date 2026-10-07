@@ -19,11 +19,12 @@ for (const [index,routine] of routines.entries()) {
   const order = routine.steps.map(s=>s.id)
   assert.equal(new Set(order).size, order.length)
   for (const step of routine.steps) {
-    assert.equal(step.speechText, step.word)
+    assert.equal(step.speechText.toLocaleUpperCase('pt-BR'), step.word)
     if (step.id === 'colocar-pijama') {
       assert.equal(step.word, 'COLOCAR PIJAMA')
-      assert.equal(step.image, null)
-      assert.equal(step.arasaacId, undefined)
+      assert.ok(step.image.endsWith('/arasaac/vestir-camiseta.png'))
+      assert.equal(step.arasaacId, 2781)
+      assert.equal(step.approvedGenericImage, true)
     } else assert.ok(fs.existsSync(new URL(step.image, new URL('../src/data/myDayRoutines.js', import.meta.url))))
   }
   let accepted = 0

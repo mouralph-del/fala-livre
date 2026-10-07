@@ -44,6 +44,12 @@ Referências auxiliares não substituem a identificação individual:
 ## Sem asset adequado identificado
 
 - Colocar pijama: 2522 é pijama-objeto; 2781 vestir mostra camiseta. Não identificado pictograma individual seguro da ação com pijama.
+  Adendo aprovado pelo usuário: em **Meu Dia a Dia → Rotinas**, reutiliza-se
+  `vestir-camiseta.png` (ARASAAC 2781) como representação **genérica de vestir a
+  roupa para dormir**, mantendo COLOCAR PIJAMA e áudio “Colocar pijama”. Não se
+  afirma que o asset representa especificamente um pijama. Essa autorização
+  aplica-se somente à etapa dessa rotina; Sequências legadas e outras lacunas
+  mantêm o tratamento anterior. Arquivo e créditos originais preservados.
 - Chegar à escola: 16807 llegar mostra casa; 36473 ir al colegio indica deslocamento. Não identificado pictograma individual da chegada à escola.
 - Se arrumar: variantes de vestir representam ação mais estreita; prepararse de 17000/17004/37794 mostra largada de corrida. Não identificado pictograma da preparação pessoal completa.
 - Pote de materiais escolares: 3322/39114 representam recipientes com tampa; 2440 lapicero é lápis. Não identificado recipiente correspondente ao destino escolar da tesoura.

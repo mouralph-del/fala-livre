@@ -186,7 +186,7 @@ try {
       await wait(`document.querySelector('#sequence-title')?.textContent===${JSON.stringify(routine.title)}`)
       assert.equal(await evaluate(`document.querySelectorAll('.sequence-handle').length`),0)
       if (routine.id === 'preparar-dormir') {
-        assert.ok(await evaluate(`(()=>{const card=[...document.querySelectorAll('.sequence-card')].find(c=>c.textContent.includes('COLOCAR PIJAMA'));return !!card&&card.textContent.includes('Sem imagem')&&!card.querySelector('img')})()`))
+        assert.ok(await evaluate(`(()=>{const card=[...document.querySelectorAll('.sequence-card')].find(c=>c.textContent.includes('COLOCAR PIJAMA'));return !!card&&!card.textContent.includes('Sem imagem')&&!!card.querySelector('img')})()`))
         assert.equal(await evaluate(`document.querySelector('.sequence-grid').textContent.includes('VESTIR CAMISETA')`),false)
         assert.equal(await evaluate(`document.querySelectorAll('.sequence-position').length`),4)
       }
@@ -207,7 +207,7 @@ try {
   await wait(`document.querySelector('#sequence-title')?.textContent==='Preparar-se para dormir.'`)
   await evaluate(`speechSynthesis.speak=utterance=>{window.__routineSpeech=utterance.text}`)
   await click('.sequence-audio[aria-label="Ouvir COLOCAR PIJAMA"]')
-  assert.equal(await evaluate('window.__routineSpeech'), 'COLOCAR PIJAMA')
+  assert.equal(await evaluate('window.__routineSpeech'), 'Colocar pijama')
   await evaluate('window.scrollTo(0,0)')
   const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true})
   fs.writeFileSync(path.join(os.tmpdir(),'falalivre-routines-390.png'),Buffer.from(shot.data,'base64'))
