@@ -35,6 +35,7 @@ export default function HeaderNavigation({ route }) {
         <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined} onClick={() => setOpen(false)}>Meu Progresso</a>
         <a href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined} onClick={() => setOpen(false)}>Configurações</a>
         <a href="#/responsaveis" aria-current={route === 'responsibleGuidance' ? 'page' : undefined} onClick={() => setOpen(false)}>Responsáveis / Sobre o Fala Livre</a>
+        <a href="#/planos" aria-current={route === 'plans' ? 'page' : undefined} onClick={() => setOpen(false)}>Planos</a>
         <div className="header-account-section">
           <span className="header-menu-label">{session ? 'Responsável' : 'Conta do responsável'}</span>
           {session && <span className="header-account-name">{session.responsibleName}</span>}

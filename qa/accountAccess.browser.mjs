@@ -121,7 +121,7 @@ try {
   await ev(`(async()=> (await import('/src/services/accountAccess.js')).requestAccountAccess('sign-in',{email:'teste@falalivre.com',password:'FalaLivre123'}))()`); await pause(60)
   // Native keyboard activation and visible focus on the real logout button.
   await ev('document.querySelector(".header-menu-toggle").focus()')
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 5; i++) {
     await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
     await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
   }
@@ -138,6 +138,7 @@ try {
   await ev('document.querySelector(".header-menu-toggle").click()')
   await ev(`(async()=> (await import('/src/services/accountAccess.js')).requestAccountAccess('sign-in',{email:'teste@falalivre.com',password:'FalaLivre123'}))()`); await pause(60)
   await ev('document.querySelector(".header-menu-toggle").click()')
+  await ev('document.querySelector(".header-sign-out").scrollIntoView({block:"nearest"})'); await pause(60)
   const logoutPoint = await ev(`(()=>{const r=document.querySelector('.header-sign-out').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
   await A.cdp('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [logoutPoint] }); await A.cdp('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await pause(80)
   assert.equal(await ev('document.querySelector("#welcome-title").textContent'), 'Olá!')
