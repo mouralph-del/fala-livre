@@ -38,6 +38,20 @@ assert.ok(validateProgress(seed).valid)
 try{
  let targets;for(let i=0;i<100;i++){try{targets=await(await fetch('http://127.0.0.1:9364/json/list')).json();if(targets.some(t=>t.type==='page'))break}catch{}await pause(100)}
  const A=await connect(targets.find(t=>t.type==='page')),ev=A.evaluate
+ const shots=path.join(tempRoot,'falalivre-ambient-review');fs.mkdirSync(shots,{recursive:true})
+ const shot=async name=>{const result=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,name+'.jpg'),Buffer.from(result.data,'base64'))}
+ const responsive=async label=>{
+  for(const width of [320,360,390,430,768,1024,1366])for(const large of [false,true])for(const zoom of [1,1.25]){
+   await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1100,deviceScaleFactor:1,mobile:false})
+   await ev('document.documentElement.dataset.elementSize='+JSON.stringify(large?'large':'normal')+';document.documentElement.style.zoom='+zoom)
+   assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),label+' '+width+' overflow')
+   assert.equal(await ev('document.querySelector(".home-decoration").getAttribute("aria-hidden")'),'true')
+   assert.equal(await ev('getComputedStyle(document.querySelector(".home-decoration")).pointerEvents'),'none')
+   assert.equal(await ev('getComputedStyle(document.querySelector(".home-decoration")).display'),'block')
+   if(!large&&zoom===1&&[320,1366].includes(width))await shot(label+'-'+width)
+  }
+  await ev('document.documentElement.style.zoom="";document.documentElement.dataset.elementSize="normal"')
+ }
  await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('falaLivre_progress_v1',${JSON.stringify(JSON.stringify(seed))});localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}));speechSynthesis.speak=()=>{};speechSynthesis.cancel=()=>{}`})
  const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...Object.keys(gameCatalog).map(id=>'/jogar/'+id),'/jogar/bingo','/jogar/sequencias','/jogar/situacoes-interativas','/meu-progresso','/perfil','/responsaveis','/entrar','/criar-conta']
  const check=async label=>{
@@ -48,10 +62,12 @@ try{
   await A.cdp('Page.navigate',{url:base+'#/'});await ready(A)
   for(const route of routes){await ev('location.hash='+JSON.stringify(route));await pause(90);await check(base+route)
    const gameId=route.startsWith('/jogar/')?route.slice(7):null
-   if(gameCatalog[gameId]){const selector={caminho:'.path-level','quebra-cabeca':'.puzzle-level','caca-palavras':'.wordsearch-level',memoria:'.memory-level','encontre-imagem':'.findimage-level','onde-pertence':'.belongs-level'}[gameId];assert.equal(await ev('document.querySelectorAll('+JSON.stringify(selector)+').length'),3);for(let index=0;index<3;index++){await ev('document.querySelectorAll('+JSON.stringify(selector)+')['+index+'].click()');await pause(60);await check(gameId+' N'+(index+1))}}
+   if(gameCatalog[gameId]){const selector={caminho:'.path-level','quebra-cabeca':'.puzzle-level','caca-palavras':'.wordsearch-level',memoria:'.memory-level','encontre-imagem':'.findimage-level','onde-pertence':'.belongs-level'}[gameId];assert.equal(await ev('document.querySelectorAll('+JSON.stringify(selector)+').length'),3);for(let index=0;index<3;index++){await ev('document.querySelectorAll('+JSON.stringify(selector)+')['+index+'].click()');await pause(60);await check(gameId+' N'+(index+1));if(base.includes('4215'))await responsive(gameId+'-n'+(index+1))}}
+   if(base.includes('4215')&&!gameCatalog[gameId])await responsive(route==='/'?'home':route.slice(1).replaceAll('/','-'))
    if(route==='/perfil')assert.ok(await ev('document.querySelectorAll('+JSON.stringify('main input[name="voice"]')+').length')>0,'real voice selector preserved')
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
  console.log('PASS public QA cleanup: static defaults, 27 public/legacy routes and all 18 game levels in DEV and production; no technical controls/text/DOM; real levels/settings preserved.')
+ console.log('PASS ambient surfaces: production routes and all 18 levels, seven widths, Normal/Grande, 100/125% zoom, reduced motion, no overflow, aria-hidden noninteractive decoration. Screenshots: '+shots)
 }finally{for(const socket of sockets)socket.close();chrome.kill();await server.close();await new Promise(resolve=>production.httpServer.close(resolve));await pause(500);const resolved=path.resolve(profile);if(path.dirname(resolved)!==tempRoot||!path.basename(resolved).startsWith('falalivre-public-qa-'))throw Error('unsafe temporary path');try{fs.rmSync(resolved,{recursive:true,force:true,maxRetries:5,retryDelay:200})}catch{}}

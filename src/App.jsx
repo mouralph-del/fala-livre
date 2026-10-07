@@ -26,6 +26,7 @@ import './dynamicLayout.css'
 import './navigationActions.css'
 import './childEntry.css'
 import './playfulSurfaces.css'
+import './ambientSurfaces.css'
 import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {

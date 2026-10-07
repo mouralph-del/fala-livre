@@ -1,0 +1,106 @@
+/* A shared paper-and-play setting. Decorations stay in the aria-hidden layer;
+   game geometry, interactive pieces, card dimensions and focus are untouched. */
+.home-surround:has(main) {
+  --ambient-paper: #EEF4F8;
+  --ambient-blue: #DCEAF5;
+  --ambient-green: #DFEEE5;
+  --ambient-gold: #F5E8C9;
+  background: var(--ambient-paper);
+}
+.home-surround:has(:is(.learn-page, .communication-page, .words-page, .writing-page, .keyboard-page, .notebook-page)) {
+  --ambient-paper: #EAF2F8;
+  --ambient-blue: #D2E5F3;
+}
+.home-surround:has(:is(.my-day-page, .sequence-page, .interactive-page, .emotions-page)) {
+  --ambient-paper: #ECF4EF;
+  --ambient-green: #D5E9DE;
+}
+.home-surround:has(:is(.games-page, .path-page, .puzzle-page, .wordsearch-page, .memory-page, .findimage-page, .belongs-page)) {
+  --ambient-paper: #F1F4EB;
+  --ambient-blue: #D7E8F4;
+  --ambient-green: #DCEBDD;
+  --ambient-gold: #F4E6BE;
+}
+.home-surround:has(:is(.profile-page, .responsible-guidance, .my-progress, .account-page)) {
+  --ambient-paper: #F0F4F3;
+  --ambient-blue: #E0ECF3;
+  --ambient-green: #E2EEE7;
+  --ambient-gold: #F5EDD9;
+}
+.home-surround:has(main[id='conteudo']) > .home-decoration { display: block; opacity: 1; }
+.home-surround:has(main) .home-decoration::before {
+  top: 70px; bottom: auto; left: -230px; width: 500px; height: 570px;
+  border-radius: 32% 68% 64% 36% / 42% 38% 62% 58%;
+  background: var(--ambient-blue); opacity: 1; transform: rotate(-18deg);
+}
+.home-surround:has(main) .home-decoration::after {
+  top: 380px; bottom: auto; right: -280px; width: 550px; height: 630px;
+  border-radius: 62% 38% 34% 66% / 46% 62% 38% 54%;
+  background: var(--ambient-green); opacity: 1; transform: rotate(20deg);
+}
+.home-surround:has(main) .home-decoration > span {
+  top: auto; bottom: -180px; left: -5%; width: 110%; height: 420px;
+  border-radius: 50% 65% 0 0; background: var(--ambient-gold); opacity: .7;
+}
+/* Four deliberately placed outlines replace the repeated confetti pattern. */
+.page-sprinkles { background: none; opacity: 1; }
+.page-sprinkles::before, .page-sprinkles::after {
+  content: ''; position: absolute; pointer-events: none;
+  width: 110px; height: 110px; border: 12px solid #D8A14835;
+  border-radius: 38% 62% 58% 42%; top: 120px; right: -36px; transform: rotate(18deg);
+}
+.page-sprinkles::after { top: 720px; right: auto; left: -55px; border-color: #A53D4328; border-radius: 50%; }
+.home-surround:has(main) .decor-motif { opacity: .48; }
+.home-surround:has(main) .decor-book { top: 295px; right: 20px; }
+.home-surround:has(main) .decor-bubble { top: 34px; left: 12px; }
+.home-surround:has(main) .decor-puzzle { top: 570px; left: 14px; }
+.home-surround:has(main) .decor-plant { bottom: 40px; right: 24px; }
+
+/* The colored shell frames the play area; opaque pieces keep their own states. */
+main[id='conteudo'] :is(.path-adventure, .puzzle-adventure, .memory-play, .wordsearch-activity, .findimage-play, .belongs-play) {
+  background: linear-gradient(140deg, #E4EFF8, #EDF4E8 65%, #F8EFD9);
+  border-color: #B7CDCF; border-radius: 26px 26px 26px 12px;
+  box-shadow: 0 5px 0 #D3E2DD, 0 9px 20px #315F8C0B;
+}
+.path-page .path-board {
+  background: radial-gradient(ellipse at 0 100%, #D9EACF, transparent 55%),
+    radial-gradient(ellipse at 100% 0, #D6EAF5, transparent 55%), #EEF5E7;
+  border-color: #ABC6BB; box-shadow: inset 0 0 0 4px #FFFFFF80;
+}
+main.memory-page[id='conteudo'] .memory-play { background: linear-gradient(140deg, #F5E5DC, #EEF3DF 70%, #E0EDF5); }
+main.puzzle-page[id='conteudo'] .puzzle-adventure { background: linear-gradient(140deg, #DFEEE5, #E6F0F7); }
+.puzzle-page .puzzle-activity { background: transparent; }
+.puzzle-page .puzzle-tray { background: #E0EBF2; border-color: #B6CCD9; }
+main.wordsearch-page[id='conteudo'] .wordsearch-activity { background: linear-gradient(140deg, #F6ECD1, #E8F0F7); }
+.wordsearch-page .wordsearch-vocabulary { background: #F8F1DF; border-radius: 18px; box-shadow: inset 0 0 0 1px #E1D3AF; }
+main.findimage-page[id='conteudo'] .findimage-play { background: linear-gradient(140deg, #E1EDF6, #EDF4E5); }
+main.belongs-page[id='conteudo'] .belongs-play { background: linear-gradient(140deg, #E1EEE7, #F6EDD9); }
+/* Differentiate the mission from the board without adding space or overlays. */
+:is(.path-situation, .puzzle-reference, .memory-heading, .findimage-target, .belongs-question) {
+  background: #FFFFFFB3; border-radius: 16px;
+}
+main[id='conteudo'] :is(.sentence-panel, .profile-section, .responsible-guidance section, .account-panel) {
+  background: linear-gradient(120deg, #FFFFFFF5, #F4F8F1);
+  border-color: #BFCFD1; box-shadow: 0 4px 0 #DFE9E5, var(--shadow-sm);
+}
+main[id='conteudo'] :is(.words-activity, .writing-work, .sequence-play, .interactive-panel) {
+  background: linear-gradient(135deg, #EAF3F8, #F1F6EC);
+  border-color: #BFCFD1;
+}
+.home .positive-message { background: #F8EDCE; border-color: #E4CF9E; }
+
+@media (min-width: 1200px) {
+  .home-surround:has(main) .decor-motif { display: block; }
+}
+@media (max-width: 1199px) {
+  .home-surround:has(main) .decor-motif { display: none; }
+  .home-surround:has(main) .home-decoration::before { left: -320px; }
+  .home-surround:has(main) .home-decoration::after { right: -360px; }
+}
+@media (max-width: 700px) {
+  .home-surround:has(main) .home-decoration::before { top: 30px; left: -280px; width: 350px; height: 420px; }
+  .home-surround:has(main) .home-decoration::after { top: 460px; right: -300px; width: 380px; height: 460px; }
+  .home-surround:has(main) .home-decoration > span { height: 300px; bottom: -160px; }
+  .page-sprinkles::before, .page-sprinkles::after { display: none; }
+  main[id='conteudo'] :is(.path-adventure, .puzzle-adventure, .memory-play, .wordsearch-activity, .findimage-play, .belongs-play) { border-radius: 20px 20px 20px 10px; }
+}
