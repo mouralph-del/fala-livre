@@ -1,13 +1,15 @@
 import './Learn.css'
 import ActivityIllustration from '../components/ActivityIllustration'
+import { PremiumBadge } from '../components/PremiumAccess'
+import { planAccess } from '../services/planAccess'
 
 const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', myDay: '/aprender/meu-dia-a-dia' }
 
 const activities = [
-  { id: 'communicate', title: 'COMUNICAR', description: 'Expresse desejos, necessidades e ideias.', tone: 'blue' },
-  { id: 'words', title: 'PALAVRAS E FRASES', description: 'Aprenda palavras e construa pequenas frases.', tone: 'green' },
-  { id: 'write', title: 'ESCREVER', description: 'Pratique a escrita do seu jeito.', detail: 'Teclado ou caderno', tone: 'green' },
-  { id: 'myDay', title: 'MEU DIA A DIA', description: 'Aprenda rotinas, comunicação e emoções em situações do cotidiano.', tone: 'green' },
+  { id: 'communicate', feature: 'communication', title: 'COMUNICAR', description: 'Expresse desejos, necessidades e ideias.', tone: 'blue' },
+  { id: 'words', feature: 'words', title: 'PALAVRAS E FRASES', description: 'Aprenda palavras e construa pequenas frases.', tone: 'green' },
+  { id: 'write', feature: 'writing', title: 'ESCREVER', description: 'Pratique a escrita do seu jeito.', detail: 'Teclado ou caderno', tone: 'green' },
+  { id: 'myDay', feature: 'myDay', title: 'MEU DIA A DIA', description: 'Aprenda rotinas, comunicação e emoções em situações do cotidiano.', tone: 'green' },
 ]
 
 function LearningIllustration({ activity }) {
@@ -24,7 +26,7 @@ function LearningIllustration({ activity }) {
   )
 }
 
-export default function Learn() {
+export default function Learn({ access = planAccess, onPremiumRequest }) {
   return (
     <main id="conteudo" className="learn-page" tabIndex={-1}>
       <a className="learn-back" href="#/">← Início</a>
@@ -34,14 +36,18 @@ export default function Learn() {
         <p>Escolha uma atividade para começar.</p>
       </section>
       <div className="learning-grid">
-        {activities.map(({ id, title, description, detail, tone }) => (
+        {activities.map(({ id, feature, title, description, detail, tone }) => (
           <article className={`learning-card learning-card--${tone}`} data-activity={id} key={id}>
             <LearningIllustration activity={id} />
             <div className="learning-content">
               <h2><span className="learning-title-desktop">{title}</span><span className="learning-title-mobile">{title === 'PALAVRAS E FRASES' ? <>PALAVRAS<span className="learning-title-line"> E FRASES</span></> : title === 'SITUAÇÕES DO DIA A DIA' ? <>SITUAÇÕES<span className="learning-title-line"> DO DIA A DIA</span></> : title === 'MEU DIA A DIA' ? <>MEU<span className="learning-title-line"> DIA A DIA</span></> : title}</span></h2>
+              {!access.canAccess(feature) && <PremiumBadge />}
               <p>{description}</p>
               {detail && <span className="learning-detail">{detail}</span>}
-              <button className="learning-start" type="button" aria-disabled={activityRoutes[id] ? undefined : true} aria-label={activityRoutes[id] ? "Começar: " + title.toLowerCase() : `Começar: ${title.toLowerCase()} — em breve`} onClick={activityRoutes[id] ? () => { window.location.hash = activityRoutes[id] } : undefined}>
+              <button className="learning-start" type="button" aria-label={"Começar: " + title.toLowerCase() + (!access.canAccess(feature) ? ' — Premium' : '')} onClick={() => {
+                if (!access.canAccess(feature)) { onPremiumRequest?.(feature); return }
+                window.location.hash = activityRoutes[id]
+              }}>
                 Começar <span aria-hidden="true">→</span>
               </button>
             </div>

@@ -11,6 +11,8 @@ import Communication from './pages/Communication'
 import Profile from './pages/Profile'
 import AccountAccess from './pages/AccountAccess'
 import Plans from './pages/Plans'
+import { planAccess } from './services/planAccess'
+import PremiumAccess, { PremiumBadge } from './components/PremiumAccess'
 import { getCurrentSession, subscribeSession } from './services/accountAccess'
 import AvailableGames from './pages/Games'
 import { games } from './data/games'
@@ -82,14 +84,16 @@ function Brand() {
   )
 }
 
-function ActivityCard({ title, description, variant, action }) {
+function ActivityCard({ title, description, variant, action, access, onPremiumRequest }) {
+  const locked = variant === 'play' && !access.canAccess('games')
   return (
     <article className={`activity-card activity-card--${variant}`}>
       <ActivityIllustration variant={variant} />
       <div className="activity-content">
         <h2>{title}</h2>
         <p>{description}</p>
-        <button className="start-button" type="button" aria-label={variant === 'learn' ? 'Começar a aprender' : 'Começar a jogar'} onClick={() => { window.location.hash = variant === 'learn' ? '/aprender' : '/jogar' }}>
+        {locked && <PremiumBadge />}
+        <button className="start-button" type="button" aria-label={variant === 'learn' ? 'Começar a aprender' : locked ? 'Conhecer jogos — Premium' : 'Começar a jogar'} onClick={() => { if (locked) { onPremiumRequest('games'); return } window.location.hash = variant === 'learn' ? '/aprender' : '/jogar' }}>
           {action} <span aria-hidden="true">→</span>
         </button>
       </div>
@@ -97,10 +101,18 @@ function ActivityCard({ title, description, variant, action }) {
   )
 }
 
-function App() {
+function App({ access = planAccess } = {}) {
+  const [premiumNotice, setPremiumNotice] = useState(null)
+  useEffect(() => {
+    const closeNotice = () => setPremiumNotice(null)
+    window.addEventListener('hashchange', closeNotice)
+    return () => window.removeEventListener('hashchange', closeNotice)
+  }, [])
   const session = useSyncExternalStore(subscribeSession, getCurrentSession)
   const route = useSyncExternalStore(subscribeToRoute, getRoute)
-  const timer = getGameTimeTracker()
+  const feature = access.featureForRoute(route)
+  const blocked = feature && !access.canAccess(feature)
+  const timer = getGameTimeTracker(access)
   const gameTime = useSyncExternalStore(timer.subscribe, timer.getSnapshot)
   useEffect(startGameTimeTracking, [])
   useEffect(() => {
@@ -129,14 +141,14 @@ function App() {
       </header>
       <div className="home-surround" data-scene={sceneForRoute(route)}>
         <PageScene family={sceneForRoute(route)} />
-        {route === 'plans' ? <Plans /> : route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
+        {blocked ? <PremiumAccess feature={access.getFeature(feature)} /> : route === 'plans' ? <Plans /> : route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn access={access} onPremiumRequest={setPremiumNotice} /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
             <h1 id="welcome-title">{session?.userName ? `Olá, ${session.userName}!` : 'Olá!'}</h1>
             <p>O que você gostaria de fazer hoje?</p>
           </section>
           <div className="activity-grid">
-            <ActivityCard title="APRENDER" description={<>Comunicação, palavras<br />e escrita para o dia a dia.</>} variant="learn" action="Começar" />
-            <ActivityCard title="JOGAR" description={<>Jogos e atividades<br />divertidas para aprender.</>} variant="play" action="Jogar" />
+            <ActivityCard title="APRENDER" description={<>Comunicação, palavras<br />e escrita para o dia a dia.</>} variant="learn" action="Começar" access={access} onPremiumRequest={setPremiumNotice} />
+            <ActivityCard title="JOGAR" description={<>Jogos e atividades<br />divertidas para aprender.</>} variant="play" action="Jogar" access={access} onPremiumRequest={setPremiumNotice} />
           </div>
 
           <section className="progress" aria-labelledby="progress-title">
@@ -148,6 +160,7 @@ function App() {
           <p className="positive-message"><Icon name="growth" /><span>Cada pequeno passo é uma grande conquista!</span></p>
         </main>}
       </div>
+      {premiumNotice && <PremiumAccess modal feature={access.getFeature(premiumNotice)} onClose={() => setPremiumNotice(null)} />}
     </>
   )
 }

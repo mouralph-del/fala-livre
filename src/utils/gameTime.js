@@ -1,5 +1,6 @@
 import { getPreferences, subscribePreferences } from './preferences'
 import { GAME_TIME_KEY, dailyUsage, consume, limitMs, isPlayRoute } from './gameTimeCore'
+import { planAccess } from '../services/planAccess'
 
 export function createGameTimeTracker({ now = Date.now, storage = { getItem: key => window.localStorage.getItem(key), setItem: (key, value) => window.localStorage.setItem(key, value) }, visible = () => document.visibilityState === 'visible', route = () => window.location.hash, preferences = getPreferences } = {}) {
   let usage
@@ -29,7 +30,9 @@ export function createGameTimeTracker({ now = Date.now, storage = { getItem: key
 }
 
 let tracker
-export function getGameTimeTracker() { return tracker ??= createGameTimeTracker() }
+export function getGameTimeTracker(access = planAccess) {
+  return tracker ??= createGameTimeTracker({ route: () => access.canAccess('games') ? window.location.hash : '#/' })
+}
 export function startGameTimeTracking() {
   const current = getGameTimeTracker()
   current.tick()
