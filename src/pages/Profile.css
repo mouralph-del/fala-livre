@@ -26,6 +26,7 @@
 .profile-option:has(input:disabled) { background: var(--surface-page); color: var(--muted); cursor: default; }
 .profile-voice-options .profile-option + .profile-option { margin-top: 10px; }
 .profile-voice-group { margin-top: 20px; }
+.profile-voice-group summary { display: list-item; min-height: var(--target); padding: 10px 4px; color: var(--primary); font-weight: 700; cursor: pointer; }
 .profile-voice-group h3 { font-size: 1rem; margin: 0 0 10px; color: var(--text); }
 .profile-action:disabled { cursor: default; color: var(--muted); background: var(--surface-page); border-color: var(--border); }
 .profile-note { font-size: 13px; }

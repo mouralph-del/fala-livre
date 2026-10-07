@@ -4,6 +4,8 @@ let currentUtterance = null
 let observedSynth = null
 let portugueseVoices = []
 let availableVoices = []
+let automaticVoiceId = null
+let lastPreference
 export const speechParameters = Object.freeze({ lang: 'pt-BR', rate: 0.9, pitch: 1.05, volume: 1 })
 const voiceListeners = new Set()
 let voiceSignature = ''
@@ -29,6 +31,8 @@ function observeVoices(synth) {
   if (observedSynth !== synth) {
     observedSynth?.removeEventListener?.('voiceschanged', refreshVoices)
     observedSynth = synth
+    automaticVoiceId = null
+    lastPreference = undefined
     // The same event exposed through speechSynthesis.onvoiceschanged.
     // A listener preserves handlers registered elsewhere in the application.
     synth.addEventListener?.('voiceschanged', refreshVoices)
@@ -42,6 +46,7 @@ function voiceScore(voice) {
 }
 
 export function isBrazilianVoice(voice) { return normalizeLanguage(voice.lang) === 'pt-br' }
+export function isPortugueseVoice(voice) { return /^pt(?:-|$)/.test(normalizeLanguage(voice.lang)) }
 export function isSpeechReady() {
   if (window.speechSynthesis) observeVoices(window.speechSynthesis)
   return !!window.speechSynthesis && !!window.SpeechSynthesisUtterance && availableVoices.length > 0
@@ -56,6 +61,18 @@ export function getCommunicationVoices() {
   return [...portugueseVoices].sort((a, b) => Number(isBrazilianVoice(b)) - Number(isBrazilianVoice(a)))
 }
 
+export function getAvailableSpeechVoices() {
+  if (window.speechSynthesis) observeVoices(window.speechSynthesis)
+  return [...new Map(availableVoices.map(voice => [voiceIdentifier(voice), voice])).values()]
+    .sort((a, b) => Number(isBrazilianVoice(b)) - Number(isBrazilianVoice(a)) || Number(isPortugueseVoice(b)) - Number(isPortugueseVoice(a)))
+}
+
+export function findSavedVoice(saved = getPreferences().voice) {
+  return availableVoices.find(voice => voiceIdentifier(voice) === saved)
+    || getAvailableSpeechVoices().find(voice => voice.name === saved)
+    || null
+}
+
 export function subscribeVoices(listener) {
   voiceListeners.add(listener)
   if (window.speechSynthesis) observeVoices(window.speechSynthesis)
@@ -66,11 +83,16 @@ export function subscribeVoices(listener) {
 
 function preferredVoice() {
   const saved = getPreferences().voice
-  const chosen = portugueseVoices.find(voice => voiceIdentifier(voice) === saved || voice.name === saved)
+  if (saved !== lastPreference) { automaticVoiceId = null; lastPreference = saved }
+  const chosen = findSavedVoice(saved)
   if (chosen) return chosen
+  const current = availableVoices.find(voice => voiceIdentifier(voice) === automaticVoiceId)
+  if (current) return current
   const brazilian = portugueseVoices.filter(({ lang }) => normalizeLanguage(lang) === 'pt-br')
   const candidates = brazilian.length ? brazilian : portugueseVoices.length ? portugueseVoices : availableVoices.filter(voice => voice.default).length ? availableVoices.filter(voice => voice.default) : availableVoices
-  return candidates.reduce((best, voice) => !best || voiceScore(voice) > voiceScore(best) ? voice : best, null)
+  const resolved = candidates.reduce((best, voice) => !best || voiceScore(voice) > voiceScore(best) ? voice : best, null)
+  if (resolved) automaticVoiceId = voiceIdentifier(resolved)
+  return resolved
 }
 
 // Load the list early, without speaking. Async updates affect the next explicit

@@ -1,28 +1,60 @@
 # Vozes e áudio
 
-Seleção Automática prioriza pt-BR, depois demais vozes portuguesas, depois a voz padrão do navegador ou outra disponível. Dentro do grupo português preferido, localService=true precede vozes remotas e default=true desempata; ordem do dispositivo resolve empates restantes. Esses metadados não demonstram naturalidade ou timbre. Removidas heurísticas de nomes, fornecedores e gênero. Não há classificação de qualidade confiável na API.
+A Web Speech API usa as vozes fornecidas pelo navegador e sistema operacional.
+A seleção e a reprodução estão centralizadas em `src/utils/speech.js`; os
+componentes chamam `falar`/`stopSpeaking` e não escolhem uma voz por conta própria.
 
-Configurações lista nomes reais, agrupados em Português (Brasil) e Outras vozes em português, sem dezenas de idiomas adicionais. Quando só existem vozes de outros idiomas, Automática usa o fallback disponível e informa ausência de português. Quando nenhuma voz está pronta, Ouvir exemplo fica desabilitado com explicação. getVoices inicialmente vazio e voiceschanged posterior são suportados, sem reprodução automática.
+Automática resolve pt-BR primeiro, depois outra voz em português, depois a voz
+padrão do navegador ou outra disponível. `localService`/`default` ajudam na
+resolução inicial, sem inferir gênero, idade ou naturalidade. A identidade
+resolvida fica estável durante a sessão enquanto existir na lista, inclusive
+após reordenação, novos candidatos ou mudanças de prioridade em `voiceschanged`.
+Se desaparecer, outra voz é resolvida. Uma lista vazia não causa erro; nesse
+intervalo a fala usa o fallback do próprio navegador sem voz explicitamente
+atribuída. A chegada de vozes nunca inicia ou reinicia áudio automaticamente.
 
-Parâmetros centralizados: idioma preferido pt-BR, rate 0.9, pitch 1.05, volume 1. O idioma da utterance acompanha a voz escolhida no fallback para não pedir português a uma voz de outra região/idioma. Parâmetros anteriores próximos já estavam corretos e foram preservados. Frase do exemplo preservada: “Olá! Eu sou a voz do Fala Livre.” Nova fala cancela a anterior; interrupções não geram erro desnecessário.
+A seleção manual usa as vozes reais de qualquer idioma. Português (Brasil) e
+outras vozes em português ficam em destaque; Outros idiomas pode ser expandido
+sem alongar desnecessariamente a tela. Nomes e idiomas são os fornecidos pela API,
+sem categorias inventadas. Ouvir exemplo fala: “Olá! Vamos aprender juntos.”,
+usando a mesma resolução de voz das atividades.
 
-Preferência única em falalivre.preferences.voice; identificador existente mantido. Voz salva ausente usa Automática efetivamente, com aviso e seleção visual correspondente. O identificador permanece salvo para não perder a escolha quando a lista estiver carregando; se retornar, pode voltar a ser usado. Escolher Automática ou Restaurar grava null. Sem mudanças em progresso, rotação ou consumo diário.
+`falalivre.preferences.voice` preserva o formato existente: JSON de `voiceURI`
+(ou `name`, quando URI não é informado), `name` e `lang` normalizado. Não há índice
+persistido. Preferências antigas contendo apenas `name` continuam compatíveis.
+Uma voz salva ausente usa Automática com aviso, sem apagar a preferência; se
+retornar, é restaurada. Outras preferências, plano e progresso não mudam.
 
-Áudio manual e global pelo utilitário existente, incluindo palavras, pictogramas, frase completa e letras. Seleção de conteúdo/voz, entrada em tela e atualização da lista não iniciam fala. Sem microfone, reconhecimento de voz, backend, downloads ou serviço externo adicionado.
+Parâmetros: idioma preferencial pt-BR, rate 0.9, pitch 1.05 e volume 1. O idioma
+da utterance acompanha a voz escolhida. Nova acao manual cancela a anterior;
+não há fila adicional e callbacks de falas interrompidas não reportam erros antigos.
 
-## Limitações e conferência
+## Compatibilidade e limites
 
-Web Speech API não fornece gênero, idade ou qualidade/naturalidade de forma confiável. Mulher/Homem/Criança não foram inventados. Listas e disponibilidade variam entre Windows, Android, iOS/macOS e navegadores. Vozes remotas oferecidas pelo próprio navegador podem depender de conectividade. Nenhuma voz específica é garantida e os parâmetros não tornam automaticamente uma voz mais natural.
+Windows, Android, iOS/macOS e navegadores podem oferecer listas diferentes.
+Não é possível garantir uma voz específica em todos os dispositivos, nem
+naturalidade universal. Vozes remotas oferecidas pelo navegador podem depender
+de conectividade. Não há backend, TTS pago, chave externa, gravação ou clonagem.
+A abstração `falar`/`stopSpeaking` é o ponto de extensão futuro para outra fonte
+de áudio, como gravação personalizada, sem implementar essa fonte agora.
 
-Conferência dirigida com lista real do Chrome nesta máquina: Microsoft Daniel e Microsoft Maria (pt-BR locais), Google português do Brasil (pt-BR remoto). Grupos, nomes, botão disponível e apresentação verificados em 390/768/1440 px. Sem escuta física; não se afirma melhora subjetiva do timbre.
+A seleção continua gratuita; `planAccess.js` e as regras Free/Premium não foram
+alterados. Nos testes, a fixture Premium existente permite conferir somente
+os consumidores protegidos, sem criar assinatura ou mudar a fonte pública free.
 
-## Testes
+## Verificação direcionada
 
-- node qa/speechVoices.test.mjs: Automática, prioridade/local/default, fallback português e sem português, vazio/voiceschanged, manual/voz ausente, parâmetros, cancelamento e engine indisponível.
-- node qa/speechVoices.browser.mjs: carregamento assíncrono, grupos, exemplo, seleção manual, persistência/refresh, voz desaparecida, restauração e ausência de autoplay.
-- node qa/speechVoices.browser.mjs --real: lista real e inspeção dirigida de Configurações, sem escuta física.
-- node qa/responsibleGuidance.browser.mjs: preferências, voz/exemplo, persistência, personagens, restauração, teclado/foco.
-- node qa/communication.test.mjs e node qa/communication.browser.mjs: regressão de áudio e composição educativos.
-- npm run lint; npm run build; git diff --check.
+- speechVoices.test.mjs: identidade, Automatica estavel, prioridades/fallbacks,
+  voz manual de outro idioma, compatibilidade, lista vazia/assincrona, retorno
+  da voz salva, parametros, cancelamento e engine indisponivel.
+- speechVoices.browser.mjs: Configuracoes, previa, refresh, reorder/voiceschanged,
+  mesma referencia em palavras/letras de Escrever, frase de Comunicar, Palavras
+  e Frases, Rotinas, Comunicacao educativa, Emocoes e Caminho. Verifica teclado,
+  toque, foco, sete larguras em Normal/Grande, preferencias e progresso intactos.
+- speechVoices.browser.mjs --real: lista real do Chrome e interface, sem escuta
+  fisica. Foram encontradas vozes Microsoft e Google, incluindo pt-BR.
+- lint, build e git diff --check.
 
-Testes aprovados; somente verificações direcionadas.
+Os testes automatizados verificam a voz atribuída e o funcionamento, não a
+qualidade sonora. Timbre, pronúncia e naturalidade precisam de escuta real no
+dispositivo de uso. Não se afirma que a voz “soa natural” com base nos testes.
