@@ -10,6 +10,7 @@ import ResponsibleGuidance from './pages/ResponsibleGuidance'
 import Communication from './pages/Communication'
 import Profile from './pages/Profile'
 import AccountAccess from './pages/AccountAccess'
+import { getCurrentSession, subscribeSession } from './services/accountAccess'
 import AvailableGames from './pages/Games'
 import { games } from './data/games'
 import DailySituations from './pages/DailySituations'
@@ -95,6 +96,7 @@ function ActivityCard({ title, description, variant, action }) {
 }
 
 function App() {
+  const session = useSyncExternalStore(subscribeSession, getCurrentSession)
   const route = useSyncExternalStore(subscribeToRoute, getRoute)
   const timer = getGameTimeTracker()
   const gameTime = useSyncExternalStore(timer.subscribe, timer.getSnapshot)
@@ -127,7 +129,7 @@ function App() {
         <PageScene family={sceneForRoute(route)} />
         {route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
-            <h1 id="welcome-title">Olá!</h1>
+            <h1 id="welcome-title">{session?.userName ? `Olá, ${session.userName}!` : 'Olá!'}</h1>
             <p>O que você gostaria de fazer hoje?</p>
           </section>
           <div className="activity-grid">

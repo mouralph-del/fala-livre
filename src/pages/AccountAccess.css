@@ -8,6 +8,7 @@
 .account-availability { margin-block: 8px 16px; color: var(--muted); font-size: .9375rem; }
 .account-field { margin-bottom: 14px; }
 .account-field label { display: block; font-weight: 600; margin-bottom: 4px; }
+.account-field h3 { font-size: 1.125rem; margin-block: 20px 10px; }
 .account-field input { width: 100%; min-width: 0; min-height: var(--target); padding: 10px 12px; border: 1px solid var(--border-control); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; }
 .account-field input[aria-invalid='true'] { border-color: var(--error); }
 .account-field small { color: var(--muted); }

@@ -36,7 +36,8 @@ export default function HeaderNavigation({ route }) {
         <a href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined} onClick={() => setOpen(false)}>Configurações</a>
         <a href="#/responsaveis" aria-current={route === 'responsibleGuidance' ? 'page' : undefined} onClick={() => setOpen(false)}>Responsáveis / Sobre o Fala Livre</a>
         <div className="header-account-section">
-          <span className="header-menu-label">{session ? session.name : 'Conta do responsável'}</span>
+          <span className="header-menu-label">{session ? 'Responsável' : 'Conta do responsável'}</span>
+          {session && <span className="header-account-name">{session.responsibleName}</span>}
           {session ? <button type="button" className="header-sign-out" onClick={() => {
             signOut(); setOpen(false); trigger.current?.focus()
           }}>Sair</button> : <>

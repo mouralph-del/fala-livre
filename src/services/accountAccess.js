@@ -2,13 +2,20 @@
 // authentication; never protect real data. Replace this service with the backend.
 // Browser progress/preferences remain unrelated to accounts.
 const SESSION_KEY = 'falalivre.demo-session.v1'
-const DEMO_NAME = 'Responsável'
+const DEMO_SESSION = Object.freeze({ demo: true, responsibleName: 'Alex', userName: 'Noa' })
+const validName = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 200 && [...value].every(character => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127)
 const listeners = new Set()
 function readSession() {
   try {
     const stored = JSON.parse(window.localStorage.getItem(SESSION_KEY))
-    return stored?.demo === true && stored.name === DEMO_NAME
-      ? Object.freeze({ demo: true, name: DEMO_NAME }) : null
+    if (stored?.demo !== true) return null
+    if (stored.name === 'Responsável' && stored.responsibleName === undefined && stored.userName === undefined) {
+      // Migrate only the known legacy demo, keeping all educational keys intact.
+      try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(DEMO_SESSION)) } catch { /* Memory-only fallback. */ }
+      return DEMO_SESSION
+    }
+    return validName(stored.responsibleName) && validName(stored.userName)
+      ? Object.freeze({ demo: true, responsibleName: stored.responsibleName.trim(), userName: stored.userName.trim() }) : null
   } catch { return null }
 }
 let session = readSession()
@@ -44,7 +51,7 @@ export async function requestAccountAccess(mode, credentials) {
   if (credentials?.email !== 'teste@falalivre.com' || credentials?.password !== 'FalaLivre123') {
     throw new InvalidAccountCredentials()
   }
-  const next = Object.freeze({ demo: true, name: DEMO_NAME })
+  const next = DEMO_SESSION
   try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(next)) } catch { /* Memory-only fallback. */ }
   publish(next)
   return next

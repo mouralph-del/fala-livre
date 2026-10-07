@@ -72,6 +72,8 @@ main[id='conteudo'] > :is(.navigation-return, a[class$='-back']) { padding: 4px 
 .header-menu-label { display: block; padding: 6px 12px 2px; font-size: .8125rem; color: var(--muted); font-weight: 600; }
 .app-header { background: #FEFEFE; border-bottom: 1px solid #E4ECF0; box-shadow: 0 2px 8px #315F8C04; }
 .header-account-section { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 4px; }
+.header-account-name { display: block; padding: 4px 12px; color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
+.welcome h1 { overflow-wrap: anywhere; }
 .app-header .header-sign-out { font: inherit; text-align: left; cursor: pointer; background: transparent; }
 .app-header .header-popover { max-height: min(calc(100svh - 116px), 60svh); overflow-y: auto; overscroll-behavior: contain; }
 @media (max-width: 1050px) {
