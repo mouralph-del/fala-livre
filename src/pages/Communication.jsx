@@ -29,7 +29,7 @@ function getNaturalPhrase(tokens) {
   return constructedSpeech(tokens, phrases, tokenCatalog)
 }
 
-export default function Communication({ progressService } = {}) {
+export default function Communication({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('communication', communicationSetIds))
   const [qaSetId, setQaSetId] = useState('')
   const selectedSetId = qaSetId || getCurrentTheme(rotation)
@@ -141,7 +141,7 @@ export default function Communication({ progressService } = {}) {
         <p>Escolha pictogramas para expressar o que você quer comunicar.</p>
       </section>
 
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && qaControls && (
         <label className="communication-qa-selector">
           Conjunto para QA
           <select value={qaSetId} onChange={event => handleQaSetChange(event.target.value)}>

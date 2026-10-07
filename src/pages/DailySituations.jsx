@@ -22,7 +22,7 @@ function resolveConcept(conceptId) {
   }
 }
 
-export default function DailySituations() {
+export default function DailySituations({ qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation(moduleId, dailySituationIds))
   const [qaSituationId, setQaSituationId] = useState('')
   const currentSituationId = qaSituationId || getCurrentTheme(rotation)
@@ -138,7 +138,7 @@ export default function DailySituations() {
     <a className="situations-back" href="#/aprender">← Aprender</a>
     <header className="situations-intro"><h1>Situações do dia a dia</h1><p>Vamos aprender o que fazer em diferentes momentos.</p></header>
 
-    {import.meta.env.DEV && (
+    {import.meta.env.DEV && qaControls && (
       <label className="situations-qa-selector">
         Situação para QA
         <select value={qaSituationId} onChange={event => { setQaSituationId(event.target.value); resetActivity() }}>

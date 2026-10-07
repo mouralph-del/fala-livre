@@ -8,7 +8,7 @@ import { advanceModuleRotation, getModuleRotation } from '../utils/contentRotati
 import './Writing.css'
 import { useLearningProgress } from '../hooks/useLearningProgress'
 
-export default function Writing({ progressService } = {}) {
+export default function Writing({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('writing', learningWordIds))
   const [phase, setPhase] = useState('typing')
   const [qaWordId, setQaWordId] = useState('')
@@ -42,7 +42,7 @@ export default function Writing({ progressService } = {}) {
       <p>{phase === 'typing' ? 'Digite a palavra e depois pratique no caderno.' : 'Pratique a palavra no caderno.'}</p>
     </header>
 
-    {import.meta.env.DEV && (
+    {import.meta.env.DEV && qaControls && (
       <label className="writing-qa-selector">
         Palavra para QA
         <select value={qaWordId} onChange={event => { setQaWordId(event.target.value); setPhase('typing') }}>

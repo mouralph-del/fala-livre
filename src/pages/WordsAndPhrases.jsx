@@ -11,7 +11,7 @@ const moduleId = 'wordsAndPhrases'
 const officialWordIds = ['casa', 'cama', 'sofa', 'gato', 'cachorro', 'peixe', 'bola', 'blocos', 'carrinho', 'lapis', 'estojo', 'mochila']
 const phaseTitles = { know: 'Conhecer', build: 'Montar', sentence: 'Usar na frase' }
 
-export default function WordsAndPhrases({ progressService } = {}) {
+export default function WordsAndPhrases({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation(moduleId, officialWordIds))
   const [qaWordId, setQaWordId] = useState('')
   const progress = useLearningProgress(!qaWordId, progressService)
@@ -129,7 +129,7 @@ export default function WordsAndPhrases({ progressService } = {}) {
       <a className="words-back" href="#/aprender">← Aprender</a>
       <header className="words-intro"><h1>Palavras e frases</h1><p>Aprenda palavras e use-as nas frases.</p></header>
 
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && qaControls && (
         <label className="words-qa-selector">
           Palavra para QA
           <select

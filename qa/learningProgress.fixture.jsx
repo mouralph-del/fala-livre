@@ -40,7 +40,7 @@ function seed(moduleId, ids, currentId) {
 async function mount(Component, props = {}, mode = 'normal') {
   root?.unmount(); await pause(); fixture = makeFixture(mode)
   root = createRoot(document.getElementById('root'))
-  root.render(<StrictMode><Component {...props} progressService={fixture.service} /></StrictMode>)
+  root.render(<StrictMode><Component {...props} qaControls progressService={fixture.service} /></StrictMode>)
   await pause(); await pause()
   check(fixture.calls.length === 0 && fixture.writes.length === 0, 'opening records nothing')
 }
