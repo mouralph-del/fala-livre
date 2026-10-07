@@ -6,7 +6,8 @@ componentes chamam `falar`/`stopSpeaking` e não escolhem uma voz por conta pró
 
 Automática resolve pt-BR primeiro, depois outra voz em português, depois a voz
 padrão do navegador ou outra disponível. `localService`/`default` ajudam na
-resolução inicial, sem inferir gênero, idade ou naturalidade. A identidade
+resolução inicial, sem inferir gênero, idade ou naturalidade. Empates usam a
+identidade URI/nome/idioma, independentemente da ordem inicial da lista. A identidade
 resolvida fica estável durante a sessão enquanto existir na lista, inclusive
 após reordenação, novos candidatos ou mudanças de prioridade em `voiceschanged`.
 Se desaparecer, outra voz é resolvida. Uma lista vazia não causa erro; nesse
@@ -35,8 +36,10 @@ Windows, Android, iOS/macOS e navegadores podem oferecer listas diferentes.
 Não é possível garantir uma voz específica em todos os dispositivos, nem
 naturalidade universal. Vozes remotas oferecidas pelo navegador podem depender
 de conectividade. Não há backend, TTS pago, chave externa, gravação ou clonagem.
-A abstração `falar`/`stopSpeaking` é o ponto de extensão futuro para outra fonte
-de áudio, como gravação personalizada, sem implementar essa fonte agora.
+Não está prevista gravação de voz do responsável ou usuário, biblioteca de
+gravações, uso de MediaRecorder para vocabulário, uploads ou clonagem de voz.
+A centralização atende exclusivamente à reprodução das vozes do navegador;
+não prepara uma arquitetura de gravação personalizada.
 
 A seleção continua gratuita; `planAccess.js` e as regras Free/Premium não foram
 alterados. Nos testes, a fixture Premium existente permite conferir somente

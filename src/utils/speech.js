@@ -90,7 +90,11 @@ function preferredVoice() {
   if (current) return current
   const brazilian = portugueseVoices.filter(({ lang }) => normalizeLanguage(lang) === 'pt-br')
   const candidates = brazilian.length ? brazilian : portugueseVoices.length ? portugueseVoices : availableVoices.filter(voice => voice.default).length ? availableVoices.filter(voice => voice.default) : availableVoices
-  const resolved = candidates.reduce((best, voice) => !best || voiceScore(voice) > voiceScore(best) ? voice : best, null)
+  const resolved = candidates.reduce((best, voice) => {
+    if (!best) return voice
+    const priority = voiceScore(voice) - voiceScore(best)
+    return priority > 0 || (priority === 0 && voiceIdentifier(voice) < voiceIdentifier(best)) ? voice : best
+  }, null)
   if (resolved) automaticVoiceId = voiceIdentifier(resolved)
   return resolved
 }

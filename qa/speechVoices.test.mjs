@@ -40,4 +40,15 @@ voices=[];synth.dispatchEvent(new Event('voiceschanged'));assert.equal(m.isSpeec
 voices=[br,local];synth.dispatchEvent(new Event('voiceschanged'));m.falar('Saved voice returns');assert.equal(spoken.at(-1).voice,br)
 let message='';spoken.at(-1).onerror({error:'network'});assert.equal(m.falar('C',s=>message=s),true);spoken.at(-1).onerror({error:'network'});assert.ok(message)
 off();delete window.speechSynthesis;assert.equal(m.falar('Unavailable',s=>message=s),false)
+// Fresh engines can expose equally ranked voices in different initial orders.
+const tiedA={name:'Brazilian A',voiceURI:'a-br',lang:'pt-BR',localService:true}
+const tiedZ={name:'Brazilian Z',voiceURI:'z-br',lang:'pt-BR',localService:true}
+saved=null
+for(const order of [[tiedZ,tiedA],[tiedA,tiedZ]]) {
+  const engine=new EventTarget()
+  engine.getVoices=()=>order;engine.cancel=()=>{};engine.speak=u=>spoken.push(u)
+  window.speechSynthesis=engine
+  m.falar('Deterministic initial selection')
+  assert.equal(spoken.at(-1).voice,tiedA,'equal-priority initial choice must not depend on browser list order')
+}
 console.log('PASS automatic pt-BR/local/default, Portuguese/engine fallback, empty/async voiceschanged, manual/missing voice, parameters, cancellation, manual-only startup and unavailable engine')
