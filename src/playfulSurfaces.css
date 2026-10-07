@@ -70,7 +70,7 @@ main[id='conteudo'] :is(.profile-intro, .situations-intro) h1 { font-size: clamp
 .communication-page .sentence-empty { padding-block: 8px; }
 main[id='conteudo'] > :is(.navigation-return, a[class$='-back']) { padding: 4px 10px; margin-block: 0 4px; border-radius: 999px; }
 .header-menu-label { display: block; padding: 6px 12px 2px; font-size: .8125rem; color: var(--muted); font-weight: 600; }
-.app-header { background: linear-gradient(180deg, #EAF3F8, #F0F6F8); border-bottom: 1px solid #D8E5EC; box-shadow: 0 2px 8px #315F8C06; }
+.app-header { background: #FEFEFE; border-bottom: 1px solid #E4ECF0; box-shadow: 0 2px 8px #315F8C04; }
 .header-account-section { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 4px; }
 .app-header .header-sign-out { font: inherit; text-align: left; cursor: pointer; background: transparent; }
 .app-header .header-popover { max-height: min(calc(100svh - 116px), 60svh); overflow-y: auto; overscroll-behavior: contain; }
