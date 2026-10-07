@@ -1,4 +1,5 @@
 import './Learn.css'
+import ActivityIllustration from '../components/ActivityIllustration'
 
 const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', myDay: '/aprender/meu-dia-a-dia' }
 
@@ -28,12 +29,13 @@ export default function Learn() {
     <main id="conteudo" className="learn-page" tabIndex={-1}>
       <a className="learn-back" href="#/">← Início</a>
       <section className="learn-intro" aria-labelledby="learn-title">
+        <span className="entry-character" aria-hidden="true"><ActivityIllustration variant="learn" /></span>
         <h1 id="learn-title">O que vamos aprender hoje?</h1>
         <p>Escolha uma atividade para começar.</p>
       </section>
       <div className="learning-grid">
         {activities.map(({ id, title, description, detail, tone }) => (
-          <article className={`learning-card learning-card--${tone}`} key={id}>
+          <article className={`learning-card learning-card--${tone}`} data-activity={id} key={id}>
             <LearningIllustration activity={id} />
             <div className="learning-content">
               <h2><span className="learning-title-desktop">{title}</span><span className="learning-title-mobile">{title === 'PALAVRAS E FRASES' ? <>PALAVRAS<span className="learning-title-line"> E FRASES</span></> : title === 'SITUAÇÕES DO DIA A DIA' ? <>SITUAÇÕES<span className="learning-title-line"> DO DIA A DIA</span></> : title === 'MEU DIA A DIA' ? <>MEU<span className="learning-title-line"> DIA A DIA</span></> : title}</span></h2>

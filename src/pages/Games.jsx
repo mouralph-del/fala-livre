@@ -10,6 +10,7 @@ import WhereBelongsGame from './WhereBelongsGame'
 import SequenceGame from './SequenceGame'
 import InteractiveSituationsGame from './InteractiveSituationsGame'
 import './Games.css'
+import ActivityIllustration from '../components/ActivityIllustration'
 
 function GameIcon({ name }) {
   return <svg className="game-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -40,8 +41,8 @@ export default function Games({ gameId }) {
   if (game) return <GamePlaceholder game={game} />
   return <main id="conteudo" className="games-page" tabIndex={-1}>
     <a className="games-back" href="#/">← Início</a>
-    <header className="games-intro"><h1>Vamos jogar!</h1><p>Escolha uma atividade para começar.</p></header>
-    <div className="games-grid">{games.filter(item => item.visible !== false).map(item => <article className={`game-card game-card--${item.tone}`} key={item.id}>
+    <header className="games-intro"><span className="entry-character" aria-hidden="true"><ActivityIllustration variant="play" /></span><h1>Vamos jogar!</h1><p>Escolha uma atividade para começar.</p></header>
+    <div className="games-grid">{games.filter(item => item.visible !== false).map(item => <article className={`game-card game-card--${item.tone}`} data-game={item.id} key={item.id}>
       <GameIcon name={item.icon} />
       <h2>{item.title}</h2><p>{item.description}</p>
       <a className="game-start" href={item.route} aria-label={`Jogar: ${item.pageTitle}`}>Jogar <span aria-hidden="true">→</span></a>

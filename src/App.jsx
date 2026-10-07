@@ -23,6 +23,7 @@ import InteractiveSituationsGame from './pages/InteractiveSituationsGame'
 import './visualIdentity.css'
 import './dynamicLayout.css'
 import './navigationActions.css'
+import './childEntry.css'
 import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {
