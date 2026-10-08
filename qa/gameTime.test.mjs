@@ -3,7 +3,7 @@ import fs from 'node:fs'
 const core = fs.readFileSync('src/utils/gameTimeCore.js', 'utf8')
 const url = 'data:text/javascript;base64,' + Buffer.from(core).toString('base64')
 const { limitMs, localDay, dailyUsage, consume, isPlayRoute, GAME_TIME_KEY } = await import(url)
-const planUrl = 'data:text/javascript;base64,' + Buffer.from(fs.readFileSync('src/services/planAccess.js', 'utf8')).toString('base64')
+const planUrl = 'data:text/javascript;base64,' + Buffer.from(fs.readFileSync('src/services/planAccess.js', 'utf8').replace("import { getCurrentSession } from './accountAccess.js'", 'const getCurrentSession=()=>null')).toString('base64')
 const runtime = fs.readFileSync('src/utils/gameTime.js', 'utf8').replace("import { getPreferences, subscribePreferences } from './preferences'", 'const getPreferences=()=>({gameTimeLimit:"unlimited"});const subscribePreferences=()=>()=>{}').replace("'./gameTimeCore'", JSON.stringify(url)).replace("'../services/planAccess'", JSON.stringify(planUrl))
 const { createGameTimeTracker } = await import('data:text/javascript;base64,' + Buffer.from(runtime).toString('base64'))
 for (const [mode, expected] of [['unlimited', Infinity], ['15', 15], ['30', 30], ['45', 45], ['60', 60], ['custom', 7]]) assert.equal(limitMs({gameTimeLimit:mode,customGameMinutes:7}), expected === Infinity ? Infinity : expected*60000)

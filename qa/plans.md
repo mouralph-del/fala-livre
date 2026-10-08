@@ -14,7 +14,8 @@ aproximadamente R$ 12,49/mês e economiza R$ 52,90 frente a 12 mensalidades.
 O seletor não cria contratação. Escolher Premium apenas anuncia indisponibilidade.
 
 `src/services/planAccess.js` centraliza a consulta `getCurrentPlan()` e os
-valores de apresentação. Retorna `free` para todos, incluindo a conta demo.
+valores de apresentação. Retorna `free` para visitantes e `premium-demo` para a
+sessão demo válida de `accountAccess.js`; logout retorna imediatamente a `free`.
 Não há setter Premium, persistência de plano, associação ao progresso,
 pagamento, API ou validação de assinatura. O backend futuro deverá substituir
 essa fonte pela assinatura validada, sem presumir endpoints/schema aqui.
@@ -28,7 +29,8 @@ um estado amigável sem montar atividades. O diálogo permite fechar ou Ver plan
 `planAccess` centraliza metadados, classificação de rota e `canAccess`.
 `createPlanAccess(planSource)` permite injeção de uma fonte Premium exclusivamente
 em fixtures automatizadas; não existe override público, query, controle secreto
-ou armazenamento de plano. Em produção a fonte continua retornando `free`.
+ou armazenamento separado de plano. A única exceção local é a sessão demo
+existente, identificada como acesso de demonstração, sem contratação ou cobrança.
 
 A proteção é somente UX/frontend e não é autorização segura. O backend futuro
 será a fonte de verdade e deverá validar recursos/dados/API Premium. Plano e

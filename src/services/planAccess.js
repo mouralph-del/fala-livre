@@ -1,6 +1,11 @@
 // Frontend UX only, not secure authorization. The backend must validate Premium
-// resources. No local premium flag, persistence, checkout or public override.
-export function getCurrentPlan() { return 'free' }
+// resources. Demo access uses only the existing local demo session, never a real
+// subscription, payment or server-verified license.
+import { getCurrentSession } from './accountAccess.js'
+
+export function getCurrentPlan() {
+  return getCurrentSession()?.demo === true ? 'premium-demo' : 'free'
+}
 
 export const planFeatures = Object.freeze({
   communication: Object.freeze({ title: 'Comunicar', plan: 'free' }),
@@ -10,12 +15,12 @@ export const planFeatures = Object.freeze({
   games: Object.freeze({ title: 'Jogos', plan: 'premium' }),
 })
 
-// Dependency injection is used by QA fixtures, never by storage, query parameters
-// or a public control. Production uses only the default backend-replaceable source.
+// Alternative plan sources are injected only by QA fixtures. Production uses
+// the existing demo-session source above, with no separate stored plan override.
 export function createPlanAccess(planSource = getCurrentPlan) {
   return Object.freeze({
     getCurrentPlan: planSource,
-    canAccess(feature) { return Object.hasOwn(planFeatures, feature) && (planFeatures[feature].plan === 'free' || planSource() === 'premium') },
+    canAccess(feature) { return Object.hasOwn(planFeatures, feature) && (planFeatures[feature].plan === 'free' || ['premium', 'premium-demo'].includes(planSource())) },
     featureForRoute(route) {
       if (route === 'words') return 'words'
       if (route.startsWith('myDay') || route === 'situations') return 'myDay'

@@ -1,10 +1,12 @@
-import { useState } from 'react'
-import { premiumOffers } from '../services/planAccess'
+import { useState, useSyncExternalStore } from 'react'
+import { getCurrentPlan, premiumOffers } from '../services/planAccess'
+import { subscribeSession } from '../services/accountAccess'
 import './Plans.css'
 
 const money = cents => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 export default function Plans() {
+  const plan = useSyncExternalStore(subscribeSession, getCurrentPlan)
   const [billing, setBilling] = useState('annual')
   const [message, setMessage] = useState('')
   const offer = premiumOffers[billing]
@@ -13,6 +15,7 @@ export default function Plans() {
     <header className="plans-intro">
       <h1>Planos do Fala Livre</h1>
       <p>Escolha a opção que combina melhor com sua família.</p>
+      {plan === 'premium-demo' && <p>Acesso Premium de demonstração — permissão local, sem assinatura ou cobrança.</p>}
     </header>
     <div className="plans-grid">
       <section className="plan-card" aria-labelledby="free-title">

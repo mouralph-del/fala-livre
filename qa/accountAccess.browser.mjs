@@ -121,15 +121,17 @@ try {
   await ev(`(async()=> (await import('/src/services/accountAccess.js')).requestAccountAccess('sign-in',{email:'teste@falalivre.com',password:'FalaLivre123'}))()`); await pause(60)
   // Native keyboard activation and visible focus on the real logout button.
   await ev('document.querySelector(".header-menu-toggle").focus()')
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 8 && await ev('document.activeElement.className') !== 'header-sign-out'; i++) {
     await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
     await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 })
   }
   assert.equal(await ev('document.activeElement.className'), 'header-sign-out')
   assert.equal(await ev('getComputedStyle(document.activeElement).outlineStyle'), 'solid')
+  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`), 'premium-demo')
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await pause(60)
   assert.equal(await ev('localStorage.getItem("falalivre.demo-session.v1")'), null)
+  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`), 'free')
   assert.equal(await storage(), preserved)
   assert.equal(await ev('document.querySelector("#welcome-title").textContent'), 'Olá!')
   assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'), 'false')

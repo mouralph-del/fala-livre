@@ -34,4 +34,11 @@ telas. O backend deverá definir autenticação, sessão segura e tratamento de
 erros e será a fonte de verdade dos dados de responsável e usuário;
 nenhum endpoint ou schema definitivo de banco é presumido aqui. Existem apresentação
 de planos e bloqueios Premium somente no frontend, documentados em `plans.md`.
-A conta demo continua no plano gratuito; não há assinatura ou pagamento funcional.
+A sessão demo válida recebe `premium-demo` pela fonte central de acesso.
+Visitantes e usuários após logout recebem `free`. O identificador é o estado
+`demo` validado por `accountAccess.js`, não os nomes Alex/Noa. A página Planos
+identifica explicitamente o acesso de demonstração; não há assinatura, pagamento
+ou licença verificada por servidor. Essa permissão é somente frontend/localStorage,
+pode ser manipulada localmente e não oferece segurança real. Autenticação e
+autorização definitivas dependem do backend. Progressão e limite diário continuam
+aplicáveis à conta demo, sem limpar progresso ou preferências no logout.
