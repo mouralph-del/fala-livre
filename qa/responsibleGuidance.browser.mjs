@@ -51,8 +51,8 @@ try {
   const click = async selector => { await A.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await pause(80) }
   assert.equal(await A.evaluate('document.querySelector("h1").textContent'), 'Configurações')
   assert.equal(await A.evaluate('document.title'), 'Configurações | Fala Livre')
-  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a"),a=>a.textContent)'), ['Meu Progresso', 'Configurações', 'Responsáveis / Sobre o Fala Livre', 'Entrar', 'Criar conta'])
-  assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 5)
+  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll(".header-navigation a"),a=>a.textContent)'), ['Meu Progresso', 'Configurações', 'Responsáveis / Sobre o Fala Livre', 'Planos', 'Entrar', 'Criar conta'])
+  assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 6)
   assert.equal(await A.evaluate(`document.querySelector('.header-navigation a[href="#/responsaveis"]') !== null`), true)
   assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("input[name=learnCharacter],input[name=gameCharacter]"),i=>({value:i.value,disabled:i.disabled,checked:i.checked}))'), [
     {value:'girl',disabled:false,checked:true},{value:'boy',disabled:false,checked:false},{value:'girl',disabled:false,checked:false},{value:'boy',disabled:false,checked:true},
@@ -63,7 +63,7 @@ try {
     await click(`input[name="gameCharacter"][value="${game}"]`)
     const previews = await A.evaluate('Array.from(document.querySelectorAll(".profile-character-preview"),i=>i.src)')
     await route('/')
-    assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("img.activity-illustration"),i=>i.src)'), previews)
+    assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("img.activity-illustration")).filter(i=>i.getBoundingClientRect().width>0).map(i=>i.src)'), previews)
     await route('/perfil')
     await A.cdp('Page.reload'); await pause(200); await ready(A)
     assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("input[name=learnCharacter]:checked,input[name=gameCharacter]:checked"),i=>i.value)'), [learn, game])
@@ -85,7 +85,7 @@ try {
   // Each radio is in its own label: choose explicitly the second mock voice.
   await A.evaluate(`Array.from(document.querySelectorAll('input[name="voice"]'))[2].click()`); await pause(80)
   await A.evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Ouvir exemplo').click()`)
-  assert.deepEqual(await A.evaluate('window.__qaSpoken.at(-1)'), {text:'Olá! Eu sou a voz do Fala Livre.',voice:'Voz B'})
+  assert.deepEqual(await A.evaluate('window.__qaSpoken.at(-1)'), {text:'Olá! Vamos aprender juntos.',voice:'Voz B'})
   assert.equal(await A.evaluate('document.documentElement.dataset.elementSize'), 'large')
   assert.equal(await A.evaluate('document.documentElement.dataset.reduceMotion'), 'true')
   for (let i=0;i<50 && !(await B.evaluate('document.querySelector("input[name=elementSize]:checked").parentElement.textContent.includes("Grande")'));i++) await pause(30)

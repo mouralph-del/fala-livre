@@ -34,3 +34,14 @@
 .home-surround:has(> .care-scene-symbol) .account-field h3 { margin-top: 4px; }
 .home-surround:has(> .care-scene-symbol) .account-panel > .navigation-action { width: 100%; justify-content: center; }
 @media (max-width: 600px) { .home-surround:has(> .care-scene-symbol) :is(.guidance-intro,.account-intro,.account-panel) { padding: 16px; } }
+
+/* Settings groups keep their original DOM order and shared preference service. */
+.home-surround:has(> .care-scene-symbol) .profile-page { max-width: 960px; }
+.home-surround:has(> .care-scene-symbol) .profile-intro { padding: 20px 24px; margin-block: 16px 24px; border: 1px solid white; border-radius: 24px; background: #EFFBFFF0; box-shadow: 0 4px 0 #FFFFFF70; }
+.home-surround:has(> .care-scene-symbol) .profile-page .profile-sections { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.home-surround:has(> .care-scene-symbol) .profile-section { padding: 24px; background: #FFFFFFF5; border: 1px solid #C8DBDF; border-radius: 24px; box-shadow: 0 5px 0 #C9DFD680, 0 10px 22px #315F8C12; }
+.home-surround:has(> .care-scene-symbol) .profile-section h2 { padding-bottom: 12px; border-bottom: 1px solid #D8E1E6; }
+.home-surround:has(> .care-scene-symbol) .profile-character-grid fieldset { padding: 16px; background: #F4FAFD; border: 1px solid #D8E1E6; border-radius: 18px; }
+.home-surround:has(> .care-scene-symbol) .profile-restore { padding: 20px; border: 1px solid #C8DBDF; border-radius: 24px; background: #FFFFFFF5; }
+.home-surround:has(> .care-scene-symbol) .records-empty > .records-empty-icon { width: 56px; height: 56px; }
+@media (max-width: 600px) { .home-surround:has(> .care-scene-symbol) :is(.profile-section,.profile-intro,.profile-restore) { padding: 16px; } }
