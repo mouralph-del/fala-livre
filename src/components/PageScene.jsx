@@ -1,5 +1,6 @@
 import './PageScene.css'
 import HomeLandscape from './HomeLandscape'
+import CareLandscape from './CareLandscape'
 import LearningLandscape from './LearningLandscape'
 import { hasLearningLandscape } from './learningScenes'
 
@@ -18,6 +19,7 @@ function House() {
 
 export default function PageScene({ family, activity }) {
   if (family === 'home') return <HomeLandscape />
+  if (['plans', 'progress'].includes(activity)) return <CareLandscape activity={activity} />
   if (family === 'play') return <LearningLandscape activity="play" />
   if (hasLearningLandscape(activity)) return <LearningLandscape activity={activity} />
   const daily = family === 'daily'

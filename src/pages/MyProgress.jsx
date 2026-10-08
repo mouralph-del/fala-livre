@@ -5,6 +5,7 @@ import { learningWords } from '../data/learningWords.js'
 import { myDayRoutines } from '../data/myDayRoutines.js'
 import { games } from '../data/games.js'
 import './MyProgress.css'
+import InterfaceIcon from '../components/InterfaceIcon'
 
 const exerciseLabels = ['pedir água', 'pedir comida', 'pedir para brincar', 'pedir para dormir', 'pedir ajuda', 'pedir banheiro', 'expressar fome', 'expressar dor', 'recusar comida', 'recusar brincadeira']
 const failures = {
@@ -34,15 +35,17 @@ export default function MyProgress({ progressService, transitionDismissed = fals
   const c = summary.counts
   return <main id="conteudo" className="my-progress" tabIndex={-1}>
     <a className="navigation-return" href="#/">Voltar ao início</a>
-    <h1>Meu Progresso</h1>
+    <header className="records-intro"><h1>Meu Progresso</h1>
     <p className="records-subtitle">Registros deste navegador</p>
     <p>Estes registros ficam neste navegador. Eles podem reunir atividades de mais de uma pessoa que usa este dispositivo.</p>
+    </header>
     <div role="status" className="records-status">
       {loading && <p>Carregando os registros deste navegador…</p>}
       {failure && <><p>{failure}</p><button type="button" onClick={() => { void actions.loadProgress() }}>Tentar ler novamente</button></>}
       {showRecords && summary.hasSessionOnly && <p>Alguns registros estão disponíveis apenas nesta sessão e podem desaparecer ao fechar ou recarregar o navegador.</p>}
     </div>
     {empty && <section className="records-empty">
+      <InterfaceIcon name="chart" className="records-empty-icon" />
       <p>Seus registros de atividades vão aparecer aqui conforme você explorar o Fala Livre.</p>
       <div className="records-links"><a className="navigation-action navigation-action--secondary" href="#/aprender">Explorar Aprender</a><a className="navigation-action navigation-action--secondary" href="#/jogar">Ver jogos</a></div>
       {!dismissed && !transitionDismissed && <aside><p>{transition}</p><button className="navigation-action navigation-action--secondary" type="button" onClick={() => { setDismissed(true); onDismissTransition?.() }}>Entendi</button></aside>}

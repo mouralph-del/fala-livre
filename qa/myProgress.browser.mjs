@@ -116,6 +116,7 @@ try {
   await A.cdp('Page.reload'); await pause(300); await ready(A); await act(A, 'await a.mount("real")')
   assert.doesNotMatch(await text(), /Reconhecer: Realizado|Nesta sessão/)
   assert.equal(await A.evaluate('localStorage.getItem(window.audit.key)'), afterRecord)
+  if (!process.argv.includes("--records-only")) {
   // App routes and session dismissal across navigation.
   await A.evaluate('localStorage.removeItem(window.audit.key);location.hash="/"')
   await act(A, 'await a.mount("app")')
@@ -151,8 +152,9 @@ try {
     await A.evaluate(`location.hash='${route}'`); await pause(100)
     assert.equal(await A.evaluate(`document.querySelector('${selector}') !== null`), true, route)
   }
+  }
   assert.deepEqual(errors, []); assert.deepEqual(warnings, [])
-  console.log('PASS: all read states, read-only retry, partial/complete/session provenance, subscriptions, six games x four chains, seven widths normal/large, native Enter/Space/focus, StrictMode, real two-tab storage, refresh, Home/header/routes, transition dismissal and privacy; no console errors/warnings.')
+  console.log(process.argv.includes('--records-only') ? 'PASS records: read states, retry, partial/complete/session provenance, subscriptions, responsive layout, native keys, two-tab storage and refresh' : 'PASS: all read states, read-only retry, partial/complete/session provenance, subscriptions, six games x four chains, seven widths normal/large, native Enter/Space/focus, StrictMode, real two-tab storage, refresh, Home/header/routes, transition dismissal and privacy; no console errors/warnings.')
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

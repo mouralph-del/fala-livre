@@ -56,6 +56,7 @@ export default function Plans() {
           <li>Recursos Premium adicionais, conforme disponibilizados</li>
         </ul>
         <button className="plan-choose" type="button" onClick={() => setMessage('A contratação online estará disponível em breve.')}>Escolher Premium</button>
+        <p className="plan-demo-note">Premium demonstrativo: não há cobrança ou assinatura real conectada.</p>
         <p className="plan-status" role="status">{message}</p>
       </section>
     </div>

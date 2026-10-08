@@ -58,7 +58,7 @@ try {
   await click('.plan-choose')
   assert.equal(await ev('document.querySelector("[role=status]").textContent'),'A contratação online estará disponível em breve.')
   assert.equal(await storage(),initial,'pricing and selection never change account or educational storage')
-  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`),'free')
+  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`),'premium-demo')
   await A.cdp('Page.reload');await ready(A);assert.equal(await price(),'R$ 149,90/ano');assert.equal(await storage(),initial)
   const shots=path.join(tempRoot,'falalivre-plans-review');fs.mkdirSync(shots,{recursive:true})
   for(const width of [320,360,390,430,768,1024,1366])for(const size of ['normal','large'])for(const zoom of [1,1.25]) {
@@ -77,10 +77,10 @@ try {
   await ev('document.querySelector(".plan-billing button:last-child").scrollIntoView({block:"center"})');await pause(60)
   const point=await ev('(()=>{const r=document.querySelector(".plan-billing button:last-child").getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()')
   await A.cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});await A.cdp('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pause(80);assert.equal(await price(),'R$ 149,90/ano')
-  // Only entry routes: pricing never grants Premium; free informational pages stay available.
+  // Only entry routes: pricing never changes the existing demo entitlement.
   for(const [hash,title] of [['/aprender/palavras-frases','Palavras'],['/aprender/meu-dia-a-dia','Meu Dia'],['/jogar','Vamos jogar!'],['/meu-progresso','Meu Progresso'],['/perfil','Configurações']]) {
     await ev('location.hash='+JSON.stringify(hash));await pause(100)
-    if (['/aprender/palavras-frases','/aprender/meu-dia-a-dia','/jogar'].includes(hash)) assert.ok(await ev('document.querySelector(".premium-access-panel")!==null'),hash)
+    if (['/aprender/palavras-frases','/aprender/meu-dia-a-dia','/jogar'].includes(hash)) assert.ok(await ev('document.querySelector(".premium-access-panel")===null'),hash)
     else assert.ok(await ev('document.querySelector("main h1").textContent.includes('+JSON.stringify(title)+')'),hash)
   }
   await ev('location.hash="#/"');await pause(80);assert.equal(await ev('document.querySelector("#welcome-title").textContent'),'Olá, Noa!')
@@ -92,9 +92,9 @@ try {
   assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'),'false')
   assert.equal(await ev('localStorage.getItem("falaLivre_progress_v1")'),JSON.parse(initial).local.find(([key])=>key==='falaLivre_progress_v1')[1])
   assert.deepEqual(await ev('JSON.parse(localStorage.getItem("falalivre.demo-session.v1"))'),{demo:true,responsibleName:'Alex',userName:'Noa'})
-  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`),'free')
+  assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`),'premium-demo')
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS plans: prices/savings/toggle/status/menu keyboard/touch/focus, seven widths Normal/Grande 125%, default free, no subscription/storage changes; pricing cannot bypass gates. Screenshots: '+shots)
+  console.log('PASS plans: prices/savings/toggle/status/menu keyboard/touch/focus, seven widths Normal/Grande 125%, unchanged demo access, no subscription/storage changes. Screenshots: '+shots)
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)
