@@ -1,0 +1,7 @@
+.pwa-controls { position: relative; margin: 16px auto; padding: 16px; width: min(640px, calc(100% - 32px)); box-sizing: border-box; border: 1px solid #D8E1E6; border-radius: 18px; background: #FFFFFF; color: #243342; box-shadow: 0 4px 16px #24334212; }
+.pwa-controls p { margin: 0 0 12px; }
+.pwa-controls button { min-height: 44px; padding: 10px 16px; margin: 4px 8px 4px 0; border: 1px solid #315F8C; border-radius: 12px; background: #315F8C; color: white; font: inherit; cursor: pointer; }
+.pwa-controls .pwa-dismiss { background: white; color: #315F8C; }
+.pwa-controls button:hover { box-shadow: 0 2px 8px #214E7A30; }
+.pwa-controls button:active { opacity: .85; }
+.pwa-controls button:focus-visible { outline: 3px solid #214E7A; outline-offset: 3px; }
