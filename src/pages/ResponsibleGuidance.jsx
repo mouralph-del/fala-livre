@@ -1,14 +1,17 @@
 import { pictogramCredit } from '../data/communicationOptions.js'
 import pictogramCredits from '../assets/pictograms/arasaac/CREDITS.md?url'
 import './ResponsibleGuidance.css'
+import InterfaceIcon from '../components/InterfaceIcon'
 
 export default function ResponsibleGuidance() {
   return <main id="conteudo" className="responsible-guidance" tabIndex={-1}>
     <a className="navigation-return" href="#/">Voltar ao início</a>
-    <h1>Responsáveis</h1>
+    <header className="guidance-intro"><h1>Responsáveis</h1>
     <p>Orientações para pais, responsáveis e cuidadores que acompanham o uso do Fala Livre.</p>
+    </header>
 
     <section aria-labelledby="guidance-about">
+      <InterfaceIcon name="book" className="guidance-icon" />
       <h2 id="guidance-about">Sobre o Fala Livre</h2>
       <p>O Fala Livre é uma aplicação educativa voltada ao apoio à comunicação e às atividades de aprendizagem. Explore as atividades em conjunto, respeitando as escolhas e o ritmo de quem participa.</p>
       <ul>
@@ -19,12 +22,14 @@ export default function ResponsibleGuidance() {
     </section>
 
     <section aria-labelledby="guidance-progress">
+      <InterfaceIcon name="chart" className="guidance-icon" />
       <h2 id="guidance-progress">Acompanhar atividades</h2>
       <p>Meu Progresso mostra explorações, etapas e atividades registradas no aplicativo. Esses registros podem reunir atividades de diferentes pessoas neste navegador. Não medem domínio, não indicam diagnóstico ou evolução clínica e não registram emoções ou necessidades pessoais.</p>
       <a href="#/meu-progresso">Ver Meu Progresso</a>
     </section>
 
     <section aria-labelledby="guidance-preferences">
+      <InterfaceIcon name="checklist" className="guidance-icon" />
       <h2 id="guidance-preferences">Preferências e acessibilidade</h2>
       <p>Em Configurações, você encontra as preferências de voz, tamanho dos elementos, redução de movimentos e personagens da Home, conforme as opções disponíveis. Essas preferências são deste navegador.</p>
       <a href="#/perfil">Abrir Configurações</a>

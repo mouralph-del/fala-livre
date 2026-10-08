@@ -21,3 +21,16 @@
 .home-surround:has(> .care-scene-symbol) .record-list li { padding: 16px; border: 1px solid #D8E1E6; border-radius: 16px; background: #F7FBFD; }
 @media (max-width: 1199px) { .care-scene-symbol { display: none; } }
 @media (max-width: 600px) { .home-surround:has(> .care-scene-symbol) :is(.plans-intro,.records-intro,.records-empty) { padding: 16px; } }
+
+/* Responsible guidance and account forms: original field/order/state retained. */
+.home-surround:has(> .care-scene-symbol) :is(.guidance-intro,.account-intro) { padding: 20px 24px; margin-block: 16px 24px; border: 1px solid white; border-radius: 24px; background: #EFFBFFF0; box-shadow: 0 4px 0 #FFFFFF70; }
+.home-surround:has(> .care-scene-symbol) .guidance-intro h1 { margin-top: 0; }
+.home-surround:has(> .care-scene-symbol) :is(.responsible-guidance > section,.account-panel) { background: #FFFFFFF5; border: 1px solid #C8DBDF; border-radius: 24px; box-shadow: 0 5px 0 #C9DFD680, 0 10px 22px #315F8C12; }
+.home-surround:has(> .care-scene-symbol) .guidance-icon { width: 48px; height: 48px; padding: 8px; margin-bottom: 12px; color: #315F8C; background: #EBF7FC; border-radius: 14px; }
+.home-surround:has(> .care-scene-symbol) .account-page { max-width: 620px; }
+.home-surround:has(> .care-scene-symbol) .account-panel { padding: 28px; }
+.home-surround:has(> .care-scene-symbol) .account-availability { padding: 12px; background: #F0F8FC; border-radius: 12px; }
+.home-surround:has(> .care-scene-symbol) .account-field:has(h3) { padding-top: 12px; margin-top: 22px; border-top: 1px solid #C8DBDF; }
+.home-surround:has(> .care-scene-symbol) .account-field h3 { margin-top: 4px; }
+.home-surround:has(> .care-scene-symbol) .account-panel > .navigation-action { width: 100%; justify-content: center; }
+@media (max-width: 600px) { .home-surround:has(> .care-scene-symbol) :is(.guidance-intro,.account-intro,.account-panel) { padding: 16px; } }

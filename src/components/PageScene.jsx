@@ -19,7 +19,7 @@ function House() {
 
 export default function PageScene({ family, activity }) {
   if (family === 'home') return <HomeLandscape />
-  if (['plans', 'progress'].includes(activity)) return <CareLandscape activity={activity} />
+  if (['plans', 'progress', 'responsibleGuidance', 'signIn', 'createAccount'].includes(activity)) return <CareLandscape activity={activity} />
   if (family === 'play') return <LearningLandscape activity="play" />
   if (hasLearningLandscape(activity)) return <LearningLandscape activity={activity} />
   const daily = family === 'daily'
