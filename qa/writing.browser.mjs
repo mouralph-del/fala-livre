@@ -76,10 +76,19 @@ try {
       for(const letter of words.find(w=>w.word===word).letters)await click('[aria-label='+JSON.stringify('Inserir letra '+letter)+']')
       await button('Conferir');await button('Praticar no caderno')
     }
-    for(const width of [320,360,390,430,768,1024,1366])for(const size of ['normal','large']) {
+    for(const width of [320,360,390,430,768,1024,1366,1920])for(const size of ['normal','large']) {
       await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
       await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";window.scrollTo(0,0)');await pause(50)
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)
+      assert.equal(await ev('getComputedStyle(document.querySelector(".scene-landscape")).display'),'none')
+      assert.ok(await ev('getComputedStyle(document.querySelector(".home-surround")).backgroundImage.includes("linear-gradient")'))
+      assert.equal(await ev('document.querySelectorAll(".writing-color-swatch").length'),12)
+      assert.equal(await ev('document.querySelectorAll(".writing-color-swatch[aria-pressed=true] .writing-color-check").length'),1)
+      if(phase==='notebook')assert.ok(await ev('Array.from(document.querySelectorAll(".writing-color-swatch")).every(e=>{const r=e.getBoundingClientRect();return r.width>=(document.documentElement.dataset.elementSize==="large"?56:44)&&r.height>=44})'))
+      await ev('window.scrollTo(0,document.documentElement.scrollHeight)');await pause(30)
+      assert.ok(await ev('document.querySelector(".home-surround").getBoundingClientRect().bottom>=document.querySelector("main").getBoundingClientRect().bottom'))
+      if(phase==='notebook'&&[390,1366,1920].includes(width)&&size==='normal'){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75});fs.writeFileSync(path.join(shots,'bottom-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
+      await ev('window.scrollTo(0,0)')
       assert.deepEqual(await ev('Array.from(document.querySelectorAll("main button")).filter(e=>e.getClientRects().length).map(e=>({text:e.textContent,clipped:e.scrollWidth>e.clientWidth+1})).filter(e=>e.clipped)'),[])
       if([390,1366].includes(width)&&size==='normal'){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,phase+'-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
     }
@@ -96,6 +105,17 @@ try {
   await click('.writing-notebook-toolbar .writing-action-button:last-child');assert.equal(await pixels(),0)
   p=await point();for(const [type,x,y,buttons]of [['mousePressed',p.x,p.y,1],['mouseMoved',p.x+60,p.y+20,1],['mouseReleased',p.x+60,p.y+20,0]])await A.cdp('Input.dispatchMouseEvent',{type,x,y,button:'left',buttons,pointerType:'pen',force:buttons?0.5:0,clickCount:1})
   await pause(100);assert.ok(await pixels()>0,'pen pointer');await button('Desfazer');assert.equal(await pixels(),0)
+  for(const name of ['Rosa','Laranja','Marrom','Preto intenso','Cinza','Verde-claro'])for(const tool of ['Lápis','Marcador','Giz de cera']) {
+    await click('[aria-label='+JSON.stringify('Selecionar ferramenta '+tool)+']');await click('[aria-label='+JSON.stringify('Cor '+name)+']')
+    assert.equal(await ev('document.querySelectorAll(".writing-color-swatch[aria-pressed=true]").length'),1)
+    const expected=await ev('getComputedStyle(document.querySelector('+JSON.stringify('[aria-label="Cor '+name+'"]')+')).backgroundColor.match(/\\d+/g).slice(0,3).map(Number)')
+    p=await point();for(const [type,x,y,buttons]of [['mousePressed',p.x,p.y,1],['mouseMoved',p.x+70,p.y+30,1],['mouseReleased',p.x+70,p.y+30,0]])await A.cdp('Input.dispatchMouseEvent',{type,x,y,button:'left',buttons,clickCount:1})
+    await pause(40)
+    const actual=await ev('(()=>{const c=document.querySelector("canvas"),d=c.getContext("2d").getImageData(0,0,c.width,c.height).data;let best=[0,0,0,0];for(let i=0;i<d.length;i+=4)if(d[i+3]>best[3])best=Array.from(d.slice(i,i+4));return best})()')
+    assert.ok(actual[3]>0&&expected.every((value,i)=>Math.abs(value-actual[i])<=3),JSON.stringify({name,tool,expected,actual}))
+    await click('.writing-notebook-toolbar .writing-action-button:last-child');assert.equal(await pixels(),0)
+  }
+  await ev('location.hash="#/aprender"');await pause(80);assert.notEqual(await ev('getComputedStyle(document.querySelector(".scene-landscape")).display'),'none','other learning scenes unchanged')
   await ev('location.hash="#/aprender"');await pause(80);await ev('location.hash="#/aprender/escrever"');await wait('document.querySelector(".writing-letter")!==null')
   await ev(`document.querySelector('[aria-label="Inserir letra A"]').focus()`)
   await click('[aria-label="Ouvir letra A"]');assert.equal(await ev('window.__spoken.at(-1)'),'A');await ev(`document.querySelector('[aria-label="Inserir letra A"]').focus()`)
@@ -106,7 +126,7 @@ try {
   const key=await ev(`(()=>{const r=document.querySelector('[aria-label="Inserir letra A"]').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
   await A.cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[key]});await A.cdp('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pause(80);assert.ok(await ev('document.querySelector(".writing-slot-panel").textContent.includes("A")'))
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS Escrever: 12 virtual-key completions/progress, no physical input, separate accents, keyboard/touch/focus, canvas mouse/touch/pen/undo/clear/resize, seven widths Normal/Grande. Screenshots: '+shots)
+  console.log('PASS Escrever: 12 virtual-key completions/progress, no physical input, separate accents, keyboard/touch/focus, expanded palette with all drawing tools, canvas mouse/touch/pen/undo/clear/resize, continuous background, eight widths Normal/Grande. Screenshots: '+shots)
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

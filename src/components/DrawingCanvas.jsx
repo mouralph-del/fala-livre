@@ -20,6 +20,12 @@ const colorOptions = [
   { name: 'Vermelho', value: '#D95C5C' },
   { name: 'Amarelo', value: '#F3C75A' },
   { name: 'Roxo', value: '#7A5AD8' },
+  { name: 'Rosa', value: '#D76BA2' },
+  { name: 'Laranja', value: '#E58A2B' },
+  { name: 'Marrom', value: '#80543C' },
+  { name: 'Preto intenso', value: '#151515' },
+  { name: 'Cinza', value: '#737B86' },
+  { name: 'Verde-claro', value: '#9ACD65' },
 ]
 
 const resolveStrokeStyle = (tool, baseColor, thicknessKey) => {
@@ -186,7 +192,9 @@ export default function DrawingCanvas({ showKeyboardLink = true }) {
       </div>
 
       <div className="writing-tool-group" aria-label="Cores">
-        {colorOptions.map(({ name, value }) => <button key={value} type="button" className="writing-color-swatch" style={{ background: value }} aria-label={`Cor ${name}`} aria-pressed={tool !== 'eraser' && color === value} onClick={() => { setColor(value); setStatusMessage(`Cor selecionada: ${name}.`); }} title={name} />)}
+        {colorOptions.map(({ name, value }) => <button key={value} type="button" className="writing-color-swatch" style={{ background: value }} aria-label={`Cor ${name}`} aria-pressed={tool !== 'eraser' && color === value} onClick={() => { setColor(value); setStatusMessage(`Cor selecionada: ${name}.`); }} title={name}>
+          {tool !== 'eraser' && color === value && <span className="writing-color-check" aria-hidden="true">✓</span>}
+        </button>)}
       </div>
 
       <div className="writing-tool-group" aria-label="Espessura">

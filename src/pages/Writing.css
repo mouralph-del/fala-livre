@@ -285,6 +285,17 @@
 .writing-tool-button[aria-pressed='true'], .writing-thickness[aria-pressed='true'] { background: var(--selected); border-color: var(--focus); }
 .writing-color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; padding: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
 .writing-color-swatch[aria-pressed='true'] { border-color: #203F69; transform: scale(1.08); }
+.writing-page .writing-color-swatch { width: var(--target); height: var(--target); min-width: var(--target); padding: 0; flex-shrink: 0; }
+:root[data-element-size='large'] .writing-page .writing-color-swatch { width: var(--target-large); height: var(--target-large); min-width: var(--target-large); }
+.writing-color-check { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: white; color: #243342; font-size: 16px; font-weight: 800; line-height: 1; }
+
+/* The fixed-height landscape stops halfway down long writing pages. Use a
+   continuous quiet blue surface here, leaving all other scene families intact. */
+.home-surround[data-scene='learn']:has(> .writing-page) {
+  background: radial-gradient(ellipse at 0% 0%, #BFDDEB80, transparent 50%),
+    linear-gradient(180deg, #DCEEF5, #EAF4F8 55%, #DCEEF5);
+}
+.home-surround[data-scene='learn']:has(> .writing-page) > .page-scene .scene-landscape { display: none; }
 .writing-status { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
 .writing-canvas-meta { margin-top: 12px; color: var(--muted); font-size: 13px; }
 
