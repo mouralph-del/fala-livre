@@ -46,7 +46,7 @@ try {
     assert.equal(await ev('document.querySelector(".premium-access-panel")'),null,context)
     assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'),context+' overflow')
     assert.ok(await ev('(()=>{const s=document.querySelector(".learning-landscape");return s.getAttribute("aria-hidden")==="true"&&getComputedStyle(s).pointerEvents==="none"&&s.getAnimations({subtree:true}).filter(a=>a.playState==="running").length===0&&Array.from(s.querySelectorAll("img")).every(e=>e.alt==="")})()'),context)
-    assert.ok(await ev('(()=>{const m=(document.querySelector(".learning-grid")||document.querySelector("main")).getBoundingClientRect();return Array.from(document.querySelectorAll(".learning-scene-character img")).every(e=>{const r=e.getBoundingClientRect();return !r.width||(e.complete&&e.naturalWidth>0&&r.left>=m.right&&Math.abs(r.width/r.height-e.naturalWidth/e.naturalHeight)<.02)})})()'),context+' character collision')
+    assert.equal(await ev('document.querySelector(".learning-scene-character")'),null,context+' no automatic character')
     await ev('window.scrollTo(0,document.documentElement.scrollHeight)');await pause(15)
     assert.ok(await ev('document.querySelector(".home-surround").getBoundingClientRect().bottom>=document.querySelector("main").getBoundingClientRect().bottom'),context+' long page scenery')
     await ev('window.scrollTo(0,0);document.querySelector("main").focus()')

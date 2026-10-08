@@ -1,6 +1,4 @@
 import './LearningLandscape.css'
-import ActivityIllustration from './ActivityIllustration'
-import writingCharacter from '../assets/illustrations/aprender-personagem.png'
 
 import { learningScenes } from './learningScenes'
 
@@ -81,8 +79,5 @@ export default function LearningLandscape({ activity }) {
       {emotional ? <Heart /> : kind === 'message' ? <Cards /> : <Books />}
     </svg>
     {emotional && <svg className="learning-scene-object learning-scene-object--right" viewBox="-15 -20 170 170" focusable="false"><Cards /></svg>}
-    {(activity === 'learn' || ['reading', 'writing'].includes(kind)) && <div className="learning-scene-character">
-      {activity === 'learn' ? <ActivityIllustration variant="learn" /> : <img src={writingCharacter} alt="" width="1392" height="1136" decoding="async" />}
-    </div>}
   </div>
 }

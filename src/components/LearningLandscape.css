@@ -10,15 +10,10 @@
 .learning-sky { fill: #9EDDF6; }
 [data-learning-kind='reading'] .learning-sky, [data-learning-kind='indoor'] .learning-sky { fill: #FFF4DB; }
 [data-learning-kind='message'] .learning-sky, [data-learning-kind='emotions'] .learning-sky { fill: #C7EACC; }
-.learning-scene-object, .learning-scene-character { position: absolute; top: 220px; width: clamp(96px, calc((100vw - 1180px) / 2 - 32px), 240px); pointer-events: none; }
+.learning-scene-object { position: absolute; top: 220px; width: clamp(96px, calc((100vw - 1180px) / 2 - 32px), 240px); pointer-events: none; }
 .learning-scene-object { height: 160px; }
 .learning-scene-object--left { left: 12px; top: 440px; }
-.learning-scene-object--right, .learning-scene-character { right: 12px; }
-.learning-scene-character { top: auto; bottom: 100px; }
-[data-learning-kind='school'] .learning-scene-character { right: 20px; width: clamp(150px, calc((100vw - 1000px) / 2 - 20px), 240px); }
-[data-learning-kind='reading'] .learning-scene-character,
-[data-learning-kind='writing'] .learning-scene-character { width: clamp(120px, calc((100vw - 1040px) / 2 - 24px), 240px); }
-.learning-scene-character img { display: block; width: 100%; max-width: none; height: auto; aspect-ratio: auto; object-fit: contain; }
+.learning-scene-object--right { right: 12px; }
 .home-surround:has(> .learning-landscape) main > :is(.learn-intro, .my-day-intro, .communication-intro, .words-intro, .writing-intro, .emotions-intro) {
   background: #F7FCFFED; border: 1px solid #FFFFFF; box-shadow: 0 4px 0 #FFFFFF70; border-radius: 24px;
 }
@@ -33,7 +28,7 @@
 .home-surround:has(> .learning-landscape) .learning-menu-icon { width: 48px; height: 48px; padding: 10px; margin-bottom: 12px; color: #315F8C; background: #E4F3FC; border-radius: 14px; }
 .home-surround:has(> .learning-landscape) :is(.my-day-option:nth-child(3), .emotions-functions > section:nth-child(3)) { background: #FFF3EF; }
 @media (max-width: 1439px) {
-  .learning-scene-object, .learning-scene-character { display: none; }
+  .learning-scene-object { display: none; }
 }
 @media (max-width: 700px) {
   .learning-landscape-art { height: 650px; opacity: .7; }

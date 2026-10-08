@@ -82,7 +82,7 @@ try {
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)
       assert.ok(await ev('document.querySelector(".learning-landscape[data-learning-kind=writing]")!==null'))
       assert.ok(await ev('getComputedStyle(document.querySelector(".home-surround")).backgroundColor!=="rgba(0, 0, 0, 0)"'))
-      assert.ok(await ev('(()=>{const e=document.querySelector(".learning-scene-character img"),r=e.getBoundingClientRect(),m=document.querySelector("main").getBoundingClientRect();return innerWidth<1440?r.width===0:e.complete&&e.naturalWidth>0&&r.left>=m.right&&getComputedStyle(e).pointerEvents==="none"})()'))
+      assert.equal(await ev('document.querySelector(".learning-scene-character")'),null)
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch").length'),12)
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch[aria-pressed=true] .writing-color-check").length'),1)
       if(phase==='notebook')assert.ok(await ev('Array.from(document.querySelectorAll(".writing-color-swatch")).every(e=>{const r=e.getBoundingClientRect();return r.width>=(document.documentElement.dataset.elementSize==="large"?56:44)&&r.height>=44})'))
