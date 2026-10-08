@@ -46,13 +46,20 @@ export class AccountServiceUnavailable extends Error {
   constructor() { super('account-service-unavailable'); this.name = 'AccountServiceUnavailable' }
 }
 
+// Explicit academic simulation; same demo session, never a payment entitlement.
+export function activatePremiumDemonstration() {
+  const next = session || DEMO_SESSION
+  try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(next)) } catch { /* Memory-only fallback. */ }
+  publish(next)
+  return next
+}
+
 export async function requestAccountAccess(mode, credentials) {
   if (mode !== 'sign-in') throw new AccountServiceUnavailable()
   if (credentials?.email !== 'teste@falalivre.com' || credentials?.password !== 'FalaLivre123') {
     throw new InvalidAccountCredentials()
   }
-  const next = DEMO_SESSION
-  try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(next)) } catch { /* Memory-only fallback. */ }
-  publish(next)
-  return next
+  // A credential login always returns the approved Alex/Noa identity.
+  session = DEMO_SESSION
+  return activatePremiumDemonstration()
 }

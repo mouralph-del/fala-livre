@@ -1,14 +1,16 @@
-import { useState, useSyncExternalStore } from 'react'
+import { useRef, useState, useSyncExternalStore } from 'react'
 import { getCurrentPlan, premiumOffers } from '../services/planAccess'
 import { subscribeSession } from '../services/accountAccess'
 import './Plans.css'
+import DemoCheckout from '../components/DemoCheckout'
 
 const money = cents => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 export default function Plans() {
   const plan = useSyncExternalStore(subscribeSession, getCurrentPlan)
   const [billing, setBilling] = useState('annual')
-  const [message, setMessage] = useState('')
+  const [checkout, setCheckout] = useState(false)
+  const choose = useRef(null)
   const offer = premiumOffers[billing]
   return <main id="conteudo" className="plans-page" tabIndex={-1}>
     <a className="navigation-return" href="#/">← Início</a>
@@ -17,7 +19,10 @@ export default function Plans() {
       <p>Escolha a opção que combina melhor com sua família.</p>
       {plan === 'premium-demo' && <p>Acesso Premium de demonstração — permissão local, sem assinatura ou cobrança.</p>}
     </header>
-    <div className="plans-grid">
+    {checkout ? <DemoCheckout billing={billing} offer={offer} onBack={() => {
+      setCheckout(false)
+      window.requestAnimationFrame(() => choose.current?.focus())
+    }} /> : <div className="plans-grid">
       <section className="plan-card" aria-labelledby="free-title">
         <h2 id="free-title">Fala Livre Gratuito</h2>
         <p className="plan-price">R$ 0</p>
@@ -55,10 +60,9 @@ export default function Plans() {
           <li>Acompanhamento dos conteúdos liberados no Meu Progresso</li>
           <li>Recursos Premium adicionais, conforme disponibilizados</li>
         </ul>
-        <button className="plan-choose" type="button" onClick={() => setMessage('A contratação online estará disponível em breve.')}>Escolher Premium</button>
+        <button ref={choose} className="plan-choose" type="button" onClick={() => setCheckout(true)}>Continuar para demonstração</button>
         <p className="plan-demo-note">Premium demonstrativo: não há cobrança ou assinatura real conectada.</p>
-        <p className="plan-status" role="status">{message}</p>
       </section>
-    </div>
+    </div>}
   </main>
 }

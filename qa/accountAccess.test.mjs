@@ -34,6 +34,14 @@ for (const stored of [{ demo: false, responsibleName: 'Alex', userName: 'Noa' },
 }
 const long = { demo: true, responsibleName: 'Alex'.repeat(40), userName: 'Noa'.repeat(40) }
 assert.deepEqual((await service(long)).api.getCurrentSession(), long)
+for (const stored of [undefined, long]) {
+  const { api, data } = await service(stored)
+  assert.deepEqual(api.activatePremiumDemonstration(), stored || { demo: true, responsibleName: 'Alex', userName: 'Noa' })
+  assert.deepEqual(protectedEntries.map(([key]) => data.get(key)), protectedEntries.map(([, value]) => value))
+  assert.equal([...data.keys()].length, protectedEntries.length + 1)
+  api.signOut(); assert.equal(api.getCurrentSession(), null)
+  assert.deepEqual([...data], protectedEntries)
+}
 const { api, data } = await service(undefined, true)
 await api.requestAccountAccess('sign-in', { email: 'teste@falalivre.com', password: 'FalaLivre123' })
 assert.equal(api.getCurrentSession().userName, 'Noa'); api.signOut(); assert.equal(api.getCurrentSession(), null)

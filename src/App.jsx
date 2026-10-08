@@ -11,6 +11,7 @@ import Communication from './pages/Communication'
 import Profile from './pages/Profile'
 import AccountAccess from './pages/AccountAccess'
 import Plans from './pages/Plans'
+import { PaymentDemoInfo } from './components/DemoCheckout'
 import { planAccess } from './services/planAccess'
 import PremiumAccess, { PremiumBadge } from './components/PremiumAccess'
 import { getCurrentSession, subscribeSession } from './services/accountAccess'
@@ -44,6 +45,7 @@ function subscribeToRoute(callback) {
 }
 
 function getRoute() {
+  if (window.location.hash.split('?')[0] === '#/pagamento-demo') return 'paymentDemo'
   if (window.location.hash === '#/planos') return 'plans'
   if (window.location.hash === '#/entrar') return 'signIn'
   if (window.location.hash === '#/criar-conta') return 'createAccount'
@@ -124,7 +126,7 @@ function App({ access = planAccess } = {}) {
   const [transitionDismissed, setTransitionDismissed] = useState(false)
 
   useEffect(() => {
-    document.title = route === 'plans' ? 'Planos | Fala Livre' : route === 'signIn' ? 'Entrar | Fala Livre' : route === 'createAccount' ? 'Criar conta | Fala Livre' : route === 'responsibleGuidance' ? 'Responsáveis | Fala Livre' : route === 'progress' ? 'Meu Progresso | Fala Livre' : route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Configurações | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
+    document.title = route === 'paymentDemo' ? 'Pagamento demonstrativo | Fala Livre' : route === 'plans' ? 'Planos | Fala Livre' : route === 'signIn' ? 'Entrar | Fala Livre' : route === 'createAccount' ? 'Criar conta | Fala Livre' : route === 'responsibleGuidance' ? 'Responsáveis | Fala Livre' : route === 'progress' ? 'Meu Progresso | Fala Livre' : route === 'games' ? 'Jogar | Fala Livre' : route.startsWith('games/') ? games.find(item => item.id === route.slice(6)).pageTitle + ' | Fala Livre' : route === 'situations' ? 'Situações do dia a dia | Fala Livre' : route === 'writing' ? 'Escrever | Fala Livre' : route === 'keyboard' ? 'Teclado educativo | Fala Livre' : route === 'notebook' ? 'Meu caderno | Fala Livre' : route === 'words' ? 'Palavras e frases | Fala Livre' : route === 'profile' ? 'Configurações | Fala Livre' : route === 'communication' ? 'Comunicar | Fala Livre' : route === 'learn' ? 'Aprender | Fala Livre' : route === 'myDay' ? 'Meu Dia a Dia | Fala Livre' : route === 'myDayRoutines' ? 'Rotinas | Fala Livre' : route === 'myDayCommunication' ? 'Comunicação | Fala Livre' : route === 'myDayEmotions' ? 'Emoções | Fala Livre' : 'Fala Livre'
     if (route !== previousRoute.current) {
       window.scrollTo(0, 0)
       document.getElementById('conteudo')?.focus({ preventScroll: true })
@@ -143,7 +145,7 @@ function App({ access = planAccess } = {}) {
       </header>
       <div className="home-surround" data-scene={sceneForRoute(route)}>
         <PageScene family={sceneForRoute(route)} activity={blocked ? undefined : route} />
-        {blocked ? <PremiumAccess feature={access.getFeature(feature)} /> : route === 'plans' ? <Plans /> : route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn access={access} onPremiumRequest={setPremiumNotice} /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
+        {blocked ? <PremiumAccess feature={access.getFeature(feature)} /> : route === 'paymentDemo' ? <PaymentDemoInfo /> : route === 'plans' ? <Plans /> : route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn access={access} onPremiumRequest={setPremiumNotice} /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">
             <h1 id="welcome-title">{session?.userName ? `Olá, ${session.userName}!` : 'Olá!'}</h1>
             <p>O que você gostaria de fazer hoje?</p>
