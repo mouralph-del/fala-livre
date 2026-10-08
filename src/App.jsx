@@ -1,5 +1,7 @@
 import './App.css'
 import officialLogo from './assets/illustrations/fala-livre-logo.png'
+import homeBoy from './assets/illustrations/jogar-personagem.png'
+import homeGirl from './assets/illustrations/aprender-personagem.png'
 
 import ActivityIllustration from './components/ActivityIllustration'
 import HeaderNavigation from './components/HeaderNavigation'
@@ -34,6 +36,8 @@ import './ambientSurfaces.css'
 import PageScene from './components/PageScene'
 import { sceneForRoute } from './components/pageSceneFamilies'
 import './gameScenes.css'
+import './homeReference.css'
+import InterfaceIcon from './components/InterfaceIcon'
 import { getGameTimeTracker, startGameTimeTracking } from './utils/gameTime'
 
 function subscribeToRoute(callback) {
@@ -89,6 +93,7 @@ function ActivityCard({ title, description, variant, action, access, onPremiumRe
   return (
     <article className={`activity-card activity-card--${variant}`}>
       <ActivityIllustration variant={variant} />
+      <span className="home-card-symbol"><InterfaceIcon name={variant === 'learn' ? 'book' : 'controller'} /></span>
       <div className="activity-content">
         <h2>{title}</h2>
         <p>{description}</p>
@@ -133,7 +138,7 @@ function App({ access = planAccess } = {}) {
   return (
     <>
       <a className="skip-link" href="#conteudo" onClick={(event) => { event.preventDefault(); document.getElementById('conteudo')?.focus() }}>Pular para o conteúdo</a>
-      <header className="app-header">
+      <header className={`app-header${route === 'home' ? ' app-header--home' : ''}`}>
         <div className="header-content">
           <Brand />
           <HeaderNavigation route={route} />
@@ -147,15 +152,23 @@ function App({ access = planAccess } = {}) {
             <p>O que você gostaria de fazer hoje?</p>
           </section>
           <div className="activity-grid">
+            <img className="home-character home-character--boy" src={homeBoy} alt="" aria-hidden="true" decoding="async" />
+            <img className="home-character home-character--girl" src={homeGirl} alt="" aria-hidden="true" decoding="async" />
             <ActivityCard title="APRENDER" description={<>Comunicação, palavras<br />e escrita para o dia a dia.</>} variant="learn" action="Começar" access={access} onPremiumRequest={setPremiumNotice} />
             <ActivityCard title="JOGAR" description={<>Jogos e atividades<br />divertidas para aprender.</>} variant="play" action="Jogar" access={access} onPremiumRequest={setPremiumNotice} />
           </div>
 
           <section className="progress" aria-labelledby="progress-title">
+            <div className="progress-entry">
+            <div className="home-progress-copy">
             <div className="section-heading">
               <h2 id="progress-title"><Icon name="activities" />Meu Progresso</h2>
             </div>
-            <div className="progress-entry"><p>Veja as atividades registradas neste navegador.</p><a className="navigation-action navigation-action--primary" href="#/meu-progresso">Ver meu progresso</a></div>
+            <p>Veja as atividades registradas neste navegador.</p>
+            </div>
+            <a className="navigation-action navigation-action--primary" href="#/meu-progresso">Ver meu progresso</a>
+            <InterfaceIcon name="checklist" className="home-checklist" />
+            </div>
           </section>
           <p className="positive-message"><Icon name="growth" /><span>Cada pequeno passo é uma grande conquista!</span></p>
         </main>}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { getCurrentSession, signOut, subscribeSession } from '../services/accountAccess'
+import InterfaceIcon from './InterfaceIcon'
 
 export default function HeaderNavigation({ route }) {
   const [open, setOpen] = useState(false)
@@ -24,10 +25,10 @@ export default function HeaderNavigation({ route }) {
   }, [open])
   return <>
     <nav className="header-desktop-navigation" aria-label="Navegação principal">
-      <a href="#/" aria-current={route === 'home' ? 'page' : undefined}>Início</a>
-      <a href="#/aprender" aria-current={['learn', 'communication', 'words', 'writing', 'keyboard', 'notebook', 'situations'].includes(route) || route.startsWith('myDay') ? 'page' : undefined}>Aprender</a>
-      <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}>Meu Progresso</a>
-      <a href="#/planos" aria-current={route === 'plans' ? 'page' : undefined}>Planos</a>
+      <a href="#/" aria-current={route === 'home' ? 'page' : undefined}><InterfaceIcon name="home" />Início</a>
+      <a href="#/aprender" aria-current={['learn', 'communication', 'words', 'writing', 'keyboard', 'notebook', 'situations'].includes(route) || route.startsWith('myDay') ? 'page' : undefined}><InterfaceIcon name="book" />Aprender</a>
+      <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}><InterfaceIcon name="chart" />Meu Progresso</a>
+      <a href="#/planos" aria-current={route === 'plans' ? 'page' : undefined}><InterfaceIcon name="crown" />Planos</a>
     </nav>
     <div className="header-actions">
     <div className="header-menu" ref={container} onBlur={event => {

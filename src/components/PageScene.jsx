@@ -1,4 +1,5 @@
 import './PageScene.css'
+import HomeLandscape from './HomeLandscape'
 
 function Book() {
   return <g><path d="M0 6Q20 0 38 10Q56 0 76 6V58Q56 52 38 62Q20 52 0 58Z" fill="var(--scene-paper)" /><path d="M38 10V62M10 20L28 23M10 33L28 36M48 23L66 20M48 36L66 33" /></g>
@@ -14,6 +15,7 @@ function House() {
 }
 
 export default function PageScene({ family }) {
+  if (family === 'home') return <HomeLandscape />
   const daily = family === 'daily'
   const playful = family === 'play' || family === 'home'
   return <div className="home-decoration page-scene" data-family={family} aria-hidden="true">

@@ -39,7 +39,7 @@ try {
     await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";location.hash='+JSON.stringify(hash)+';window.scrollTo(0,0)');await pause(60)
     const context=JSON.stringify({width,height,size,zoom,hash})
     assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),context)
-    assert.equal(await ev('getComputedStyle(document.querySelector(".app-header")).backgroundColor'),'rgb(254, 254, 254)')
+    assert.equal(await ev('getComputedStyle(document.querySelector(".header-content")).backgroundColor'),'rgb(254, 254, 254)')
     const desktop=width/zoom>=1200
     assert.equal(await ev('document.querySelector(".header-desktop-navigation").getClientRects().length>0'),desktop,context)
     if(desktop) {
@@ -50,7 +50,25 @@ try {
     if(width/zoom>=1100) {
       assert.ok(await ev('Math.abs(document.querySelector("main").getBoundingClientRect().left-document.querySelector(".header-content").getBoundingClientRect().left)<1'),context)
       if(hash==='#/aprender')assert.equal(await ev('getComputedStyle(document.querySelector(".learning-grid")).gridTemplateColumns.split(" ").length'),2)
-      else assert.equal(await ev('getComputedStyle(document.querySelector(".activity-grid")).gridTemplateColumns.split(" ").length'),2,context)
+      else {
+        assert.equal(await ev('getComputedStyle(document.querySelector(".activity-grid")).gridTemplateColumns.split(" ").length'),2,context)
+        assert.equal(await ev('Array.from(document.querySelectorAll(".home .activity-illustration")).some(e=>e.getClientRects().length)'),false,'desktop characters must be outside the cards')
+        assert.equal(await ev('document.querySelectorAll(".home-card-symbol .interface-icon").length'),2)
+        const characters=await ev(`(()=>{
+          const elements=Array.from(document.querySelectorAll('.home-character'));
+          const controls=Array.from(document.querySelectorAll('.home .welcome,.home .activity-card,.home .progress,.home .positive-message'));
+          const intersects=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+          return elements.map(e=>{const r=e.getBoundingClientRect();return {visible:r.width>0,loaded:e.complete&&e.naturalWidth>0,
+            inside:r.left>=0&&r.right<=innerWidth,overlaps:controls.some(c=>intersects(r,c.getBoundingClientRect())),
+            ratio:r.width/r.height,naturalRatio:e.naturalWidth/e.naturalHeight,
+            decorative:e.alt===''&&e.getAttribute('aria-hidden')==='true'&&getComputedStyle(e).pointerEvents==='none',
+            side:e.classList.contains('home-character--boy')?'boy':'girl',src:e.getAttribute('src'),left:r.left}})
+        })()`)
+        assert.equal(characters.length,2)
+        for(const c of characters){assert.ok(c.visible&&c.loaded&&c.inside&&!c.overlaps&&c.decorative,context+JSON.stringify(c));assert.ok(Math.abs(c.ratio-c.naturalRatio)<.01,context)}
+        assert.ok(characters[0].left<characters[1].left)
+        assert.ok(characters[0].src.includes('jogar-personagem')&&characters[1].src.includes('aprender-personagem'))
+      }
     }
     await ev('document.querySelector(".header-menu-toggle").click()');await pause(15)
     assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'),'true')
