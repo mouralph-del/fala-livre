@@ -22,7 +22,14 @@ export default function HeaderNavigation({ route }) {
       window.removeEventListener('hashchange', navigate)
     }
   }, [open])
-  return <div className="header-actions">
+  return <>
+    <nav className="header-desktop-navigation" aria-label="Navegação principal">
+      <a href="#/" aria-current={route === 'home' ? 'page' : undefined}>Início</a>
+      <a href="#/aprender" aria-current={['learn', 'communication', 'words', 'writing', 'keyboard', 'notebook', 'situations'].includes(route) || route.startsWith('myDay') ? 'page' : undefined}>Aprender</a>
+      <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined}>Meu Progresso</a>
+      <a href="#/planos" aria-current={route === 'plans' ? 'page' : undefined}>Planos</a>
+    </nav>
+    <div className="header-actions">
     <div className="header-menu" ref={container} onBlur={event => {
       if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
     }}>
@@ -30,12 +37,12 @@ export default function HeaderNavigation({ route }) {
         aria-expanded={open} aria-controls="header-navigation" onClick={() => setOpen(value => !value)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
       </button>
-      <nav id="header-navigation" className="header-navigation header-popover" aria-label="Navegação principal" hidden={!open}>
+      <nav id="header-navigation" className="header-navigation header-popover" aria-label="Menu de navegação" hidden={!open}>
         <span className="header-menu-label">Explorar</span>
-        <a href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined} onClick={() => setOpen(false)}>Meu Progresso</a>
+        <a className="header-compact-link" href="#/meu-progresso" aria-current={route === 'progress' ? 'page' : undefined} onClick={() => setOpen(false)}>Meu Progresso</a>
         <a href="#/perfil" aria-current={route === 'profile' ? 'page' : undefined} onClick={() => setOpen(false)}>Configurações</a>
         <a href="#/responsaveis" aria-current={route === 'responsibleGuidance' ? 'page' : undefined} onClick={() => setOpen(false)}>Responsáveis / Sobre o Fala Livre</a>
-        <a href="#/planos" aria-current={route === 'plans' ? 'page' : undefined} onClick={() => setOpen(false)}>Planos</a>
+        <a className="header-compact-link" href="#/planos" aria-current={route === 'plans' ? 'page' : undefined} onClick={() => setOpen(false)}>Planos</a>
         <div className="header-account-section">
           <span className="header-menu-label">{session ? 'Responsável' : 'Conta do responsável'}</span>
           {session && <span className="header-account-name">{session.responsibleName}</span>}
@@ -48,5 +55,6 @@ export default function HeaderNavigation({ route }) {
         </div>
       </nav>
     </div>
-  </div>
+    </div>
+  </>
 }

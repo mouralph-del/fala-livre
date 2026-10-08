@@ -40,10 +40,17 @@ try {
     const context=JSON.stringify({width,height,size,zoom,hash})
     assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),context)
     assert.equal(await ev('getComputedStyle(document.querySelector(".app-header")).backgroundColor'),'rgb(254, 254, 254)')
+    const desktop=width/zoom>=1200
+    assert.equal(await ev('document.querySelector(".header-desktop-navigation").getClientRects().length>0'),desktop,context)
+    if(desktop) {
+      assert.equal(await ev('document.querySelector(".header-desktop-navigation [aria-current=page]").getAttribute("href")'),hash)
+      assert.deepEqual(await ev('Array.from(document.querySelectorAll(".header-desktop-navigation a"),a=>a.getAttribute("href"))'),['#/','#/aprender','#/meu-progresso','#/planos'])
+    }
     assert.deepEqual(await ev('Array.from(document.querySelectorAll(".start-button,.learning-start,.header-menu-toggle"),e=>({text:e.textContent,clipped:e.scrollWidth>e.clientWidth+1})).filter(e=>e.clipped)'),[],context)
     if(width/zoom>=1100) {
       assert.ok(await ev('Math.abs(document.querySelector("main").getBoundingClientRect().left-document.querySelector(".header-content").getBoundingClientRect().left)<1'),context)
       if(hash==='#/aprender')assert.equal(await ev('getComputedStyle(document.querySelector(".learning-grid")).gridTemplateColumns.split(" ").length'),2)
+      else assert.equal(await ev('getComputedStyle(document.querySelector(".activity-grid")).gridTemplateColumns.split(" ").length'),2,context)
     }
     await ev('document.querySelector(".header-menu-toggle").click()');await pause(15)
     assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'),'true')
@@ -55,6 +62,12 @@ try {
     await A.cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9})
     assert.ok(await ev('document.activeElement.matches(":focus-visible")&&getComputedStyle(document.activeElement).outlineStyle!=="none"'),context)
     if(zoom===1){await ev('document.activeElement.blur()');const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,(hash==='#/'?'home':'learn')+'-'+width+'-'+size+'.jpg'),Buffer.from(shot.data,'base64'))}
+  }
+  await A.cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false})
+  for(const hash of ['#/meu-progresso','#/planos','#/aprender','#/']) {
+    await ev('document.querySelector('+JSON.stringify('.header-desktop-navigation a[href="'+hash+'"]')+').click()');await pause(80)
+    assert.equal(await ev('location.hash'),hash)
+    assert.equal(await ev('document.querySelector(".header-desktop-navigation [aria-current=page]").getAttribute("href")'),hash)
   }
   assert.equal(await ev('JSON.stringify(Object.entries(localStorage))'),before)
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
