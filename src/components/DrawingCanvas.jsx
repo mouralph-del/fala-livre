@@ -175,7 +175,8 @@ export default function DrawingCanvas({ showKeyboardLink = true }) {
 
   return <>
     <p id="canvas-help" className="writing-canvas-help">
-      Use o mouse, o dedo ou uma caneta para escrever no caderno.
+      No computador, pressione o botão esquerdo do mouse e arraste para desenhar.
+      No celular ou tablet, use o dedo ou uma caneta.
       {showKeyboardLink && <> Para praticar com teclado, use o <a href="#/aprender/escrever/teclado">Teclado educativo</a>.</>}
     </p>
 
@@ -203,6 +204,7 @@ export default function DrawingCanvas({ showKeyboardLink = true }) {
     <div className="writing-sheet">
       <canvas
         ref={canvas}
+        tabIndex={-1}
         aria-label="Folha para desenho e escrita livre"
         aria-describedby="canvas-help"
         onPointerDown={start}

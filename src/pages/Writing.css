@@ -20,6 +20,15 @@
 .writing-back:hover { background: var(--soft-blue); }
 
 .writing-intro { margin-bottom: 24px; }
+.writing-mode-panel[hidden] { display: none; }
+.writing-mode-panel:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.writing-sheet canvas:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.writing-mode-selector { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block: 16px; }
+.writing-page .writing-mode-selector button { flex-direction: column; align-items: flex-start; text-align: left; }
+.writing-mode-selector button span { font-size: .875rem; line-height: 1.4; }
+.writing-mode-selector button[aria-pressed='true'] { background: var(--soft-blue); border-color: var(--primary); box-shadow: inset 0 -3px 0 var(--primary); }
+.writing-mode-selector button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 500px) { .writing-mode-selector { grid-template-columns: minmax(0, 1fr); } }
 .writing-intro h1 { color: var(--text); font-size: clamp(28px, 3.4vw, 42px); line-height: 1.25; }
 .writing-intro p, .writing-page p { line-height: 1.5; }
 .writing-intro p { color: var(--muted); margin-top: 10px; }

@@ -30,22 +30,38 @@ try {
   let targets
   for(let i=0;i<100;i++){try{targets=await(await fetch('http://127.0.0.1:9369/json/list')).json();if(targets.some(t=>t.type==='page'))break}catch{}await pause(100)}
   const A=await connect(targets.find(t=>t.type==='page')),ev=A.evaluate
+  await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:`window.__spoken=[];const synth=new EventTarget();synth.getVoices=()=>[{name:'Test Brazilian',voiceURI:'test-br',lang:'pt-BR'}];synth.cancel=()=>{};synth.speak=u=>window.__spoken.push(u.text);Object.defineProperty(window,'speechSynthesis',{value:synth,configurable:true});window.SpeechSynthesisUtterance=class{constructor(text){this.text=text}}`})
   await A.cdp('Page.navigate',{url:'http://127.0.0.1:4219/__audit#/aprender/escrever'});await ready(A)
   const wait=async expression=>{for(let i=0;i<150;i++){if(await ev(expression))return;await pause(40)}throw Error('not ready: '+expression)}
   const click=async selector=>{await ev('document.querySelector('+JSON.stringify(selector)+').click()');await pause(40)}
-  const button=async text=>{await ev('Array.from(document.querySelectorAll("main button")).find(b=>b.textContent.trim()==='+JSON.stringify(text)+').click()');await pause(40)}
+  const button=async text=>{await ev('Array.from(document.querySelectorAll("main button")).find(b=>b.getClientRects().length&&b.textContent.trim()==='+JSON.stringify(text)+').click()');await pause(40)}
   const words=await ev("(async()=> (await import('/src/data/learningWords.js')).learningWords)()")
   assert.equal(words.length,12)
   await wait('document.querySelector(".writing-letter")!==null')
   const physicalAbsent=async()=>{assert.equal(await ev('document.querySelectorAll("main input").length'),0);assert.equal(await ev('document.querySelectorAll(".writing-physical-entry").length'),0)}
   await physicalAbsent()
   assert.equal(await ev(`document.querySelectorAll('[aria-label="Letras do alfabeto"] .writing-letter').length`),26)
+  const initialProgress=await ev('localStorage.getItem("falaLivre_progress_v1")')
+  await click('[aria-label="Inserir letra A"]')
+  await click('#writing-notebook-mode')
+  assert.equal(await ev('document.querySelector("#writing-notebook-panel").hidden'),false)
+  assert.equal(await ev('document.querySelector("#writing-typing-panel").hidden'),true)
+  assert.ok(await ev('document.querySelector("canvas").getBoundingClientRect().width>0'))
+  assert.equal(await ev('document.activeElement.tagName'),'CANVAS')
+  assert.ok(await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return r.top<innerHeight&&r.bottom>0})()'),'selecting Caderno brings the drawing area into view')
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="Concluir prática").disabled'),true)
+  assert.equal(await ev('localStorage.getItem("falaLivre_progress_v1")'),initialProgress,'selecting Caderno never awards completion')
+  await click('#writing-typing-mode')
+  assert.ok(await ev('document.querySelector(".writing-slot-panel").textContent.includes("A")'),'typed draft preserved across mode changes')
+  await button('Limpar')
   await click('[aria-label="Inserir letra Z"]');await button('Conferir');assert.ok(await ev('document.querySelector(".writing-feedback").textContent.includes("Quase")'));await button('Apagar')
   // All twelve targets are completed using only public virtual-letter controls.
   const seen=new Set()
   for(let i=0;i<12;i++) {
     const word=await ev('document.querySelector(".writing-practice h2").textContent')
     const target=words.find(w=>w.word===word);assert.ok(target,word);assert.ok(!seen.has(target.id));seen.add(target.id)
+    assert.equal(await ev('document.querySelectorAll(\'[aria-label="Letras com acento"]\').length'),target.letters.includes('Á')?1:0,word)
+    if(target.letters.includes('Á')){await click('[aria-label="Ouvir letra Á"]');assert.equal(await ev('window.__spoken.at(-1)'),'Á')}
     for(const letter of target.letters)await click('[aria-label='+JSON.stringify('Inserir letra '+letter)+']')
     await button('Conferir');await wait('document.querySelector(".writing-feedback").textContent.includes("Muito bem")')
     await wait('JSON.parse(localStorage.getItem("falaLivre_progress_v1"))?.performedActivities.writing['+JSON.stringify(target.id)+']?.includes("typing")')
@@ -64,7 +80,7 @@ try {
       await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
       await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";window.scrollTo(0,0)');await pause(50)
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)
-      assert.deepEqual(await ev('Array.from(document.querySelectorAll("main button"),e=>({text:e.textContent,clipped:e.scrollWidth>e.clientWidth+1})).filter(e=>e.clipped)'),[])
+      assert.deepEqual(await ev('Array.from(document.querySelectorAll("main button")).filter(e=>e.getClientRects().length).map(e=>({text:e.textContent,clipped:e.scrollWidth>e.clientWidth+1})).filter(e=>e.clipped)'),[])
       if([390,1366].includes(width)&&size==='normal'){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,phase+'-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
     }
   }
@@ -73,6 +89,7 @@ try {
   let p=await point();assert.equal(await pixels(),0)
   for(const [type,x,y,buttons]of [['mousePressed',p.x,p.y,1],['mouseMoved',p.x+70,p.y+30,1],['mouseReleased',p.x+70,p.y+30,0]])await A.cdp('Input.dispatchMouseEvent',{type,x,y,button:'left',buttons,clickCount:1})
   await pause(100);assert.ok(await pixels()>0)
+  await click('#writing-typing-mode');await click('#writing-notebook-mode');await pause(100);assert.ok(await pixels()>0,'drawing preserved across mode changes')
   await A.cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false});await pause(150);assert.ok(await pixels()>0)
   await button('Desfazer');assert.equal(await pixels(),0)
   p=await point();await A.cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p]});await A.cdp('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:p.x+45,y:p.y+25}]});await A.cdp('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pause(100);assert.ok(await pixels()>0)
@@ -81,6 +98,7 @@ try {
   await pause(100);assert.ok(await pixels()>0,'pen pointer');await button('Desfazer');assert.equal(await pixels(),0)
   await ev('location.hash="#/aprender"');await pause(80);await ev('location.hash="#/aprender/escrever"');await wait('document.querySelector(".writing-letter")!==null')
   await ev(`document.querySelector('[aria-label="Inserir letra A"]').focus()`)
+  await click('[aria-label="Ouvir letra A"]');assert.equal(await ev('window.__spoken.at(-1)'),'A');await ev(`document.querySelector('[aria-label="Inserir letra A"]').focus()`)
   for(const type of ['keyDown','keyUp'])await A.cdp('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:type==='keyDown'?'\r':undefined})
   await pause(60);assert.ok(await ev('document.querySelector(".writing-slot-panel").textContent.includes("A")'));assert.equal(await ev('getComputedStyle(document.activeElement).outlineStyle'),'solid')
   await button('Limpar');assert.ok(await ev('!document.querySelector(".writing-slot-panel").textContent.includes("A")'))
