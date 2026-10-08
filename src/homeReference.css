@@ -95,8 +95,8 @@
   .home .start-button { position: relative; max-width: none; width: 100%; border-radius: 24px; justify-content: center; }
   .home .start-button > span { position: absolute; right: 20px; }
   .home-scenery-character { top: 175px; width: 300px; }
-  .home-scenery-character--learn { left: auto; right: 0; }
-  .home-scenery-character--play { right: auto; left: 0; }
+  .home-scenery-character--learn { left: 0; right: auto; }
+  .home-scenery-character--play { right: 0; left: auto; }
 }
 @media (max-width: 1099px) {
   .home .home-activity-heading { gap: 10px; }

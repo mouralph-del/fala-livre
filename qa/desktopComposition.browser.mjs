@@ -124,6 +124,32 @@ try {
     }
   }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
+  // Preferences must match the visual area, including exterior desktop figures.
+  for (const width of [390, 1440]) for (const learn of ['girl', 'boy']) for (const game of ['girl', 'boy']) {
+    await A.cdp('Emulation.setDeviceMetricsOverride', {width, height:900, deviceScaleFactor:1, mobile:false})
+    await ev('location.hash="#/perfil"'); await pause(80)
+    await ev(`document.querySelector('input[name="learnCharacter"][value="${learn}"]').click();document.querySelector('input[name="gameCharacter"][value="${game}"]').click()`)
+    const previews = await ev('Array.from(document.querySelectorAll(".profile-character-preview"),e=>e.src)')
+    const check = async () => {
+      const prefix = width >= 1366 ? '.home-scenery-character--' : '.activity-card--'
+      const selectors = [prefix+'learn .activity-illustration',prefix+'play .activity-illustration']
+      assert.deepEqual(await ev(`(${JSON.stringify(selectors)}).map(s=>document.querySelector(s).src)`),previews)
+      assert.ok(await ev(`(()=>{const [l,g]=(${JSON.stringify(selectors)}).map(s=>document.querySelector(s).getBoundingClientRect());return l.width>0&&g.width>0&&${width >= 1366 ? 'l.right<=document.querySelector(".activity-card--learn").getBoundingClientRect().left&&g.left>=document.querySelector(".activity-card--play").getBoundingClientRect().right' : 'l.top<g.top'}})()`))
+      assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'))
+    }
+    await ev('location.hash="#/"'); await pause(80); await check()
+    await A.cdp('Page.reload'); await pause(200); await ready(A); await check()
+  }
+  await ev('location.hash="#/perfil"'); await pause(80)
+  await ev('window.confirm=()=>true;document.querySelector(".profile-restore button").click()'); await pause(30)
+  assert.deepEqual(await ev('Array.from(document.querySelectorAll("input[name=learnCharacter]:checked,input[name=gameCharacter]:checked"),e=>e.value)'),['girl','boy'])
+  await ev('location.hash="#/aprender"'); await pause(80)
+  assert.equal(await ev('document.querySelector(".learning-scene-character")'),null,'Aprender menu has no isolated character')
+  assert.equal(await ev('document.querySelectorAll(".learning-card").length'),4)
+  await ev('location.hash="#/aprender/escrever"'); await pause(80)
+  assert.equal(await ev('document.querySelector(".learning-scene-character")'),null,'no automatic character in writing')
+  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
+  console.log('PASS all four Home character combinations: settings UI, mobile/desktop area positions, refresh, defaults and isolated Aprender character removal')
   console.log('PASS Home/Learn/header: eight viewports, Normal/Grande, 125%/200% zoom reflow, no horizontal overflow/clipped buttons, desktop alignment/2x2 grid, menu/Escape/keyboard focus and unchanged storage; '+shots)
 
 } finally {
