@@ -1,8 +1,6 @@
 /* Shared visual patterns. Board geometry and educational image treatments
    remain in their page styles; no universal button sizing touches game pieces. */
 .header-content { max-width: var(--width-wide); gap: var(--space-xl); }
-.brand-name { color: var(--primary); font-size: 28px; font-weight: 800; }
-.brand-mark { width: 52px; height: 48px; }
 .brand p { font-size: var(--font-auxiliary); }
 .header-navigation { gap: var(--space-sm); }
 .header-navigation a { min-height: var(--target); font-size: 1rem; border-color: var(--border-control); padding: var(--space-md) var(--space-lg); }
@@ -109,8 +107,6 @@ main :focus-visible, .header-navigation a:focus-visible, .skip-link:focus-visibl
 @media (max-width: 900px) { .activity-content { min-height: 0; } }
 @media (max-width: 600px) {
   .header-content { gap: var(--space-md); padding-block: var(--space-lg); }
-  .brand-name { font-size: 24px; }
-  .brand-mark { width: 40px; height: 38px; }
   .brand p { font-size: .75rem; }
   .header-navigation { gap: var(--space-sm); }
   .header-navigation a { padding: var(--space-sm) var(--space-md); }

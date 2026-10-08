@@ -54,7 +54,6 @@
 .games-page .game-card .game-icon { width: 64px; height: 64px; padding: 7px; }
 .games-page .game-card h2 { font-size: 1.125rem; }
 .games-page .games-grid { gap: 16px; }
-.entry-character { width: 56px; height: 56px; top: 0; right: 8px; }
 main[id='conteudo'] :is(.learn-intro, .games-intro) { padding-right: 72px; }
 main:is(.learn-page, .games-page) { padding-top: 4px; }
 

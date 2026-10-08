@@ -1,15 +1,9 @@
 ﻿.app-header { background: var(--surface); border-bottom: 1px solid var(--border); }
 .header-content { max-width: 1180px; width: calc(100% - 48px); min-height: 96px; margin: 0 auto; padding-block: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.brand-mark { width: 60px; height: 56px; }
-.brand-copy { min-width: 0; }
 .app-header .brand { width: clamp(240px, 30vw, 340px); max-width: 100%; }
 .app-header .brand-logo { display: block; width: 100%; height: auto; object-fit: contain; }
-.brand-name { font-size: 30px; font-weight: 900; letter-spacing: -0.8px; color: var(--primary); }
 .brand p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.profile-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 17px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; flex-shrink: 0; }
-.profile-button svg { width: 19px; height: 19px; }
-.profile-button:hover { background: var(--surface-page); border-color: var(--primary); }
 .header-navigation { display: flex; gap: 12px; flex-wrap: wrap; }
 .header-navigation a { text-decoration: none; }
 .progress-entry { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); line-height: 1.6; }
@@ -57,10 +51,7 @@
 @media (max-width: 600px) {
   .header-content { width: calc(100% - 32px); min-height: 88px; padding-block: 16px; }
   .brand { gap: 8px; }
-  .brand-mark { width: 36px; height: 36px; }
-  .brand-name { font-size: 23px; }
   .brand p { font-size: 11px; }
-  .profile-button { padding: 10px 12px; gap: 6px; }
   .home { width: calc(100% - 32px); padding-block: 28px 32px; }
   .welcome { margin-bottom: 24px; }
   .welcome p { font-size: 16px; }
@@ -80,11 +71,7 @@
 @media (max-width: 359px) {
   .header-content { width: calc(100% - 24px); gap: 8px; }
   .brand { gap: 6px; }
-  .brand-mark { width: 28px; height: 30px; }
-  .brand-name { font-size: 22px; }
   .brand p { font-size: 10px; }
-  .profile-button { padding: 10px 8px; font-size: 13px; }
-  .profile-button svg { width: 16px; height: 16px; }
   .home { width: calc(100% - 24px); }
   .welcome p { font-size: 15px; }
   .activity-grid { gap: 10px; }

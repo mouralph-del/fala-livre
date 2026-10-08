@@ -11,8 +11,6 @@ main[id='conteudo'] :is(.learn-intro, .games-intro, .communication-intro, .words
   content: ''; display: block; position: absolute; left: 0; bottom: -5px; width: 72px; height: 3px; border-radius: 9px; margin: 0;
   background: linear-gradient(90deg, var(--primary) 0 25%, var(--secondary) 25% 50%, var(--accent) 50% 75%, var(--error) 75%); pointer-events: none;
 }
-.entry-character { position: absolute; right: 8px; top: -6px; width: 80px; height: 80px; pointer-events: none; }
-.entry-character .activity-illustration { width: 100%; height: 100%; object-fit: contain; }
 main[id='conteudo'] :is(.learn-intro, .games-intro) { padding-right: 104px; }
 main[id='conteudo']:not(.my-progress):not(.profile-page):not(.responsible-guidance) > :is(a[class$='-back'], .navigation-return, button.emotions-back) {
   min-height: var(--target); padding: 4px 10px; margin-block: 0 4px; border-radius: 999px;
@@ -51,7 +49,6 @@ main[id='conteudo']:not(.my-progress):not(.profile-page):not(.responsible-guidan
 @media (max-width: 700px) {
   main:is(.learn-page, .games-page, .communication-page) { padding-top: 4px; }
   main[id='conteudo'] :is(.learn-intro, .games-intro) { padding-right: 0; }
-  .entry-character { display: none; }
   main[id='conteudo'] :is(.learn-intro, .games-intro, .communication-intro) { margin-bottom: 10px; }
   main[id='conteudo'] :is(.learn-intro, .games-intro, .communication-intro) > p { font-size: .9375rem; }
   .learn-page .learning-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }

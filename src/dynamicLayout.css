@@ -165,8 +165,6 @@
   .app-header .header-content { flex-wrap: wrap; padding-block: 16px; }
   .app-header .header-navigation { width: 100%; justify-content: flex-start; gap: 10px; }
   .app-header .header-navigation a { min-height: var(--target); font-size: 1rem; padding: 10px 12px; }
-  .app-header .brand-name { font-size: 26px; }
-  .app-header .brand-mark { width: 44px; height: 42px; }
   .app-header .brand p { font-size: var(--font-auxiliary); }
   .home .activity-grid { gap: 18px; }
   .home .activity-card, :root[data-element-size='large'] .home .activity-card { grid-template-columns: minmax(0, .36fr) minmax(0, .64fr); gap: 14px; padding: 22px 18px 22px 12px; min-height: 224px; }

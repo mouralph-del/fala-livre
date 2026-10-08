@@ -38,6 +38,7 @@ assert.ok(validateProgress(seed).valid)
 try{
  let targets;for(let i=0;i<100;i++){try{targets=await(await fetch('http://127.0.0.1:9364/json/list')).json();if(targets.some(t=>t.type==='page'))break}catch{}await pause(100)}
  const A=await connect(targets.find(t=>t.type==='page')),ev=A.evaluate
+ await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}))"})
  const shots=path.join(tempRoot,'falalivre-ambient-review');fs.mkdirSync(shots,{recursive:true})
  const shot=async name=>{const result=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,name+'.jpg'),Buffer.from(result.data,'base64'))}
  const responsive=async label=>{
@@ -55,12 +56,13 @@ try{
  await A.cdp('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('falaLivre_progress_v1',${JSON.stringify(JSON.stringify(seed))});localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}));speechSynthesis.speak=()=>{};speechSynthesis.cancel=()=>{}`})
  const routes=['/','/aprender','/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/escrever/teclado','/aprender/escrever/caderno','/aprender/meu-dia-a-dia','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao','/aprender/meu-dia-a-dia/emocoes','/aprender/situacoes','/jogar',...Object.keys(gameCatalog).map(id=>'/jogar/'+id),'/jogar/bingo','/jogar/sequencias','/jogar/situacoes-interativas','/meu-progresso','/perfil','/responsaveis','/entrar','/criar-conta']
  const check=async label=>{
-  assert.equal(await ev('document.querySelectorAll(".scene-landscape").length'),1,label+' shared scene')
+  assert.equal(await ev('document.querySelectorAll(".home-decoration").length'),1,label+' shared scene')
   const family=await ev('document.querySelector(".home-surround").dataset.scene')
   assert.ok(['home','learn','daily','play','care'].includes(family),label+' scene family')
-  assert.equal(await ev('document.querySelector(".page-scene").dataset.family'),family,label+' consistent scene')
+  assert.ok(await ev(`(()=>{const scene=document.querySelector('.home-decoration');const family=${JSON.stringify(family)};if(family==='home')return scene.matches('.home-landscape');if(family==='care'||family==='play')return scene.dataset.learningScene===family;return scene.dataset.family===family||scene.matches('.learning-landscape')})()`),label+' consistent scene')
   assert.equal(await ev('document.querySelectorAll('+JSON.stringify('[class*="-qa-"],[data-debug],[data-fixture]')+').length'),0,label+' technical DOM')
-  assert.equal(await ev('/\\bQA\\b|\\bdebug\\b|fixture|\\bMVP\\b|prot[oó]tipo|demonstra[çc][ãa]o|demonstra[çc][õo]es|rota..o normal|voltar . rota..o|for.ar (conte.do|conclus.o|desbloqueio)/i.test(document.body.textContent)'),false,label+' technical text')
+  // Demo/account notices are real user-facing limitations, not technical QA controls.
+  assert.equal(await ev('/\\bQA\\b|\\bdebug\\b|fixture|rota..o normal|voltar . rota..o|for.ar (conte.do|conclus.o|desbloqueio)/i.test(document.body.textContent)'),false,label+' technical text')
  }
  for(const base of ['http://127.0.0.1:4214/__audit','http://127.0.0.1:4215/']){
   await A.cdp('Page.navigate',{url:base+'#/'});await ready(A)

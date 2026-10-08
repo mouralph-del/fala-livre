@@ -72,10 +72,7 @@ function Icon({ name }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {name === 'activities' && <><path d="M3 21h18" /><rect x="4" y="12" width="4" height="9" rx="1" /><rect x="10" y="7" width="4" height="14" rx="1" /><rect x="16" y="3" width="4" height="18" rx="1" /></>}
-      {name === 'points' && <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />}
-      {name === 'award' && <><path d="M7 3h10v6a5 5 0 0 1-10 0Z" fill="#E5C878" /><path d="M7 5H3v3a4 4 0 0 0 4 4M17 5h4v3a4 4 0 0 1-4 4M12 14v5M8 21h8M9 19h6" /></>}
       {name === 'growth' && <><path d="M12 21V11M12 16C5 16 3 12 3 7c6 0 9 3 9 9ZM12 12c0-6 3-9 9-9 0 6-3 9-9 9Z" /></>}
-      {name === 'profile' && <><circle cx="12" cy="8" r="3.5" /><path d="M5 21v-2a7 7 0 0 1 14 0v2" /></>}
     </svg>
   )
 }

@@ -69,6 +69,7 @@ try {
   }
   const key='falaLivre_contentRotation_v1'
   await cdp('Runtime.enable'); await cdp('Page.enable')
+  await cdp('Page.addScriptToEvaluateOnNewDocument', { source: "localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}))" })
   await cdp('Emulation.setDeviceMetricsOverride',{width:1366,height:1000,deviceScaleFactor:1,mobile:false})
   await cdp('Page.navigate',{url:'http://127.0.0.1:4183/#/aprender/meu-dia-a-dia/rotinas'})
   await wait(`document.querySelector('.sequence-grid')`)

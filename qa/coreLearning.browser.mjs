@@ -32,6 +32,7 @@ try {
   for (let i=0;i<100;i++) { try { targets=await(await fetch('http://127.0.0.1:9367/json/list')).json(); if(targets.some(t=>t.type==='page'))break } catch {} await pause(100) }
   const A = await connect(targets.find(t=>t.type==='page')), ev = A.evaluate
   await A.cdp('Page.addScriptToEvaluateOnNewDocument', { source: `
+    localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}));
     window.__spoken=[];
     const voices=[{voiceURI:'chosen-br',name:'Chosen Brazilian',lang:'pt-BR',localService:true},{voiceURI:'other-br',name:'Other Brazilian',lang:'pt-BR',default:true,localService:true}];
     Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>voices,addEventListener(){},removeEventListener(){},cancel(){},speak(u){window.__spoken.push({text:u.text,voice:u.voice?.voiceURI,rate:u.rate,pitch:u.pitch})}}});
@@ -149,7 +150,7 @@ try {
   await button('Continuar');await touch('.words-option')
   assert.equal(await ev('document.querySelector(".words-option").getAttribute("aria-pressed")'),'true')
   // Minimal keyboard check: base alphabet stays distinct from accent aids.
-  await navigate('#/aprender/escrever');await wait('document.querySelector(".writing-letter")!==null')
+  await seed('writing',catalog.words.map(w=>w.id),'agua','#/aprender/escrever');await wait('document.querySelector(".writing-letter")!==null')
   assert.equal(await ev(`document.querySelectorAll('[aria-label="Letras do alfabeto"] .writing-letter').length`),26)
   assert.ok(await ev(`!!document.querySelector('[aria-label="Letras com acento"] [aria-label="Inserir letra Á"]')`))
   await click('[aria-label="Inserir letra Á"]')

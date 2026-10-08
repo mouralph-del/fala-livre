@@ -22,8 +22,6 @@
 .plan-card .plan-savings { font-size: .9375rem; color: var(--muted); }
 .plans-page .plan-choose { width: 100%; background: var(--primary); color: white; border-color: var(--primary); }
 .plans-page .plan-choose:hover, .plans-page .plan-choose:active { background: var(--focus); }
-.plan-status:empty { display: none; }
-.plan-status:not(:empty) { padding: 12px; border-radius: 12px; background: var(--soft-blue); }
 :root[data-element-size='large'] .plans-page button { min-height: var(--target-large); font-size: 1.125rem; }
 @media (max-width: 700px) {
   .plans-page { width: calc(100% - 32px); }

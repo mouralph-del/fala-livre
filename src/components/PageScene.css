@@ -40,7 +40,6 @@
   padding: 10px 14px; margin-bottom: 18px;
 }
 .home-surround[data-scene] .welcome { padding: 10px 14px; }
-.home-surround[data-scene] .entry-character { top: 7px; }
 @media (min-width: 701px) {
   .home-surround[data-scene] main[id='conteudo'] > :is(.learn-intro, .games-intro) { padding-right: 80px; }
 }
