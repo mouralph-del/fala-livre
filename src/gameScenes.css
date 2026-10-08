@@ -58,3 +58,26 @@
   .home-surround[data-scene] :is(.memory-grid, .wordsearch-play, .findimage-grid, .belongs-destinations),
   .home-surround[data-scene] .puzzle-work > section { box-shadow: none; }
 }
+
+/* Play-only polish: shared landscape and activity geometry stay independent. */
+.home-surround[data-scene='play']:has(> .learning-landscape) { background: #E0EED3; }
+.home-surround[data-scene='play'] > .learning-landscape { display: block; }
+.home-surround[data-scene='play'] main > :is(.path-intro,.puzzle-intro,.memory-intro,.findimage-intro,.belongs-intro,.wordsearch-intro) { border-radius: 22px; padding: 16px 20px; background: #EFFBFFF0; border: 1px solid white; box-shadow: 0 4px 0 #FFFFFF70; }
+.home-surround[data-scene='play'] main .game-surface { background: #FFFDF6F5; box-shadow: 0 6px 0 #C7DEC580, 0 12px 24px #315F8C12; }
+.home-surround[data-scene='play'] main .game-surface--trail { background: #EFF7E3F5; }
+.home-surround[data-scene='play'] .path-board { background: radial-gradient(ellipse at 15% 80%, #F8EAC8 0 10%, transparent 45%), #DCF0BB; }
+.home-surround[data-scene='play'] .path-situation { background: #FFFAEAF5; }
+.home-surround[data-scene='play'] main .game-surface--assembly { background: #FFF0D6F5; }
+.home-surround[data-scene='play'] .puzzle-work > section:first-child { background: #DCEEF6; box-shadow: 0 0 0 6px #DCEEF6; }
+.home-surround[data-scene='play'] .puzzle-work > section:last-child { background: #FFF9E8; box-shadow: 0 0 0 6px #FFF9E8; }
+.home-surround[data-scene='play'] .memory-grid { background: #F9ECE5; box-shadow: 0 0 0 7px #F9ECE5; }
+.home-surround[data-scene='play'] .memory-card-back { background: radial-gradient(circle at 18% 18%, #FFFFFF70 0 5%, transparent 6%), radial-gradient(circle at 82% 82%, #FFFFFF50 0 5%, transparent 6%), #317BB5; color: white; border-color: #ECF7FF; }
+.home-surround[data-scene='play'] .memory-card-back svg { stroke: currentColor; }
+.home-surround[data-scene='play'] .memory-card--matched .memory-card-front { border-color: #237D47; background: #EFF9E6; }
+.home-surround[data-scene='play'] .wordsearch-play { background: #E7F3FC; }
+.home-surround[data-scene='play'] .wordsearch-vocabulary { background: #FFFAE8; border-radius: 20px; }
+.home-surround[data-scene='play'] .findimage-target { background: #EFFBFF; box-shadow: 0 4px 0 #BEDFEA; }
+.home-surround[data-scene='play'] .findimage-grid { background: #E5F4E2; }
+.home-surround[data-scene='play'] .belongs-origin { background: #EFF9FF; }
+.home-surround[data-scene='play'] .belongs-destinations { background: #E8F3DB; }
+@media (max-width: 700px) { .home-surround[data-scene='play'] main > :is(.path-intro,.puzzle-intro,.memory-intro,.findimage-intro,.belongs-intro,.wordsearch-intro) { padding: 12px; } .home-surround[data-scene='play'] .puzzle-work > section, .home-surround[data-scene='play'] .memory-grid { box-shadow: none; } }

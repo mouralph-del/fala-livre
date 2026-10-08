@@ -10,10 +10,9 @@ import WhereBelongsGame from './WhereBelongsGame'
 import SequenceGame from './SequenceGame'
 import InteractiveSituationsGame from './InteractiveSituationsGame'
 import './Games.css'
-import ActivityIllustration from '../components/ActivityIllustration'
 
 function GameIcon({ name }) {
-  return <svg className="game-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  return <svg className="game-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
     {name === 'association' && <><circle cx="16" cy="15" r="9" fill="white" /><path d="M29 15h15v16m-6-6 6 6 6-6" /><rect x="24" y="38" width="32" height="20" rx="4" fill="#E7F3EC" /><path d="M24 44h32M36 50h8" /></>}
     {name === 'conversation' && <><path d="M8 7h30a6 6 0 0 1 6 6v15a6 6 0 0 1-6 6H20L8 43V13a6 6 0 0 1 0-6Z" fill="white" /><path d="M30 37v7a6 6 0 0 0 6 6h10l10 8V29a6 6 0 0 0-6-6M17 17h18M17 24h12" /></>}
     {name === 'sequence' && <><rect x="5" y="7" width="22" height="18" rx="4" fill="white" /><rect x="37" y="39" width="22" height="18" rx="4" fill="#E7F3EC" /><path d="M33 16h15v16m-5-5 5 5 5-5M11 16h10M43 48h10" /></>}
@@ -41,7 +40,7 @@ export default function Games({ gameId }) {
   if (game) return <GamePlaceholder game={game} />
   return <main id="conteudo" className="games-page" tabIndex={-1}>
     <a className="games-back" href="#/">← Início</a>
-    <header className="games-intro"><span className="entry-character" aria-hidden="true"><ActivityIllustration variant="play" /></span><h1>Vamos jogar!</h1><p>Escolha uma atividade para começar.</p></header>
+    <header className="games-intro"><h1>Vamos jogar!</h1><p>Escolha um jogo para começar.</p></header>
     <div className="games-grid">{games.filter(item => item.visible !== false).map(item => <article className={`game-card game-card--${item.tone}`} data-game={item.id} key={item.id}>
       <GameIcon name={item.icon} />
       <h2>{item.title}</h2><p>{item.description}</p>

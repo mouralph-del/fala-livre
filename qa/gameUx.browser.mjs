@@ -30,7 +30,7 @@ try {
   let targets
   for (let i = 0; i < 100; i++) { try { targets = await (await fetch('http://127.0.0.1:9361/json/list')).json(); if (targets.some(t => t.type === 'page')) break } catch { /* Chrome startup. */ } await pause(100) }
   const A = await connect(targets.find(t => t.type === 'page')), ev = A.evaluate
-  await A.cdp('Page.addScriptToEvaluateOnNewDocument', { source: `window.__spoken=[];speechSynthesis.speak=u=>window.__spoken.push(u.text);speechSynthesis.cancel=()=>{};localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}))` })
+  await A.cdp('Page.addScriptToEvaluateOnNewDocument', { source: `window.__spoken=[];speechSynthesis.speak=u=>window.__spoken.push(u.text);speechSynthesis.cancel=()=>{};localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}));localStorage.setItem('falalivre.preferences',JSON.stringify({reduceMotion:true}))` })
   await A.cdp('Page.navigate', { url: 'http://127.0.0.1:4211/__audit#/' }); await ready(A)
   const route = async hash => { await ev('location.hash=' + JSON.stringify(hash)); await pause(80) }
   const click = async selector => { await ev('document.querySelector(' + JSON.stringify(selector) + ').click()'); await pause(35) }
@@ -173,7 +173,7 @@ try {
   // Contrast is checked with both the card and its actual CTA forced into hover.
   await ev('document.documentElement.dataset.reduceMotion="false"')
   await A.cdp('DOM.enable'); await A.cdp('CSS.enable')
-  for (const [hash, card, button] of [['/','.activity-card','.start-button'],['/aprender','.learning-card','.learning-start'],['/jogar','.game-card','.game-start'],['/aprender/meu-dia-a-dia','.my-day-option','.my-day-start']]) {
+  for (const [hash, card, button] of [['/','.activity-card','.start-button'],['/aprender','.learning-card','.learning-start'],['/jogar','.game-card','.game-start'],['/aprender/meu-dia-a-dia','.my-day-option','.my-day-start']].filter(([hash])=>!process.argv.includes('--games-only')||hash==='/jogar')) {
     await route(hash)
     const root = await A.cdp('DOM.getDocument')
     const nodes = await A.cdp('DOM.querySelectorAll', { nodeId: root.root.nodeId, selector: card })
@@ -190,12 +190,14 @@ try {
     if (hash !== '/') assert.ok(await ev('document.querySelector("main header,main .learn-intro").getBoundingClientRect().height<150'))
     await screenshot('hub-'+(hash==='/'?'home':hash.slice(1).replaceAll('/','-')))
   }
-  for (const hash of ['/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/meu-dia-a-dia/emocoes','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao',...['caminho','quebra-cabeca','caca-palavras','memoria','encontre-imagem','onde-pertence'].map(g=>'/jogar/'+g)]) { await route(hash); assert.equal(await ev('document.querySelector("main").textContent.includes("ARASAAC")'), false, hash) }
+  for (const hash of ['/aprender/comunicar','/aprender/palavras-frases','/aprender/escrever','/aprender/meu-dia-a-dia/emocoes','/aprender/meu-dia-a-dia/rotinas','/aprender/meu-dia-a-dia/comunicacao',...['caminho','quebra-cabeca','caca-palavras','memoria','encontre-imagem','onde-pertence'].map(g=>'/jogar/'+g)].filter(hash=>!process.argv.includes('--games-only')||hash.startsWith('/jogar/'))) { await route(hash); assert.equal(await ev('document.querySelector("main").textContent.includes("ARASAAC")'), false, hash) }
+  if(!process.argv.includes('--games-only')) {
   await route('/responsaveis')
   assert.ok(await ev('document.querySelector("main").textContent.includes("Sergio Palao")'))
   assert.ok(await ev(`(async()=>{const a=Array.from(document.querySelectorAll('main a')).find(a=>a.textContent.startsWith('Créditos detalhados'));const r=await fetch(a.href);return r.ok&&(await r.text()).includes('CC BY-NC-SA 4.0')})()`))
+  }
   assert.deepEqual(errors, []); assert.deepEqual(warnings, [])
-  console.log('PASS: puzzle N1/N2/N3, real mouse/touch drag, swaps, Escape/cancel/outside, native Enter/Space, help, restart, completion/unlock; 3x3 seven widths Normal/Grande 125%; path three levels; wordsearch rules/four colors/shared cells/labels; memory backs; all hub hover contrast; central credits. Screenshots: '+shotDirectory)
+  console.log('PASS: puzzle N1/N2/N3, real mouse/touch drag, swaps, Escape/cancel/outside, native Enter/Space, help, restart, completion/unlock; 3x3 seven widths Normal/Grande 125%; path three levels; wordsearch rules/four colors/shared cells/labels; memory backs; targeted hub hover contrast. Screenshots: '+shotDirectory)
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

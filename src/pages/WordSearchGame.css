@@ -1,6 +1,6 @@
 ﻿/* Scoped scenery: other approved pages retain their decoration. */
-.home-surround:has(.wordsearch-page) { background: #F3F7F4; }
-.home-surround:has(.wordsearch-page) > .home-decoration { display: none; }
+
+
 .wordsearch-page { width: calc(100% - 48px); max-width: 1000px; margin: auto; padding: 12px 0 32px; }
 .wordsearch-back { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; color: var(--primary); border-radius: var(--radius-control); text-decoration: none; font-weight: 700; }
 .wordsearch-back:hover { background: var(--soft-blue); }

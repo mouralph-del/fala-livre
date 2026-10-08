@@ -28,3 +28,24 @@
  .game-icon { width: 60px; height: 60px; }
  .game-card h2 { font-size: 21px; }
 }
+
+/* Illustrated hub only: six original destinations and their existing semantics. */
+.home-surround[data-scene='play'] .games-intro { max-width: 600px; margin: 0 auto 26px; padding: 20px 24px; text-align: center; border-radius: 26px; background: #F0FBFFF0; border: 1px solid white; box-shadow: 0 5px 0 #FFFFFF70; }
+.home-surround[data-scene='play'] .games-grid { gap: 22px; background: none; box-shadow: none; }
+.home-surround[data-scene='play'] .game-card { --play-color: #236ED0; --play-paper: #EAF7FF; display: flex; flex-direction: column; align-items: stretch; padding: 24px; gap: 14px; border-radius: 26px; background: var(--play-paper); border-color: #FFFFFF; box-shadow: 0 5px 0 #CEE5D280, 0 10px 20px #315F8C12; color: var(--play-color); }
+.home-surround[data-scene='play'] [data-game='quebra-cabeca'] { --play-color: #237D47; --play-paper: #EFF9E6; }
+.home-surround[data-scene='play'] [data-game='caca-palavras'] { --play-color: #996000; --play-paper: #FFF6DB; }
+.home-surround[data-scene='play'] [data-game='memoria'] { --play-color: #A3434F; --play-paper: #FFF0ED; }
+.home-surround[data-scene='play'] [data-game='encontre-imagem'] { --play-color: #236F8B; --play-paper: #E9F9FC; }
+.home-surround[data-scene='play'] [data-game='onde-pertence'] { --play-color: #246E62; --play-paper: #E9F6EF; }
+.home-surround[data-scene='play'] .game-card .game-icon { width: 88px; height: 88px; padding: 10px; align-self: center; border-radius: 22px; background: #FFFFFFB0; }
+.home-surround[data-scene='play'] .game-card h2 { font-size: 1.25rem; color: #123F66; }
+.home-surround[data-scene='play'] .game-card .game-start { background: var(--play-color); border-color: var(--play-color); color: white; border-radius: 18px; }
+.home-surround[data-scene='play'] .game-card .game-start:hover, .home-surround[data-scene='play'] .game-card .game-start:active { background: var(--focus); border-color: var(--focus); }
+@media (min-width: 1024px) { .home-surround[data-scene='play'] .games-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 601px) and (max-width: 1023px) { .home-surround[data-scene='play'] .games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .home-surround[data-scene='play'] .games-intro { padding: 16px; } .home-surround[data-scene='play'] .game-card { padding: 20px; } }
+
+@media (min-width: 1024px) { :root[data-element-size='large'] .home-surround[data-scene='play'] .games-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.home-surround[data-scene='play'] .game-card::after { content: none; }

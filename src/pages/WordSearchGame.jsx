@@ -116,7 +116,7 @@ export default function WordSearchGame({ progressService } = {}) {
 
   return <main id="conteudo" className="wordsearch-page" tabIndex={-1}>
     <a className="wordsearch-back" href="#/jogar">← Jogos</a>
-    <header className="wordsearch-intro"><div><h1>Caça-palavras</h1><p>Encontre {level.words.map(word => word.word).join(' e ')}</p></div><div className="wordsearch-friends" aria-hidden="true"><img src={girl} alt="" /><img src={boy} alt="" /></div></header>
+    <header className="wordsearch-intro"><div><h1>Caça-palavras</h1><p>Encontre {level.words.map(word => word.word).join(' e ')}</p></div></header>
     <nav className="wordsearch-levels" aria-label="Escolher nível">
       {wordSearchLevels.map((item, index) => <button key={item.id} type="button" className={`wordsearch-level${item.id === level.id ? ' wordsearch-level--active' : ''}`} aria-pressed={item.id === level.id} aria-disabled={progress.availability(item.id).status !== 'available'} onClick={() => changeLevel(item)}>Nível {index + 1}<GameLevelStatus progress={progress} levelId={item.id} /></button>)}
     </nav>
