@@ -67,6 +67,16 @@ try {
         assert.ok(characters[0].src.includes('aprender-personagem')&&characters[1].src.includes('jogar-personagem'))
       }
     }
+    if(hash==='#/aprender') {
+      assert.deepEqual(await ev('Array.from(document.querySelectorAll(".learning-card"),e=>e.dataset.activity)'),['communicate','words','write','myDay'])
+      assert.ok(await ev(`Array.from(document.querySelectorAll('.learning-context-image')).every(image=>{
+        const r=image.getBoundingClientRect();if(!r.width)return true;
+        return image.complete&&image.naturalWidth>0&&Array.from(image.closest('article').querySelectorAll('h2,p,button,.premium-badge,.learning-detail')).every(e=>{
+          const t=e.getBoundingClientRect();return !t.width||r.right<=t.left||r.left>=t.right||r.bottom<=t.top||r.top>=t.bottom
+        })
+      })`),context+' educational illustration overlaps text/control')
+      assert.ok(await ev('document.querySelector(".learn-scenery").getAttribute("aria-hidden")==="true"&&getComputedStyle(document.querySelector(".learn-scenery")).pointerEvents==="none"'))
+    }
     await ev('document.querySelector(".header-menu-toggle").click()');await pause(15)
     assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'),'true')
     assert.ok(await ev('(()=>{const r=document.querySelector(".header-popover").getBoundingClientRect();return r.left>=0&&r.right<=innerWidth})()'),context)
