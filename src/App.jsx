@@ -92,7 +92,7 @@ function ActivityCard({ title, description, variant, action, access, onPremiumRe
     <article className={`activity-card activity-card--${variant}`}>
       <ActivityIllustration variant={variant} />
       <div className="activity-content">
-        <h2>{title}</h2>
+        <div className="home-activity-heading"><InterfaceIcon name={variant === 'learn' ? 'book' : 'controller'} /><h2>{title}</h2></div>
         <p>{description}</p>
         {locked && <PremiumBadge />}
         <button className="start-button" type="button" aria-label={variant === 'learn' ? 'Começar a aprender' : locked ? 'Conhecer jogos — Premium' : 'Começar a jogar'} onClick={() => { if (locked) { onPremiumRequest('games'); return } window.location.hash = variant === 'learn' ? '/aprender' : '/jogar' }}>

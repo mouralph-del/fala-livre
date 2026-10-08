@@ -49,7 +49,7 @@ try {
     }
     assert.deepEqual(await ev('Array.from(document.querySelectorAll(".start-button,.learning-start,.header-menu-toggle"),e=>({text:e.textContent,clipped:e.scrollWidth>e.clientWidth+1})).filter(e=>e.clipped)'),[],context)
     if(width/zoom>=1100) {
-      assert.ok(await ev('Math.abs(document.querySelector("main").getBoundingClientRect().left-document.querySelector(".header-content").getBoundingClientRect().left)<1'),context)
+      assert.ok(await ev('(()=>{const m=document.querySelector("main").getBoundingClientRect(),h=document.querySelector(".header-content").getBoundingClientRect();return Math.abs((m.left+m.right-h.left-h.right)/2)<1})()'),context)
       if(hash==='#/aprender')assert.equal(await ev('getComputedStyle(document.querySelector(".learning-grid")).gridTemplateColumns.split(" ").length'),2)
       else {
         assert.equal(await ev('getComputedStyle(document.querySelector(".activity-grid")).gridTemplateColumns.split(" ").length'),2,context)
@@ -98,6 +98,21 @@ try {
     assert.equal(await ev('document.querySelector(".header-desktop-navigation [aria-current=page]").getAttribute("href")'),hash)
   }
   assert.equal(await ev('JSON.stringify(Object.entries(localStorage))'),afterCommunicationInit)
+  await ev(`(async()=> (await import('/src/services/accountAccess.js')).requestAccountAccess('sign-in',{email:'teste@falalivre.com',password:'FalaLivre123'}))()`);await pause(80)
+  for(const width of [390,1366,1440,1920]) {
+    await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:width===1920?1080:900,deviceScaleFactor:1,mobile:false})
+    await ev('document.documentElement.dataset.elementSize="normal";location.hash="#/"');await pause(80)
+    assert.equal(await ev('document.querySelector("#welcome-title").textContent'),'Olá, Noa!')
+    assert.equal(await ev('document.querySelector(".activity-card--play .premium-badge")'),null)
+    await ev('document.activeElement.blur()')
+    const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:85,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,'home-demo-'+width+'.jpg'),Buffer.from(shot.data,'base64'))
+    for(const [selector,hash] of [['.activity-card--learn .start-button','#/aprender'],['.activity-card--play .start-button','#/jogar'],['.progress-entry a','#/meu-progresso']]) {
+      await ev('location.hash="#/"');await pause(60)
+      await ev('document.querySelector('+JSON.stringify(selector)+').click()');await pause(80)
+      assert.equal(await ev('location.hash'),hash)
+      assert.equal(await ev('document.querySelector(".premium-access-panel")'),null)
+    }
+  }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
   console.log('PASS Home/Learn/header: eight viewports, Normal/Grande, 125%/200% zoom reflow, no horizontal overflow/clipped buttons, desktop alignment/2x2 grid, menu/Escape/keyboard focus and unchanged storage; '+shots)
 

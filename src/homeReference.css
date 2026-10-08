@@ -3,12 +3,13 @@
 .header-desktop-navigation a { gap: 8px; }
 .header-desktop-navigation a[href='#/planos'] .interface-icon { color: #A96F12; }
 .app-header .header-content { background: #FEFEFE; }
-.app-header--home { background: #ACE0FD; border: 0; box-shadow: none; padding-block: 18px 10px; }
+.app-header--home { background: #83D6F7; border: 0; box-shadow: none; padding-block: 18px 10px; }
 .app-header--home .header-content { border-radius: 22px; padding-inline: 24px; box-shadow: 0 6px 18px #315F8C0C; }
 .app-header--home .brand { width: clamp(180px, 14vw, 220px); }
-.home-surround[data-scene='home'] { background: #ACE0FD; }
+.home-surround[data-scene='home'] { background: #83D6F7; }
 .home-landscape::before, .home-landscape::after { content: none; }
-.home-landscape > svg { width: 100%; height: 100%; min-height: 900px; position: absolute; inset: 0; }
+.home-landscape > .home-landscape-backdrop { width: 100%; height: 100%; min-height: 900px; position: absolute; inset: 0; }
+.home-landscape > .home-landscape-sun { position: absolute; width: 120px; height: 120px; top: 24px; left: clamp(72px, calc((100% - 1280px) / 2 + 100px), 420px); }
 .home .home-checklist { width: 64px; height: 72px; color: var(--primary); }
 .home .home-progress-copy { min-width: 0; flex: 1; }
 .home .home-progress-copy .section-heading { margin-bottom: 6px; }
@@ -58,6 +59,66 @@
 @media (max-width: 700px) {
   .app-header--home { padding-block: 8px; }
   .app-header--home .header-content { padding-inline: 12px; border-radius: 18px; }
-  .home-landscape > svg { min-height: 1000px; opacity: .6; }
+  .home-landscape > .home-landscape-backdrop { min-height: 1000px; opacity: .6; }
   .home-landscape-sun { display: none; }
+}
+
+/* Official Home reference: compact central actions framed by the original PNGs. */
+.home .home-activity-heading { display: flex; align-items: center; gap: 16px; }
+.home .home-scenery-character .activity-illustration { width: 100%; max-width: none; height: auto; }
+.home .home-activity-heading > .interface-icon { width: 48px; height: 48px; padding: 10px; border-radius: 15px; background: #287AE6; color: white; }
+.home .activity-card--play .home-activity-heading > .interface-icon { background: #479E57; }
+.home .activity-card--learn .start-button { background: #236ED0; color: white; border-color: #236ED0; }
+.home .activity-card--play .start-button { background: #237D47; color: white; border-color: #237D47; }
+.home .start-button:hover { background: var(--focus); border-color: var(--focus); }
+@media (min-width: 1100px) {
+  .home-landscape > .home-landscape-backdrop { min-height: 0; }
+  .app-header--home .header-content { max-width: 1040px; min-height: 84px; }
+  .app-header--home .brand { width: 204px; }
+  .home-surround[data-scene='home'] .home { max-width: 1280px; width: calc(100% - 64px); padding-block: 24px 36px; }
+  .home-surround[data-scene='home'] main.home > .welcome { max-width: 484px; padding: 18px 40px; margin-bottom: 24px; }
+  .home .welcome h1 { font-size: 3rem; color: #123F66; }
+  .home .progress { max-width: 800px; margin-top: 24px; }
+  .home .progress-entry { padding: 16px 24px; gap: 16px; border-radius: 26px; }
+  .home .home-progress-copy > p { padding-left: 52px; }
+  .home .positive-message { max-width: 580px; margin-top: 22px; padding: 12px 20px; }
+}
+@media (min-width: 1366px) {
+  .home .activity-grid, :root[data-element-size='large'] .home .activity-grid { width: 56%; max-width: 640px; gap: 24px; }
+  .home-surround .home .activity-card, :root[data-element-size='large'] .home-surround .home .activity-card { min-height: 220px; padding: 22px 20px; border-radius: 28px; gap: 0; }
+  .home .activity-card--learn { background: #E7F5FD; }
+  .home .activity-card--play { background: #E6F4E2; }
+  .home .activity-content { min-height: 176px; justify-content: flex-start; }
+  .home .activity-card h2 { font-size: 1.25rem; }
+  .home .activity-card p { font-size: .875rem; margin-block: 8px 12px; padding-left: 64px; }
+  .home .activity-card .premium-badge { margin-left: 64px; margin-bottom: 10px; }
+  .home .start-button { position: relative; max-width: none; width: 100%; border-radius: 24px; justify-content: center; }
+  .home .start-button > span { position: absolute; right: 20px; }
+  .home-scenery-character { top: 175px; width: 300px; }
+  .home-scenery-character--learn { left: auto; right: 0; }
+  .home-scenery-character--play { right: auto; left: 0; }
+}
+@media (max-width: 1099px) {
+  .home .home-activity-heading { gap: 10px; }
+  .home .home-activity-heading > .interface-icon { width: 36px; height: 36px; padding: 7px; }
+}
+@media (max-width: 390px) {
+  .home .home-activity-heading { flex-wrap: wrap; justify-content: center; gap: 8px; }
+}
+@media (min-width: 1600px) {
+  .app-header--home .header-content { width: 74%; max-width: 1400px; min-height: 104px; }
+  .app-header--home .brand { width: 250px; }
+  .home-surround[data-scene='home'] .home { max-width: 1720px; padding-block: 36px 44px; }
+  .home-surround[data-scene='home'] main.home > .welcome { max-width: 640px; padding: 22px 44px; margin-bottom: 32px; }
+  .home .welcome h1 { font-size: 3.5rem; }
+  .home .welcome p { font-size: 1.25rem; }
+  .home .activity-grid, :root[data-element-size='large'] .home .activity-grid { width: 52%; max-width: 860px; gap: 32px; }
+  .home-surround .home .activity-card, :root[data-element-size='large'] .home-surround .home .activity-card { padding: 28px; min-height: 280px; }
+  .home .activity-content { min-height: 222px; }
+  .home .activity-card h2 { font-size: 1.5rem; }
+  .home .activity-card p { font-size: 1rem; }
+  .home-scenery-character { width: 360px; top: 230px; }
+  .home .progress { max-width: 1100px; margin-top: 32px; }
+  .home .progress-entry { padding: 24px 32px; }
+  .home .positive-message { max-width: 780px; margin-top: 28px; padding: 16px 24px; }
 }
