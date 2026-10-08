@@ -2,8 +2,17 @@ import { pictogramCredit } from '../data/communicationOptions.js'
 import pictogramCredits from '../assets/pictograms/arasaac/CREDITS.md?url'
 import './ResponsibleGuidance.css'
 import InterfaceIcon from '../components/InterfaceIcon'
+import { useState, useSyncExternalStore } from 'react'
+import GameTimeSettings from '../components/GameTimeSettings'
+import { getPreferences, subscribePreferences, updatePreference } from '../utils/preferences'
 
 export default function ResponsibleGuidance() {
+  const preferences = useSyncExternalStore(subscribePreferences, getPreferences)
+  const [message, setMessage] = useState('')
+  function change(key, value) {
+    const saved = updatePreference(key, value)
+    setMessage(saved ? 'Preferência salva.' : 'Preferência aplicada nesta sessão. Não foi possível salvar neste navegador.')
+  }
   return <main id="conteudo" className="responsible-guidance" tabIndex={-1}>
     <a className="navigation-return" href="#/">Voltar ao início</a>
     <header className="guidance-intro"><h1>Responsáveis</h1>
@@ -21,6 +30,8 @@ export default function ResponsibleGuidance() {
       </ul>
     </section>
 
+    <GameTimeSettings preferences={preferences} change={change} title="Controle de atividades" feedback={message} />
+
     <section aria-labelledby="guidance-progress">
       <InterfaceIcon name="chart" className="guidance-icon" />
       <h2 id="guidance-progress">Acompanhar atividades</h2>
@@ -35,13 +46,9 @@ export default function ResponsibleGuidance() {
       <a href="#/perfil">Abrir Configurações</a>
     </section>
 
-    <section aria-labelledby="guidance-game-time">
-      <h2 id="guidance-game-time">Tempo de jogos</h2>
-      <p>O limite diário de jogos é definido em Configurações. Quando o tempo termina, Aprender continua disponível. A configuração e o consumo do dia ficam somente neste navegador/dispositivo.</p>
-    </section>
-
     <section aria-labelledby="guidance-privacy">
       <h2 id="guidance-privacy">Privacidade e dados</h2>
+      <p>A configuração do limite diário e o consumo do dia ficam somente neste navegador/dispositivo. O controle de atividades está disponível nesta página, sem senha ou PIN.</p>
       <p>Neste navegador, o Fala Livre pode guardar registros educativos, preferências e a organização da sequência de conteúdos. Alguns registros podem ficar disponíveis apenas durante a sessão. Frases produzidas, sentimentos escolhidos, necessidades pessoais, desenhos, áudio, erros, tentativas e tempo não são salvos como progresso. Os registros não são vinculados a uma pessoa ou conta.</p>
     </section>
 

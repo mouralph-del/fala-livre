@@ -36,7 +36,7 @@ try {
     window.__visible=true;Object.defineProperty(document,'visibilityState',{get:()=>window.__visible?'visible':'hidden'});
     window.confirm=()=>true;
   `})
-  await A.cdp('Page.navigate',{url:'http://127.0.0.1:4204/__audit#/perfil'});await ready(A)
+  await A.cdp('Page.navigate',{url:'http://127.0.0.1:4204/__audit#/responsaveis'});await ready(A)
   const ev=A.evaluate
   const route=async hash=>{await ev('location.hash='+JSON.stringify(hash));await pause(100)}
   const click=async selector=>{await ev('document.querySelector('+JSON.stringify(selector)+').click()');await pause(80)}
@@ -44,6 +44,7 @@ try {
   const advance=async ms=>{await ev(`(async()=>{window.__clock+=${ms};const m=await import('/src/utils/gameTime.js');m.getGameTimeTracker().tick()})()`);await pause(80)}
   const state=()=>ev("(async()=>{const m=await import('/src/utils/gameTime.js');return m.getGameTimeTracker().getSnapshot()})()")
   assert.equal(await ev('document.querySelectorAll("[name=gameTimeLimit]").length'),6)
+  await ev("(async()=>{await(await import('/src/services/accountAccess.js')).requestAccountAccess('sign-in',{email:'teste@falalivre.com',password:'FalaLivre123'})})()")
   await ev("localStorage.setItem('falaLivre_progress_v1','{}');localStorage.setItem('falaLivre_contentRotation_v1','{}')")
   const protectedBefore=await ev("[localStorage.getItem('falaLivre_progress_v1'),localStorage.getItem('falaLivre_contentRotation_v1')]")
   await click('[name=gameTimeLimit][value="15"]')
@@ -61,23 +62,29 @@ try {
   await route('/aprender');await advance(60000);assert.equal((await state()).consumedMs,60000)
   await route('/jogar/memoria');await advance(60000);assert.equal((await state()).exhausted,true)
   assert.ok(await ev("document.querySelector('main').textContent.includes('O tempo de jogos de hoje terminou.')"))
-  for(const hash of ['/jogar','/jogar/quebra-cabeca','/jogar/sequencias','/jogar/onde-pertence']){await route(hash);assert.ok(await ev("!!document.querySelector('a[href=\"#/aprender\"]') && document.querySelector('main').textContent.includes('terminou')"))}
+  const gameRoutes=['/jogar/caminho','/jogar/quebra-cabeca','/jogar/caca-palavras','/jogar/memoria','/jogar/encontre-imagem','/jogar/onde-pertence']
+  for(const hash of ['/jogar',...gameRoutes]){await route(hash);assert.ok(await ev("!!document.querySelector('a[href=\"#/aprender\"]') && document.querySelector('main').textContent.includes('terminou')"))}
   await click('main a[href="#/aprender"]');assert.equal(await ev('location.hash'),'#/aprender');assert.ok(await ev('!!document.querySelector(".learning-grid")'))
   for(const hash of ['/perfil','/responsaveis','/meu-progresso']){await route(hash);assert.ok(!(await ev("document.querySelector('main').textContent.includes('O tempo de jogos de hoje terminou.')")))}
   await prefs('gameTimeLimit','15');await route('/jogar');assert.equal((await state()).exhausted,false)
   await prefs('gameTimeLimit','custom');assert.equal((await state()).exhausted,true)
   await prefs('gameTimeLimit','unlimited');assert.equal((await state()).exhausted,false)
+  for(const hash of gameRoutes){
+    await route(hash);assert.ok(await ev("!document.querySelector('main').textContent.includes('O tempo de jogos de hoje terminou.') && !document.querySelector('.premium-access-panel')"))
+    const before=(await state()).consumedMs;await advance(1000);assert.equal((await state()).consumedMs,before+1000)
+  }
   await route('/perfil')
+  assert.equal(await ev('document.querySelectorAll("[name=gameTimeLimit],#game-time-minutes,.profile-game-time").length'),0)
   for(const learn of ['girl','boy'])for(const play of ['girl','boy']){await click('[name=learnCharacter][value="'+learn+'"]');await click('[name=gameCharacter][value="'+play+'"]');assert.equal(await ev('Array.from(document.querySelectorAll(".profile-character-preview")).every(i=>i.complete&&i.naturalWidth>0)'),true)}
   await click('[name=elementSize]');await prefs('elementSize','large');await prefs('reduceMotion',true)
   assert.equal(await ev('document.documentElement.dataset.elementSize'),'large');assert.equal(await ev('document.documentElement.dataset.reduceMotion'),'true')
   assert.ok(await ev("Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Ouvir exemplo')"))
-  await click('.profile-restore button');assert.equal(await ev("JSON.parse(localStorage.getItem('falalivre.preferences')).gameTimeLimit"),'unlimited');assert.equal((await state()).consumedMs,120000)
+  await click('.profile-restore button');assert.equal(await ev("JSON.parse(localStorage.getItem('falalivre.preferences')).gameTimeLimit"),'unlimited');assert.equal((await state()).consumedMs,126000)
   assert.deepEqual(await ev("[localStorage.getItem('falaLivre_progress_v1'),localStorage.getItem('falaLivre_contentRotation_v1')]"),protectedBefore)
   await prefs('customGameMinutes',2);await prefs('gameTimeLimit','custom');await A.cdp('Page.reload');await ready(A);assert.equal((await state()).exhausted,true)
   await ev("(async()=>{const m=await import('/src/utils/gameTime.js');m.getGameTimeTracker().suspend();window.__clock=new Date(2026,9,7,0,0,5).getTime();m.getGameTimeTracker().tick()})()");await pause(80);assert.equal((await state()).consumedMs,0)
   const screenshots=path.join(os.tmpdir(),'falalivre-game-time-review');fs.mkdirSync(screenshots,{recursive:true})
-  for(const width of [390,768,1440]){
+  for(const width of [320,390,768,1440]){
     await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
     await prefs('elementSize','large');await prefs('reduceMotion',true)
     for(const [name,hash,exhaust] of [['settings','/perfil',false],['games','/jogar',false],['finished','/jogar/memoria',true],['learn','/aprender',false],['guidance','/responsaveis',false]]){
@@ -91,7 +98,7 @@ try {
     await ev("(async()=>{const m=await import('/src/utils/gameTime.js');m.getGameTimeTracker().suspend();window.__clock+=86400000;m.getGameTimeTracker().tick()})()");await pause(80)
   }
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS UI presets/custom validation, visible play only, route gate, Learn, preferences, restore, reload/day reset, characters, accessibility and 15 responsive screenshots: '+screenshots)
+  console.log('PASS Responsible presets/custom validation, all six game timers/gates, Settings control absent, preferences/restore/refresh/day reset, accessibility and 20 responsive screenshots: '+screenshots)
 
 } finally {
   for(const socket of sockets)socket.close();chrome.kill();await server.close();await pause(500)

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function GameTimeSettings({ preferences, change }) {
+export default function GameTimeSettings({ preferences, change, title = 'Tempo de jogos', feedback = '' }) {
   const [draft, setDraft] = useState(String(preferences.customGameMinutes))
   const [error, setError] = useState('')
   function save(event) {
@@ -14,7 +14,7 @@ export default function GameTimeSettings({ preferences, change }) {
     setError('')
   }
   return <section className="profile-section profile-game-time" aria-labelledby="game-time-title">
-    <h2 id="game-time-title">Tempo de jogos</h2>
+    <h2 id="game-time-title">{title}</h2>
     <p>Defina quanto tempo os jogos podem ser usados por dia neste navegador. A área Aprender continua disponível quando o tempo terminar.</p>
     <fieldset><legend>Limite diário</legend><div className="profile-options">
       {[['unlimited', 'Sem limite'], ['15', '15 minutos'], ['30', '30 minutos'], ['45', '45 minutos'], ['60', '1 hora'], ['custom', 'Personalizado']].map(([value, label]) => <label className="profile-option" key={value}>
@@ -28,5 +28,6 @@ export default function GameTimeSettings({ preferences, change }) {
       <p id="game-time-current">Limite ativo: {preferences.customGameMinutes} minutos por dia.</p>
       <p id="game-time-error" role="alert">{error}</p>
     </form>}
+    <p className="profile-feedback" role="status">{feedback}</p>
   </section>
 }

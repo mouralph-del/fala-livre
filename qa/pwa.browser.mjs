@@ -72,6 +72,21 @@ try {
  const demoRoutes=['jogar','aprender/palavras-frases','aprender/meu-dia-a-dia','aprender/meu-dia-a-dia/rotinas','aprender/meu-dia-a-dia/comunicacao','aprender/meu-dia-a-dia/emocoes','jogar/caminho','jogar/quebra-cabeca','jogar/caca-palavras','jogar/memoria','jogar/encontre-imagem','jogar/onde-pertence']
  for(const hash of demoRoutes){await route(hash);assert.equal(await ev('!!document.querySelector(".premium-access-panel")'),false);assert.ok(await ev('Array.from(document.images).filter(i=>i.getClientRects().length).every(i=>i.complete&&i.naturalWidth>0)'))}
  await reload();assert.equal(await ev('!!document.querySelector(".premium-access-panel")'),false)
+ await ev('document.querySelector(".header-menu-toggle").click();document.querySelector(\'.header-navigation a[href="#/responsaveis"]\').click()')
+ await pause(150)
+ assert.equal(await ev('location.hash'),'#/responsaveis')
+ assert.equal(await ev('document.querySelectorAll("input[name=gameTimeLimit]").length'),6)
+ for(const value of ['15','unlimited','30','45','60','custom']){
+  await ev('document.querySelector(\'input[name=gameTimeLimit][value="'+value+'"]\').click()');await pause(50)
+  assert.equal(await ev('JSON.parse(localStorage.getItem("falalivre.preferences")).gameTimeLimit'),value)
+ }
+ await ev('(()=>{const i=document.querySelector("#game-time-minutes");Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set.call(i,"25");i.dispatchEvent(new Event("input",{bubbles:true}))})()')
+ await pause(50);await ev('document.querySelector(".profile-game-time form").requestSubmit()');await pause(50)
+ await reload()
+ assert.equal(await ev('document.querySelector("#game-time-minutes").value'),'25')
+ assert.equal(await ev('document.querySelector("input[name=gameTimeLimit]:checked").value'),'custom')
+ await ev('document.querySelector("input[name=gameTimeLimit][value=unlimited]").click()')
+ await route('perfil');assert.equal(await ev('document.querySelectorAll("input[name=gameTimeLimit],.profile-game-time").length'),0)
  await route('aprender/escrever/caderno')
  await ev('document.querySelector("canvas").scrollIntoView({block:"center"})')
  const canvas=await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return {x:r.x+40,y:r.y+40}})()')
@@ -120,7 +135,7 @@ try {
  await route('jogar');assert.ok(await ev('!!document.querySelector(".premium-access-panel")'))
  await reload();assert.ok(await ev('!!document.querySelector(".premium-access-panel")'))
  assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
- console.log('PASS production offline shell, visitor/demo/direct routes/six games, notebook mouse, refresh, update prompt/no unsolicited reload/storage preserved, logout/free, seven widths Normal/Grande/reduced motion/focus, no JS errors')
+ console.log('PASS production offline shell, visitor/demo/direct routes/six games, Responsible game time presets/custom/refresh and absent from Settings, notebook mouse, update/storage preserved, logout/free, seven widths Normal/Grande/reduced motion/focus, no JS errors')
 } finally {
  for(const socket of sockets)socket.close();chrome.kill();await new Promise(resolve=>server.httpServer.close(resolve));await pause(500)
  const resolved=path.resolve(profile);if(path.dirname(resolved)!==tempRoot||!path.basename(resolved).startsWith('falalivre-pwa-'))throw Error('unsafe temporary path')
