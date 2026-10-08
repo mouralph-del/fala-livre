@@ -4,6 +4,7 @@ import './ResponsibleGuidance.css'
 import InterfaceIcon from '../components/InterfaceIcon'
 import { useState, useSyncExternalStore } from 'react'
 import GameTimeSettings from '../components/GameTimeSettings'
+import PwaInstallation from '../components/PwaInstallation'
 import { getPreferences, subscribePreferences, updatePreference } from '../utils/preferences'
 
 export default function ResponsibleGuidance() {
@@ -45,6 +46,8 @@ export default function ResponsibleGuidance() {
       <p>Em Configurações, você encontra as preferências de voz, tamanho dos elementos, redução de movimentos e personagens da Home, conforme as opções disponíveis. Essas preferências são deste navegador.</p>
       <a href="#/perfil">Abrir Configurações</a>
     </section>
+
+    <PwaInstallation />
 
     <section aria-labelledby="guidance-privacy">
       <h2 id="guidance-privacy">Privacidade e dados</h2>

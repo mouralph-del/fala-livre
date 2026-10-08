@@ -75,6 +75,8 @@ try {
  await ev('document.querySelector(".header-menu-toggle").click();document.querySelector(\'.header-navigation a[href="#/responsaveis"]\').click()')
  await pause(150)
  assert.equal(await ev('location.hash'),'#/responsaveis')
+ assert.equal(await ev('document.querySelectorAll(".pwa-installation").length'),1,'Offline installation guidance in Responsible')
+ for(const index of [0,1,2]){await ev('document.querySelectorAll(".installation-devices button")['+index+'].click()');await pause(30);assert.equal(await ev('document.querySelectorAll("#installation-instructions ol li").length'),4)}
  assert.equal(await ev('document.querySelectorAll("input[name=gameTimeLimit]").length'),6)
  for(const value of ['15','unlimited','30','45','60','custom']){
   await ev('document.querySelector(\'input[name=gameTimeLimit][value="'+value+'"]\').click()');await pause(50)
@@ -86,7 +88,7 @@ try {
  assert.equal(await ev('document.querySelector("#game-time-minutes").value'),'25')
  assert.equal(await ev('document.querySelector("input[name=gameTimeLimit]:checked").value'),'custom')
  await ev('document.querySelector("input[name=gameTimeLimit][value=unlimited]").click()')
- await route('perfil');assert.equal(await ev('document.querySelectorAll("input[name=gameTimeLimit],.profile-game-time").length'),0)
+ await route('perfil');assert.equal(await ev('document.querySelectorAll("input[name=gameTimeLimit],.profile-game-time,.pwa-installation").length'),0)
  await route('aprender/escrever/caderno')
  await ev('document.querySelector("canvas").scrollIntoView({block:"center"})')
  const canvas=await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return {x:r.x+40,y:r.y+40}})()')

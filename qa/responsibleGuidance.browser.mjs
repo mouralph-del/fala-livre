@@ -116,7 +116,7 @@ try {
   assert.equal(await A.evaluate('location.hash'), '#/responsaveis')
   assert.equal(await A.evaluate('document.title'), 'Responsáveis | Fala Livre')
   assert.equal(await A.evaluate('document.querySelector("h1").textContent'), 'Responsáveis')
-  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("main h2"),h=>h.textContent)'), ['Sobre o Fala Livre','Controle de atividades','Acompanhar atividades','Preferências e acessibilidade','Privacidade e dados','Sobre os pictogramas'])
+  assert.deepEqual(await A.evaluate('Array.from(document.querySelectorAll("main h2"),h=>h.textContent)'), ['Sobre o Fala Livre','Controle de atividades','Acompanhar atividades','Preferências e acessibilidade','Instalar Fala Livre','Privacidade e dados','Sobre os pictogramas'])
   for (const pattern of [/aplicação educativa/, /Não medem domínio/, /diferentes pessoas neste navegador/, /não registram emoções ou necessidades pessoais/, /não são salvos como progresso/, /não são vinculados a uma pessoa ou conta/, /Sergio Palao/, /Governo de Aragão/]) assert.match(await text(), pattern)
   assert.equal(await A.evaluate(`document.querySelector('main a[href="https://arasaac.org"]').textContent`), 'ARASAAC')
   assert.equal(await A.evaluate(`document.querySelector('main a[href="https://creativecommons.org/licenses/by-nc-sa/4.0/"]').textContent`), 'CC BY-NC-SA 4.0')
