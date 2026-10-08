@@ -1,5 +1,6 @@
 import './PageScene.css'
 import HomeLandscape from './HomeLandscape'
+import writingCharacter from '../assets/illustrations/aprender-personagem.png'
 
 function Book() {
   return <g><path d="M0 6Q20 0 38 10Q56 0 76 6V58Q56 52 38 62Q20 52 0 58Z" fill="var(--scene-paper)" /><path d="M38 10V62M10 20L28 23M10 33L28 36M48 23L66 20M48 36L66 33" /></g>
@@ -14,7 +15,7 @@ function House() {
   return <g><path d="M0 30L36 0L72 30M8 24V74H64V24" fill="var(--scene-paper)" /><path d="M28 74V44H46V74M15 37H23V48H15Z" /></g>
 }
 
-export default function PageScene({ family }) {
+export default function PageScene({ family, activity }) {
   if (family === 'home') return <HomeLandscape />
   const daily = family === 'daily'
   const playful = family === 'play' || family === 'home'
@@ -33,5 +34,6 @@ export default function PageScene({ family }) {
         <path d="M0 0H16V72L8 88L0 72Z" fill="var(--scene-piece)" /><path d="M0 12H16M0 72H16M8 16V68" />
       </g>
     </svg>
+    {activity === 'writing' && <img className="writing-scene-character" src={writingCharacter} alt="" width="1392" height="1136" decoding="async" />}
   </div>
 }

@@ -76,12 +76,13 @@ try {
       for(const letter of words.find(w=>w.word===word).letters)await click('[aria-label='+JSON.stringify('Inserir letra '+letter)+']')
       await button('Conferir');await button('Praticar no caderno')
     }
-    for(const width of [320,360,390,430,768,1024,1366,1920])for(const size of ['normal','large']) {
+    for(const width of [320,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
       await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
       await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";window.scrollTo(0,0)');await pause(50)
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)
       assert.equal(await ev('getComputedStyle(document.querySelector(".scene-landscape")).display'),'none')
       assert.ok(await ev('getComputedStyle(document.querySelector(".home-surround")).backgroundImage.includes("linear-gradient")'))
+      assert.ok(await ev('(()=>{const e=document.querySelector(".writing-scene-character"),r=e.getBoundingClientRect(),m=document.querySelector("main").getBoundingClientRect();return innerWidth<1366?r.width===0:e.complete&&e.naturalWidth>0&&r.left>=m.right&&getComputedStyle(e).pointerEvents==="none"})()'))
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch").length'),12)
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch[aria-pressed=true] .writing-color-check").length'),1)
       if(phase==='notebook')assert.ok(await ev('Array.from(document.querySelectorAll(".writing-color-swatch")).every(e=>{const r=e.getBoundingClientRect();return r.width>=(document.documentElement.dataset.elementSize==="large"?56:44)&&r.height>=44})'))

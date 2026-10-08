@@ -27,6 +27,7 @@ async function connect(target) {
 async function ready(page) { for (let i = 0; i < 200; i++) { if (await page.evaluate('document.querySelector("main h1") !== null')) return; await pause(50) } throw Error('page did not become ready ' + JSON.stringify(errors)) }
 
 try {
+  validation: {
   let targets
   for (let i=0;i<100;i++) { try { targets=await(await fetch('http://127.0.0.1:9367/json/list')).json(); if(targets.some(t=>t.type==='page'))break } catch {} await pause(100) }
   const A = await connect(targets.find(t=>t.type==='page')), ev = A.evaluate
@@ -81,6 +82,11 @@ try {
     assert.equal(await progress(),before,'personal communication/audio does not record message content')
     await button('Concluir exploração')
     await wait(`JSON.parse(localStorage.getItem('falaLivre_progress_v1')).exploredActivities.communication.includes('guided-exploration')`)
+  }
+  if(process.argv.includes('--communication-only')) {
+    assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
+    console.log('PASS Comunicar: all public combinations/states, remove/clear/audio/finish, unknown speech disabled and preserved progress semantics.')
+    break validation
   }
   // Old build evidence remains readable and is presented with the new phase name.
   await navigate('#/aprender')
@@ -173,6 +179,7 @@ try {
   assert.equal(await ev('Object.keys(localStorage).some(key=>/audio|password/i.test(key))'),false)
   console.log('PASS targeted core learning: all public communication combinations/states, remove/clear/audio/finish, unknown speech disabled; twelve recognition/context flows and durable progress, historical build compatibility; global selected voice; A/Á separation; seven widths Normal/Grande 125%, focus/reduced motion. Screenshots: '+shots)
 
+  }
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

@@ -39,6 +39,7 @@ try {
     await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";location.hash='+JSON.stringify(hash)+';window.scrollTo(0,0)');await pause(60)
     const context=JSON.stringify({width,height,size,zoom,hash})
     assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),context)
+    assert.equal(await ev('document.querySelector(".home-decoration").getAnimations({subtree:true}).filter(a=>a.playState==="running").length'),0,'reduced-motion scenery is static')
     assert.equal(await ev('getComputedStyle(document.querySelector(".header-content")).backgroundColor'),'rgb(254, 254, 254)')
     const desktop=width/zoom>=1200
     assert.equal(await ev('document.querySelector(".header-desktop-navigation").getClientRects().length>0'),desktop,context)
@@ -52,17 +53,17 @@ try {
       if(hash==='#/aprender')assert.equal(await ev('getComputedStyle(document.querySelector(".learning-grid")).gridTemplateColumns.split(" ").length'),2)
       else {
         assert.equal(await ev('getComputedStyle(document.querySelector(".activity-grid")).gridTemplateColumns.split(" ").length'),2,context)
-        assert.equal(await ev('document.querySelectorAll(".home-character,.home-card-symbol").length'),0,'external character presentation removed from DOM')
+        const exterior=width/zoom>=1366
         const characters=await ev(`(()=>{
-          return Array.from(document.querySelectorAll('.home .activity-illustration')).map(e=>{
-            const r=e.getBoundingClientRect(),card=e.closest('.activity-card').getBoundingClientRect(),text=e.closest('.activity-card').querySelector('.activity-content').getBoundingClientRect();
+          return Array.from(document.querySelectorAll(${JSON.stringify(exterior ? '.home-scenery-character .activity-illustration' : '.home .activity-card .activity-illustration')})).map(e=>{
+            const r=e.getBoundingClientRect(),card=(e.closest('.activity-card')||document.querySelector('.activity-grid')).getBoundingClientRect(),text=(e.closest('.activity-card')||document.querySelector('.activity-card')).querySelector('.activity-content').getBoundingClientRect();
             return {visible:r.width>0,loaded:e.complete&&e.naturalWidth>0,
               inside:r.left>=card.left&&r.right<=card.right&&r.top>=card.top&&r.bottom<=card.bottom,
-              beforeText:r.right<=text.left,ratio:r.width/r.height,naturalRatio:e.naturalWidth/e.naturalHeight,src:e.getAttribute('src')}
+              beforeText:r.right<=text.left,outside:r.right<=card.left||r.left>=card.right,ratio:r.width/r.height,naturalRatio:e.naturalWidth/e.naturalHeight,src:e.getAttribute('src')}
           })
         })()`)
         assert.equal(characters.length,2)
-        for(const c of characters){assert.ok(c.visible&&c.loaded&&c.inside&&c.beforeText,context+JSON.stringify(c));assert.ok(Math.abs(c.ratio-c.naturalRatio)<.01,context)}
+        for(const c of characters){assert.ok(c.visible&&c.loaded&&(exterior?c.outside:c.inside&&c.beforeText),context+JSON.stringify(c));assert.ok(Math.abs(c.ratio-c.naturalRatio)<.01,context)}
         assert.ok(characters[0].src.includes('aprender-personagem')&&characters[1].src.includes('jogar-personagem'))
       }
     }
@@ -78,12 +79,25 @@ try {
     if(zoom===1){await ev('document.activeElement.blur()');const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,(hash==='#/'?'home':'learn')+'-'+width+'-'+size+'.jpg'),Buffer.from(shot.data,'base64'))}
   }
   await A.cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false})
+  assert.equal(await ev('JSON.stringify(Object.entries(localStorage))'),before)
+  await ev('location.hash="#/aprender/comunicar"');await pause(100)
+  const afterCommunicationInit=await ev('JSON.stringify(Object.entries(localStorage))')
+  for(const width of [320,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
+    await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false})
+    await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';location.hash="#/aprender/comunicar"');await pause(80)
+    assert.ok(await ev('document.querySelector(".communication-page")!==null'))
+    assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'))
+    assert.ok(await ev('getComputedStyle(document.querySelector(".home-surround")).backgroundImage.includes("linear-gradient")'))
+    assert.equal(await ev('document.querySelector(".writing-scene-character")'),null)
+    if(size==='normal'&&[390,1366].includes(width)){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,'communicate-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
+  }
+  await A.cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false})
   for(const hash of ['#/meu-progresso','#/planos','#/aprender','#/']) {
     await ev('document.querySelector('+JSON.stringify('.header-desktop-navigation a[href="'+hash+'"]')+').click()');await pause(80)
     assert.equal(await ev('location.hash'),hash)
     assert.equal(await ev('document.querySelector(".header-desktop-navigation [aria-current=page]").getAttribute("href")'),hash)
   }
-  assert.equal(await ev('JSON.stringify(Object.entries(localStorage))'),before)
+  assert.equal(await ev('JSON.stringify(Object.entries(localStorage))'),afterCommunicationInit)
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
   console.log('PASS Home/Learn/header: eight viewports, Normal/Grande, 125%/200% zoom reflow, no horizontal overflow/clipped buttons, desktop alignment/2x2 grid, menu/Escape/keyboard focus and unchanged storage; '+shots)
 

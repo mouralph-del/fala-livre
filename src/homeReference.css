@@ -13,6 +13,18 @@
 .home .home-progress-copy { min-width: 0; flex: 1; }
 .home .home-progress-copy .section-heading { margin-bottom: 6px; }
 .home .progress-entry { border-style: solid; }
+.home-scenery-characters { display: none; }
+@media (min-width: 1366px) {
+  .home { position: relative; }
+  .home-scenery-characters { display: block; pointer-events: none; }
+  .home-scenery-character { position: absolute; top: 170px; width: clamp(180px, 15vw, 260px); }
+  .home-scenery-character--learn { left: 0; }
+  .home-scenery-character--play { right: 0; }
+  .home-scenery-character .activity-illustration { width: 100%; max-width: none; height: auto; }
+  .home .activity-grid, :root[data-element-size='large'] .home .activity-grid { width: 62%; max-width: 850px; }
+  .home-surround .home .activity-card, :root[data-element-size='large'] .home-surround .home .activity-card { grid-template-columns: minmax(0, 1fr); }
+  .home .activity-card > .activity-illustration { display: none; }
+}
 @media (min-width: 1100px) {
   .home-surround[data-scene='home'] .home { padding-top: clamp(28px, 3vw, 44px); }
   .home-surround[data-scene='home'] main.home > .welcome {
