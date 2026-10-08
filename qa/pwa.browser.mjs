@@ -3,8 +3,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
-import { preview } from 'vite'
+import { loadEnv, preview } from 'vite'
 import { createEmptyProgress, applyProgressCommand, serializeProgress } from '../src/utils/progress.js'
+import { getPublicPaymentDemoUrl } from '../src/utils/publicAppUrl.js'
 
 
 let nextVersion = false
@@ -72,7 +73,12 @@ try {
  await route('planos')
  await ev('document.querySelector(".plan-billing button:first-child").click()');await pause(50)
  await ev('document.querySelector(".plan-choose").click()');await pause(50)
- assert.equal(await ev('document.querySelector(".demo-qr-link").href'),'http://127.0.0.1:4228/#/pagamento-demo')
+ const expectedQrUrl = getPublicPaymentDemoUrl(process.env.VITE_PUBLIC_APP_URL ?? loadEnv('production', process.cwd()).VITE_PUBLIC_APP_URL, 'http://127.0.0.1:4228')
+ if (expectedQrUrl) assert.equal(await ev('document.querySelector(".demo-qr-link").href'), expectedQrUrl)
+ else {
+  assert.equal(await ev('document.querySelectorAll(".demo-qr,.demo-qr-link").length'),0)
+  assert.ok(await ev('document.querySelector(".demo-qr-unavailable").textContent.includes("endereço público HTTPS")'))
+ }
  await ev('document.querySelector(".demo-checkout .plan-choose").click()');await pause(800)
  assert.equal(await ev('JSON.parse(localStorage.getItem("falalivre.demo-session.v1")).demo'),true)
  await route('jogar');assert.equal(await ev('!!document.querySelector(".premium-access-panel")'),false)

@@ -24,6 +24,15 @@ npm run preview
 
 ## Escopo
 
+Para testar o QR Code Premium entre dispositivos, configure `VITE_PUBLIC_APP_URL`
+em `.env.local` com o endereço público HTTPS real da aplicação e gere novamente
+o build. Pode incluir o subdiretório da publicação. Sem essa variável, usa-se
+apenas uma origem atual HTTPS com hostname público; localhost, IPs e nomes
+locais não geram QR Code. URLs inválidas configuradas também desativam o QR.
+A validação não verifica DNS/disponibilidade: confirme que o endereço abre no
+outro dispositivo. O QR abre somente a confirmação demonstrativa e não autoriza
+Premium, pagamentos ou mudança de sessão.
+
 O MVP funciona como frontend com dados locais deste navegador. Não há backend integrado, autenticação real, banco de dados ou sincronização remota. O limite diário local de jogos não é controle parental seguro. As vozes disponíveis dependem do navegador e do dispositivo.
 
 ## Testes

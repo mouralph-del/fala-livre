@@ -3,6 +3,9 @@
 .demo-checkout p { margin: 16px 0; line-height: 1.6; }
 .demo-qr { display: block; width: min(100%, 256px); height: auto; margin: 20px auto; }
 .demo-qr-address { font-size: .9em; }
+.demo-confirmation { text-align: center; }
+.demo-confirmation-icon { display: block; width: 64px; height: 64px; margin: 0 auto 16px; color: #397568; }
+.demo-confirmation .navigation-action { max-width: 100%; white-space: normal; }
 .demo-checkout .demo-back { display: block; margin-top: 20px; }
 .plans-page button:disabled { opacity: .7; cursor: wait; }
 .demo-checkout :focus-visible { outline: 3px solid #214E7A; outline-offset: 3px; }
