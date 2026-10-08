@@ -24,20 +24,6 @@
 .home-surround[data-scene] > .page-scene::after { content: none; }
 .home-surround[data-scene] > .page-scene { display: block; opacity: 1; }
 .scene-landscape { position: absolute; top: 0; left: 0; width: 100%; height: 1000px; pointer-events: none; }
-.writing-scene-character { display: none; }
-@media (min-width: 1366px) {
-  .home-surround:has(> .writing-page) .writing-scene-character {
-    display: block; position: absolute; top: 230px; right: 12px;
-    width: clamp(120px, calc((100vw - 1040px) / 2 - 24px), 240px);
-    height: auto; pointer-events: none;
-  }
-}
-.home-surround:has(> .communication-page) {
-  background: linear-gradient(180deg, #BFE6F8, #E4F4FA 45%, #DCEEF5);
-}
-.home-surround:has(> .communication-page) .scene-landscape {
-  mask-image: linear-gradient(#000 65%, transparent);
-}
 .scene-shore { fill: var(--scene-shore); }
 .scene-bank { fill: var(--scene-bank); }
 .scene-bank--right { fill: var(--scene-shore); }

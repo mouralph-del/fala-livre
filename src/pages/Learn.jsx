@@ -1,5 +1,4 @@
 import './Learn.css'
-import ActivityIllustration from '../components/ActivityIllustration'
 import { PremiumBadge } from '../components/PremiumAccess'
 import { planAccess } from '../services/planAccess'
 import book from '../assets/pictograms/arasaac/livro.png'
@@ -8,21 +7,6 @@ import backpack from '../assets/memory/mochila.png'
 import help from '../assets/pictograms/arasaac/ajuda.png'
 
 const contextualImages = { communicate: help, words: book, write: notebook, myDay: backpack }
-
-function LearningScenery() {
-  return <div className="learn-scenery" aria-hidden="true">
-    <svg viewBox="0 0 1440 900" preserveAspectRatio="none" focusable="false">
-      <path fill="#83D6F7" d="M0 0H1440V900H0Z" />
-      <g fill="#FFF" opacity=".8"><path d="M0 100Q35 40 75 100Q140 65 160 140H0Z" /><path d="M1180 110Q1210 40 1250 100Q1320 65 1360 140H1180Z" /></g>
-      <path fill="#A1D4BD" d="M0 340Q190 220 400 365T840 330T1440 350V900H0Z" />
-      <path fill="#ABD67D" d="M0 450Q180 310 340 490T850 520Q1170 320 1440 460V900H0Z" />
-      <path fill="#FFF0CA" d="M600 480Q1150 500 1040 670T700 900H230Q740 760 720 650T600 480Z" />
-      <g fill="#6DB497"><path d="M0 900V690Q35 590 65 710Q135 630 125 755Q210 740 160 815L220 900Z" /><path d="M1440 900V670Q1400 570 1370 700Q1300 635 1300 755Q1220 725 1260 825L1220 900Z" /></g>
-    </svg>
-    <span className="learn-scenery-books"><LearningIllustration activity="words" /></span>
-    <span className="learn-scenery-character"><ActivityIllustration variant="learn" /></span>
-  </div>
-}
 
 const activityRoutes = { communicate: '/aprender/comunicar', words: '/aprender/palavras-frases', write: '/aprender/escrever', myDay: '/aprender/meu-dia-a-dia' }
 
@@ -50,7 +34,6 @@ function LearningIllustration({ activity }) {
 export default function Learn({ access = planAccess, onPremiumRequest }) {
   return (
     <main id="conteudo" className="learn-page learn-reference" tabIndex={-1}>
-      <LearningScenery />
       <a className="learn-back" href="#/">← Início</a>
       <section className="learn-intro" aria-labelledby="learn-title">
         <h1 id="learn-title">O que vamos aprender hoje?</h1>

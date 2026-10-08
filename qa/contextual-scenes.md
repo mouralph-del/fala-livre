@@ -1,5 +1,10 @@
 # Cenários contextualizados — preparação inicial
 
+Nota: este documento registra a preparação anterior. A expansão aprovada para
+as páginas de Aprender está descrita em [learning-scenes.md](learning-scenes.md).
+As regras antigas de fundo e posicionamento de Escrever foram substituídas pelo
+cenário compartilhado; Home continua preservada.
+
 Referência: composição aprovada pelo usuário em 8 de outubro de 2026.
 Escopo desta etapa: Home, Comunicar e Escrever. As demais atividades não foram
 redesenhadas e dependem de aprovação antes da expansão.

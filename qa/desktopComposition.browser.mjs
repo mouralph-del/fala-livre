@@ -75,7 +75,7 @@ try {
           const t=e.getBoundingClientRect();return !t.width||r.right<=t.left||r.left>=t.right||r.bottom<=t.top||r.top>=t.bottom
         })
       })`),context+' educational illustration overlaps text/control')
-      assert.ok(await ev('document.querySelector(".learn-scenery").getAttribute("aria-hidden")==="true"&&getComputedStyle(document.querySelector(".learn-scenery")).pointerEvents==="none"'))
+      assert.ok(await ev('document.querySelector(".learning-landscape").getAttribute("aria-hidden")==="true"&&getComputedStyle(document.querySelector(".learning-landscape")).pointerEvents==="none"'))
     }
     await ev('document.querySelector(".header-menu-toggle").click()');await pause(15)
     assert.equal(await ev('document.querySelector(".header-menu-toggle").getAttribute("aria-expanded")'),'true')
@@ -97,7 +97,7 @@ try {
     await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';location.hash="#/aprender/comunicar"');await pause(80)
     assert.ok(await ev('document.querySelector(".communication-page")!==null'))
     assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'))
-    assert.ok(await ev('getComputedStyle(document.querySelector(".home-surround")).backgroundImage.includes("linear-gradient")'))
+    assert.ok(await ev('document.querySelector(".learning-landscape[data-learning-kind=message]")!==null'))
     assert.equal(await ev('document.querySelector(".writing-scene-character")'),null)
     if(size==='normal'&&[390,1366].includes(width)){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true});fs.writeFileSync(path.join(shots,'communicate-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
   }

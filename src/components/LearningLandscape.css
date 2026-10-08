@@ -1,0 +1,42 @@
+/* Shared illustrated planes, scoped to learning routes only. No fixed page height. */
+.home-surround:has(> .learning-landscape) { --learning-ground: #E0EED3; background: var(--learning-ground); }
+.home-surround:has(> [data-learning-kind='reading']),
+.home-surround:has(> [data-learning-kind='indoor']) { --learning-ground: #F8EBCD; }
+.home-surround:has(> [data-learning-kind='emotions']),
+.home-surround:has(> [data-learning-kind='message']) { --learning-ground: #DDEFE2; }
+.learning-landscape { pointer-events: none; }
+.learning-scene-sun { position: absolute; top: 18px; left: 3%; width: clamp(70px, 8vw, 120px); height: auto; }
+.learning-landscape-art { position: absolute; top: 0; left: 0; width: 100%; height: clamp(600px, 58vw, 860px); mask-image: linear-gradient(#000 85%, transparent); }
+.learning-sky { fill: #9EDDF6; }
+[data-learning-kind='reading'] .learning-sky, [data-learning-kind='indoor'] .learning-sky { fill: #FFF4DB; }
+[data-learning-kind='message'] .learning-sky, [data-learning-kind='emotions'] .learning-sky { fill: #C7EACC; }
+.learning-scene-object, .learning-scene-character { position: absolute; top: 220px; width: clamp(96px, calc((100vw - 1180px) / 2 - 32px), 240px); pointer-events: none; }
+.learning-scene-object { height: 160px; }
+.learning-scene-object--left { left: 12px; top: 440px; }
+.learning-scene-object--right, .learning-scene-character { right: 12px; }
+.learning-scene-character { top: auto; bottom: 100px; }
+[data-learning-kind='school'] .learning-scene-character { right: 20px; width: clamp(150px, calc((100vw - 1000px) / 2 - 20px), 240px); }
+[data-learning-kind='reading'] .learning-scene-character,
+[data-learning-kind='writing'] .learning-scene-character { width: clamp(120px, calc((100vw - 1040px) / 2 - 24px), 240px); }
+.learning-scene-character img { display: block; width: 100%; max-width: none; height: auto; aspect-ratio: auto; object-fit: contain; }
+.home-surround:has(> .learning-landscape) main > :is(.learn-intro, .my-day-intro, .communication-intro, .words-intro, .writing-intro, .emotions-intro) {
+  background: #F7FCFFED; border: 1px solid #FFFFFF; box-shadow: 0 4px 0 #FFFFFF70; border-radius: 24px;
+}
+.home-surround:has(> .learning-landscape) main :is(.sentence-panel, .words-activity, .writing-work, .sequence-play, .interactive-panel, .emotions-explore, .emotions-builder) {
+  border-radius: 24px; background-color: #FFFFFDF5; border-color: #BDD6DA; box-shadow: 0 5px 0 #C7DEDD80, 0 10px 22px #315F8C0D;
+}
+.home-surround:has(> .learning-landscape) :is(.my-day-options, .emotions-functions) { background: none; box-shadow: none; gap: 20px; }
+.home-surround:has(> .learning-landscape) :is(.my-day-option, .emotions-functions > section) {
+  background: #F6FCFF; border: 1px solid #C0D8DE; border-radius: 24px; box-shadow: 0 5px 0 #D3E6DE80; padding: 22px;
+}
+.home-surround:has(> .learning-landscape) .my-day-option:nth-child(2) { background: #F3FAED; }
+.home-surround:has(> .learning-landscape) .learning-menu-icon { width: 48px; height: 48px; padding: 10px; margin-bottom: 12px; color: #315F8C; background: #E4F3FC; border-radius: 14px; }
+.home-surround:has(> .learning-landscape) :is(.my-day-option:nth-child(3), .emotions-functions > section:nth-child(3)) { background: #FFF3EF; }
+@media (max-width: 1439px) {
+  .learning-scene-object, .learning-scene-character { display: none; }
+}
+@media (max-width: 700px) {
+  .learning-landscape-art { height: 650px; opacity: .7; }
+  .home-surround:has(> .learning-landscape) main :is(.sentence-panel, .words-activity, .writing-work, .sequence-play, .interactive-panel, .emotions-explore, .emotions-builder) { border-radius: 18px; }
+  .home-surround:has(> .learning-landscape) :is(.my-day-option, .emotions-functions > section) { padding: 16px; }
+}

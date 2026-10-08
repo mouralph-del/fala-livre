@@ -1,4 +1,5 @@
 import './MyDay.css'
+import InterfaceIcon from '../components/InterfaceIcon'
 
 const options = [
   {
@@ -32,6 +33,9 @@ export default function MyDay() {
     <div className="my-day-options" aria-label="Opções de Meu Dia a Dia">
       {options.map(option => (
         <article className={`my-day-option${option.pending ? ' my-day-option--pending' : ''}`} key={option.id}>
+          {option.id === 'rotinas' ? <InterfaceIcon className="learning-menu-icon" name="checklist" /> : <svg className="learning-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+            {option.id === 'comunicacao' ? <path d="M5 3h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-6 4V5a2 2 0 0 1 2-2ZM7 8h10M7 12h7" /> : <path d="M12 21C-8 9 4-3 12 5c8-8 20 4 0 16Z" />}
+          </svg>}
           <h2>{option.title}</h2>
           <p>{option.description}</p>
           {option.pending ? (
