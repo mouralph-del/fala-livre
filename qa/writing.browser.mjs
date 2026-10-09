@@ -47,14 +47,32 @@ try {
   assert.equal(await ev('document.querySelector("#writing-notebook-panel").hidden'),false)
   assert.equal(await ev('document.querySelector("#writing-typing-panel").hidden'),true)
   assert.ok(await ev('document.querySelector("canvas").getBoundingClientRect().width>0'))
-  assert.equal(await ev('document.activeElement.tagName'),'CANVAS')
-  assert.ok(await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return r.top<innerHeight&&r.bottom>0})()'),'selecting Caderno brings the drawing area into view')
-  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="Concluir prática").disabled'),true)
+  assert.equal(await ev('document.activeElement.id'),'writing-notebook-panel')
+  assert.ok(await ev('(()=>{const r=document.querySelector("#writing-notebook-panel .writing-practice").getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight})()'),'selecting Caderno keeps the reference visible')
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="Concluir prática").disabled'),false)
   assert.equal(await ev('localStorage.getItem("falaLivre_progress_v1")'),initialProgress,'selecting Caderno never awards completion')
   await click('#writing-typing-mode')
   assert.ok(await ev('document.querySelector(".writing-slot-panel").textContent.includes("A")'),'typed draft preserved across mode changes')
   await button('Limpar')
   await click('[aria-label="Inserir letra Z"]');await button('Conferir');assert.ok(await ev('document.querySelector(".writing-feedback").textContent.includes("Quase")'));await button('Apagar')
+  // Direct notebook practice is self-confirmed, never invents typing, and advances once.
+  await click('#writing-notebook-mode')
+  const directName = await ev('document.querySelector("#writing-notebook-panel .writing-practice h2").textContent')
+  const directWord = words.find(w => w.word === directName)
+  const beforeRotation = await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writing')
+  await ev('document.querySelector("canvas").scrollIntoView({block:"center"})')
+  const directPoint = await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return{x:r.x+40,y:r.y+40}})()')
+  for(const [type,offset,buttons] of [['mousePressed',0,1],['mouseMoved',45,1],['mouseReleased',45,0]]) await A.cdp('Input.dispatchMouseEvent',{type,x:directPoint.x+offset,y:directPoint.y+offset/2,button:'left',buttons,clickCount:1})
+  await pause(60)
+  assert.ok(await ev('(()=>{const c=document.querySelector("canvas");return c.getContext("2d").getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0)})()'))
+  await ev('(()=>{const b=document.querySelector("#writing-notebook-panel .writing-actions button");b.click();b.click()})()')
+  await wait('!document.querySelector("#writing-typing-panel").hidden')
+  await wait('JSON.parse(localStorage.getItem("falaLivre_progress_v1"))?.performedActivities.writing['+JSON.stringify(directWord.id)+']?.includes("notebook")')
+  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("falaLivre_progress_v1")).performedActivities.writing['+JSON.stringify(directWord.id)+']'),['notebook'])
+  assert.equal(await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writing.currentIndex'),beforeRotation.currentIndex+1)
+  // Start the full-cycle scenario at its boundary in this isolated test profile.
+  await ev('localStorage.removeItem("falaLivre_contentRotation_v1");location.reload()')
+  await wait('document.querySelector(".writing-letter")!==null')
   // All twelve targets are completed using only public virtual-letter controls.
   const seen=new Set()
   for(let i=0;i<12;i++) {
@@ -76,8 +94,8 @@ try {
       for(const letter of words.find(w=>w.word===word).letters)await click('[aria-label='+JSON.stringify('Inserir letra '+letter)+']')
       await button('Conferir');await button('Praticar no caderno')
     }
-    for(const width of [320,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
-      await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})
+    for(const width of [320,360,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
+      await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<=430})
       await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";window.scrollTo(0,0)');await pause(50)
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)
       assert.ok(await ev('document.querySelector(".learning-landscape[data-learning-kind=writing]")!==null'))
@@ -86,6 +104,10 @@ try {
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch").length'),12)
       assert.equal(await ev('document.querySelectorAll(".writing-color-swatch[aria-pressed=true] .writing-color-check").length'),1)
       if(phase==='notebook')assert.ok(await ev('Array.from(document.querySelectorAll(".writing-color-swatch")).every(e=>{const r=e.getBoundingClientRect();return r.width>=(document.documentElement.dataset.elementSize==="large"?56:44)&&r.height>=44})'))
+      if(phase==='notebook') {
+        assert.ok(await ev('(()=>{const sheet=document.querySelector(".writing-sheet"),tools=document.querySelector(".writing-notebook-toolbar"),reference=document.querySelector("#writing-notebook-panel .writing-practice");return reference.getBoundingClientRect().bottom<sheet.getBoundingClientRect().top&&sheet.compareDocumentPosition(tools)&Node.DOCUMENT_POSITION_FOLLOWING})()'))
+        if(width<=430)assert.ok(await ev('(()=>{const b=[...document.querySelectorAll(".writing-tool-button")],r=b.map(e=>e.getBoundingClientRect());return r[0].top===r[1].top&&r[2].top===r[3].top&&r[2].top>r[0].top&&b.every(e=>{return e.scrollWidth<=e.clientWidth+1&&e.getBoundingClientRect().height<=80&&getComputedStyle(e).overflowWrap==="normal"})})()'),'compact 2x2 tools '+width+size)
+      }
       await ev('window.scrollTo(0,document.documentElement.scrollHeight)');await pause(30)
       assert.ok(await ev('document.querySelector(".home-surround").getBoundingClientRect().bottom>=document.querySelector("main").getBoundingClientRect().bottom'))
       if(phase==='notebook'&&[390,1366,1920].includes(width)&&size==='normal'){const shot=await A.cdp('Page.captureScreenshot',{format:'jpeg',quality:75});fs.writeFileSync(path.join(shots,'bottom-'+width+'.jpg'),Buffer.from(shot.data,'base64'))}
@@ -99,6 +121,17 @@ try {
   let p=await point();assert.equal(await pixels(),0)
   for(const [type,x,y,buttons]of [['mousePressed',p.x,p.y,1],['mouseMoved',p.x+70,p.y+30,1],['mouseReleased',p.x+70,p.y+30,0]])await A.cdp('Input.dispatchMouseEvent',{type,x,y,button:'left',buttons,clickCount:1})
   await pause(100);assert.ok(await pixels()>0)
+  const drawnPixels=await pixels()
+  await click('[aria-label="Selecionar ferramenta Borracha"]')
+  for(const size of ['Fino','Médio','Grosso']) {
+    await click('[aria-label='+JSON.stringify('Espessura '+size)+']')
+    assert.equal(await ev('document.querySelectorAll(".writing-thickness[aria-pressed=true]").length'),1)
+  }
+  p=await point()
+  for(const [type,x,y,buttons]of [['mousePressed',p.x,p.y,1],['mouseMoved',p.x+70,p.y+30,1],['mouseReleased',p.x+70,p.y+30,0]])await A.cdp('Input.dispatchMouseEvent',{type,x,y,button:'left',buttons,clickCount:1})
+  await pause(80);assert.ok(await pixels()<drawnPixels,'eraser removes existing strokes')
+  await button('Desfazer');assert.equal(await pixels(),drawnPixels,'undo restores erased drawing')
+  await click('[aria-label="Selecionar ferramenta Lápis"]')
   await click('#writing-typing-mode');await click('#writing-notebook-mode');await pause(100);assert.ok(await pixels()>0,'drawing preserved across mode changes')
   await A.cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false});await pause(150);assert.ok(await pixels()>0)
   await button('Desfazer');assert.equal(await pixels(),0)
@@ -126,8 +159,10 @@ try {
   await ev(`document.querySelector('[aria-label="Inserir letra A"]').scrollIntoView({block:"center"})`)
   const key=await ev(`(()=>{const r=document.querySelector('[aria-label="Inserir letra A"]').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
   await A.cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[key]});await A.cdp('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pause(80);assert.ok(await ev('document.querySelector(".writing-slot-panel").textContent.includes("A")'))
+  await ev('location.hash="#/aprender/escrever/caderno"');await wait('document.querySelector("canvas")!==null&&document.querySelector(".writing-mode-selector")===null')
+  assert.ok(await ev('Array.from(document.querySelectorAll("main a")).some(a=>a.textContent==="Voltar a Escrever"&&a.getAttribute("href")==="#/aprender/escrever")'),'free notebook has a real return action')
   assert.deepEqual(errors,[]);assert.deepEqual(warnings,[])
-  console.log('PASS Escrever: 12 virtual-key completions/progress, no physical input, separate accents, keyboard/touch/focus, expanded palette with all drawing tools, canvas mouse/touch/pen/undo/clear/resize, continuous background, eight widths Normal/Grande. Screenshots: '+shots)
+  console.log('PASS Escrever: direct notebook confirmation advances once without invented typing; 12 virtual-key completions/progress, no physical input, separate accents, keyboard/touch/focus, expanded palette, canvas mouse/touch/pen/undo/clear/resize, continuous background, nine widths Normal/Grande. Screenshots: '+shots)
 } finally {
   for (const socket of sockets) socket.close(); chrome.kill(); await server.close(); await pause(500)
   const resolved = path.resolve(profile)

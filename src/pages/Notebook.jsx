@@ -8,5 +8,6 @@ export default function Notebook() {
     <header className="writing-intro"><h1>Meu caderno</h1><p>Escreva ou desenhe do seu jeito.</p></header>
     <WritingPractice notebook />
     <section className="writing-work" aria-label="Caderno de prática livre"><DrawingCanvas /></section>
+    <a className="writing-action" href="#/aprender/escrever">Voltar a Escrever</a>
   </main>
 }

@@ -117,7 +117,7 @@ try {
     check(fixture.calls.length === 1, 'canvas has no evidence')
     await click('Concluir prática', 2); await settle()
     expectCalls([['recordActivityPerformed', 'writing', word.id, ['typing']], ['recordActivityPerformed', 'writing', word.id, ['notebook', 'complete']]])
-    check(document.querySelector('.writing-phase-label').textContent === 'Teclado', 'practice advances even before persistence'); privacy()
+    check(document.querySelector('#writing-typing-panel').hidden === false, 'practice advances even before persistence'); privacy()
   }
   tests.push('Escrever: 12 IDs, erros/teclas sem registro, callback typing, canvas, lote final, duplo avanço')
   await mount(Writing); selectValue('.writing-qa-selector select', 'casa'); await pause(); await virtualInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); expectCalls([])
@@ -167,7 +167,7 @@ try {
     seed('wordsAndPhrases', learningWords.map(word => word.id), 'casa'); await mount(WordsAndPhrases, {}, mode); await completeWord(learningWords[0]); await click('Próxima palavra'); await settle()
     check(fixture.service.getProgressSnapshot().persistenceStatus === 'session-only', 'fallback session')
     check(document.querySelector('main').textContent.includes('pode não ficar salvo'), 'neutral fallback message'); privacy()
-    seed('writing', learningWords.map(word => word.id), 'casa'); await mount(Writing, {}, mode); await virtualInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); check(document.querySelector('.writing-phase-label').textContent === 'Teclado', 'failed storage never blocks notebook'); privacy()
+    seed('writing', learningWords.map(word => word.id), 'casa'); await mount(Writing, {}, mode); await virtualInput('CASA'); await pause(); await click('Conferir'); await click('Praticar no caderno'); await click('Concluir prática'); await settle(); check(document.querySelector('#writing-typing-panel').hidden === false, 'failed storage never blocks notebook'); privacy()
     await mount(Communication, {}, mode); await click('Concluir exploração'); await settle(); privacy()
     await mount(MyDayEmotions, {}, mode); await selector('[aria-label="Abrir Conhecer emoções"]'); await click('Próximo conceito'); await settle(); privacy()
     const routine = myDayRoutines[0]

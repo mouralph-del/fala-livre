@@ -282,6 +282,7 @@
 .writing-notebook-toolbar { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--soft-blue); }
 .writing-tool-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .writing-tool-button, .writing-thickness, .writing-action-button { min-height: 44px; }
+.writing-page .writing-tool-button, .writing-page .writing-thickness, .writing-page .writing-action-button { padding: 8px 10px; overflow-wrap: normal; word-break: normal; line-height: 1.3; }
 .writing-tool-button[aria-pressed='true'], .writing-thickness[aria-pressed='true'] { background: var(--selected); border-color: var(--focus); }
 .writing-color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; padding: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
 .writing-color-swatch[aria-pressed='true'] { border-color: #203F69; transform: scale(1.08); }
@@ -310,4 +311,13 @@
   .writing-tool-group { width: 100%; }
   .writing-tool-button, .writing-thickness, .writing-action-button { flex: 1; }
   .writing-slot-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .writing-notebook-toolbar { gap: 8px; padding: 8px; margin-block: 12px; }
+  .writing-tool-group--tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .writing-page .writing-tool-group--tools .writing-tool-button { flex: none; }
+  .writing-notebook-flow .writing-practice { flex-direction: row; text-align: left; gap: 12px; padding: 12px; }
+  .writing-notebook-flow .writing-practice img { width: 72px; height: 72px; flex-shrink: 0; }
+  .writing-notebook-flow .writing-practice button { margin-top: 6px; }
 }

@@ -186,8 +186,22 @@ export default function DrawingCanvas({ showKeyboardLink = true }) {
       {showKeyboardLink && <> Para praticar com teclado, use o <a href="#/aprender/escrever/teclado">Teclado educativo</a>.</>}
     </p>
 
+    <div className="writing-sheet">
+      <canvas
+        ref={canvas}
+        tabIndex={-1}
+        aria-label="Folha para desenho e escrita livre"
+        aria-describedby="canvas-help"
+        onPointerDown={start}
+        onPointerMove={move}
+        onPointerUp={finish}
+        onPointerCancel={finish}
+        onLostPointerCapture={finish}
+      >Área de desenho livre. Use o Teclado educativo como alternativa.</canvas>
+    </div>
+
     <div className="writing-notebook-toolbar" aria-label="Ferramentas do caderno">
-      <div className="writing-tool-group" aria-label="Ferramentas de desenho">
+      <div className="writing-tool-group writing-tool-group--tools" aria-label="Ferramentas de desenho">
         {Object.entries(toolLabels).map(([value, label]) => <button key={value} type="button" className="writing-tool-button" aria-pressed={tool === value} aria-label={`Selecionar ferramenta ${label}`} onClick={() => handleToolChange(value)}>{label}</button>)}
       </div>
 
@@ -208,20 +222,6 @@ export default function DrawingCanvas({ showKeyboardLink = true }) {
     </div>
 
     <div className="writing-status" role="status" aria-live="polite">{statusMessage}</div>
-
-    <div className="writing-sheet">
-      <canvas
-        ref={canvas}
-        tabIndex={-1}
-        aria-label="Folha para desenho e escrita livre"
-        aria-describedby="canvas-help"
-        onPointerDown={start}
-        onPointerMove={move}
-        onPointerUp={finish}
-        onPointerCancel={finish}
-        onLostPointerCapture={finish}
-      >Área de desenho livre. Use o Teclado educativo como alternativa.</canvas>
-    </div>
 
     <div className="writing-canvas-meta" aria-live="polite">{currentToolLabel} · {tool === 'eraser' ? 'apagando' : colorOptions.find(item => item.value === color)?.name || 'Preto'} · {thicknessOptions[thickness].label}</div>
   </>

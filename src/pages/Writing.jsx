@@ -11,7 +11,6 @@ import { useLearningProgress } from '../hooks/useLearningProgress'
 export default function Writing({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('writing', learningWordIds))
   const [phase, setPhase] = useState('typing')
-  const [completedWordId, setCompletedWordId] = useState(null)
   const [qaWordId, setQaWordId] = useState('')
   const progress = useLearningProgress(!qaWordId, progressService)
   const advanceLock = useRef(false)
@@ -21,26 +20,24 @@ export default function Writing({ progressService, qaControls = false } = {}) {
     if (previousPhase.current === phase) return
     previousPhase.current = phase
     const panel = document.getElementById(phase === 'typing' ? 'writing-typing-panel' : 'writing-notebook-panel')
-    const target = phase === 'notebook' ? panel?.querySelector('canvas') : panel
-    target?.focus({ preventScroll: true })
-    target?.scrollIntoView({ block: phase === 'notebook' ? 'center' : 'start' })
+    panel?.focus({ preventScroll: true })
+    panel?.scrollIntoView({ block: 'start' })
   }, [phase])
   useEffect(() => { advanceLock.current = false; typedWord.current = null }, [rotation, qaWordId])
   const currentWordId = qaWordId || getCurrentTheme(rotation)
   const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
-  const canFinishPractice = completedWordId === currentWord.id
 
   function completePractice(event) {
-    if (event.detail > 1 || advanceLock.current || typedWord.current !== currentWord.id) return
+    if (event.detail > 1 || advanceLock.current || phase !== 'notebook') return
     advanceLock.current = true
-    setCompletedWordId(null)
     if (qaWordId) {
       setQaWordId('')
       setPhase('typing')
       return
     }
 
-    progress.recordActivityPerformed('writing', currentWord.id, ['notebook', 'complete'])
+    const steps = typedWord.current === currentWord.id ? ['notebook', 'complete'] : ['notebook']
+    progress.recordActivityPerformed('writing', currentWord.id, steps)
     const nextRotation = advanceModuleRotation('writing', learningWordIds)
     if (!nextRotation) { advanceLock.current = false; return }
     setRotation(nextRotation)
@@ -56,7 +53,7 @@ export default function Writing({ progressService, qaControls = false } = {}) {
     {import.meta.env.DEV && qaControls && (
       <label className="writing-qa-selector">
         Palavra para QA
-        <select value={qaWordId} onChange={event => { setQaWordId(event.target.value); setCompletedWordId(null); setPhase('typing') }}>
+        <select value={qaWordId} onChange={event => { setQaWordId(event.target.value); setPhase('typing') }}>
           <option value="">Rotação normal</option>
           {learningWords.map(word => <option key={word.id} value={word.id}>{word.word}</option>)}
         </select>
@@ -76,19 +73,19 @@ export default function Writing({ progressService, qaControls = false } = {}) {
       <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onComplete={id => {
         if (id !== currentWord.id || typedWord.current === id) return
         typedWord.current = id
-        setCompletedWordId(id)
         progress.recordActivityPerformed('writing', id, ['typing'])
       }} onAdvance={() => setPhase('notebook')} />
     </div>
       <div id="writing-notebook-panel" className="writing-mode-panel writing-notebook-flow" role="region" aria-labelledby="writing-notebook-mode" tabIndex={-1} hidden={phase !== 'notebook'}>
         <h2 id="writing-notebook-title">Praticar no caderno</h2>
+        <p>Escreva a palavra ou desenhe do seu jeito. Ao concluir, siga para a próxima palavra.</p>
         <WritingPractice key={currentWord.id} notebook wordId={currentWord.id} />
         <section className="writing-work" aria-label="Caderno de prática">
           <DrawingCanvas key={currentWord.id} showKeyboardLink={false} />
           <div className="writing-actions">
-            <button className="action-primary" type="button" disabled={!canFinishPractice} onClick={completePractice}>Concluir prática</button>
+            <button className="action-primary" type="button" onClick={completePractice}>Concluir prática</button>
           </div>
-          {!canFinishPractice && <p>Para concluir a prática desta palavra, escreva-a e confira no Teclado.</p>}
+          <p>Você confirma quando terminou. O desenho não é corrigido automaticamente.</p>
         </section>
       </div>
     <p role="status" aria-live="polite">{progress.message}</p>
