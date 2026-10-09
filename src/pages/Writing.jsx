@@ -10,10 +10,12 @@ import { useLearningProgress } from '../hooks/useLearningProgress'
 
 export default function Writing({ progressService, qaControls = false } = {}) {
   const [rotation, setRotation] = useState(() => getModuleRotation('writing', learningWordIds))
+  const [notebookRotation, setNotebookRotation] = useState(() => getModuleRotation('writingNotebook', learningWordIds))
   const [phase, setPhase] = useState('typing')
   const [qaWordId, setQaWordId] = useState('')
   const progress = useLearningProgress(!qaWordId, progressService)
   const advanceLock = useRef(false)
+  const typingAdvanceLock = useRef(false)
   const typedWord = useRef(null)
   const previousPhase = useRef(phase)
   useEffect(() => {
@@ -23,9 +25,22 @@ export default function Writing({ progressService, qaControls = false } = {}) {
     panel?.focus({ preventScroll: true })
     panel?.scrollIntoView({ block: 'start' })
   }, [phase])
-  useEffect(() => { advanceLock.current = false; typedWord.current = null }, [rotation, qaWordId])
+  useEffect(() => { typedWord.current = null }, [rotation, qaWordId])
+  useEffect(() => { advanceLock.current = false }, [notebookRotation, qaWordId])
+  useEffect(() => { typingAdvanceLock.current = false }, [rotation, qaWordId])
   const currentWordId = qaWordId || getCurrentTheme(rotation)
   const currentWord = learningWords.find(word => word.id === currentWordId) ?? learningWords[0]
+  const notebookWordId = qaWordId || getCurrentTheme(notebookRotation)
+  const notebookWord = learningWords.find(word => word.id === notebookWordId) ?? learningWords[0]
+
+  function advanceTyping(event) {
+    if (event.detail > 1 || typingAdvanceLock.current || typedWord.current !== currentWord.id || phase !== 'typing') return
+    typingAdvanceLock.current = true
+    if (qaWordId) { setQaWordId(''); return }
+    const nextRotation = advanceModuleRotation('writing', learningWordIds)
+    if (nextRotation) setRotation(nextRotation)
+    else typingAdvanceLock.current = false
+  }
 
   function completePractice(event) {
     if (event.detail > 1 || advanceLock.current || phase !== 'notebook') return
@@ -36,12 +51,10 @@ export default function Writing({ progressService, qaControls = false } = {}) {
       return
     }
 
-    const steps = typedWord.current === currentWord.id ? ['notebook', 'complete'] : ['notebook']
-    progress.recordActivityPerformed('writing', currentWord.id, steps)
-    const nextRotation = advanceModuleRotation('writing', learningWordIds)
+    progress.recordActivityPerformed('writing', notebookWord.id, ['notebook'])
+    const nextRotation = advanceModuleRotation('writingNotebook', learningWordIds)
     if (!nextRotation) { advanceLock.current = false; return }
-    setRotation(nextRotation)
-    setPhase('typing')
+    setNotebookRotation(nextRotation)
   }
 
   return <main id="conteudo" className="writing-page" tabIndex={-1}>
@@ -74,14 +87,14 @@ export default function Writing({ progressService, qaControls = false } = {}) {
         if (id !== currentWord.id || typedWord.current === id) return
         typedWord.current = id
         progress.recordActivityPerformed('writing', id, ['typing'])
-      }} onAdvance={() => setPhase('notebook')} />
+      }} onAdvance={advanceTyping} advanceLabel="Próxima palavra" />
     </div>
       <div id="writing-notebook-panel" className="writing-mode-panel writing-notebook-flow" role="region" aria-labelledby="writing-notebook-mode" tabIndex={-1} hidden={phase !== 'notebook'}>
         <h2 id="writing-notebook-title">Praticar no caderno</h2>
         <p>Escreva a palavra ou desenhe do seu jeito. Ao concluir, siga para a próxima palavra.</p>
-        <WritingPractice key={currentWord.id} notebook wordId={currentWord.id} />
+        <WritingPractice key={notebookWord.id} notebook wordId={notebookWord.id} />
         <section className="writing-work" aria-label="Caderno de prática">
-          <DrawingCanvas key={currentWord.id} showKeyboardLink={false} />
+          <DrawingCanvas key={notebookWord.id} showKeyboardLink={false} />
           <div className="writing-actions">
             <button className="action-primary" type="button" onClick={completePractice}>Concluir prática</button>
           </div>

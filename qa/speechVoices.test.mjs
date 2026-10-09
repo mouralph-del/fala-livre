@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
+import { alphabet } from '../src/data/alphabet.js'
+assert.deepEqual(alphabet.map(item => item.audioText), ['a','bê','cê','dê','é','éfe','gê','agá','i','jota','cá','éle','ême','êne','ó','pê','quê','érre','ésse','tê','u','vê','dáblio','xis','ípsilon','zê'])
+assert.ok(alphabet.every(item => !/maiúscul|minúscul|letra/i.test(item.audioText)))
 let saved=null, voices=[], spoken=[], cancels=0
 const synth=new EventTarget();synth.getVoices=()=>voices;synth.cancel=()=>cancels++;synth.speak=u=>spoken.push(u)
 globalThis.window={speechSynthesis:synth,SpeechSynthesisUtterance:class{constructor(text){this.text=text}}}
@@ -16,7 +19,7 @@ voices=[en,pt,br,local];synth.dispatchEvent(new Event('voiceschanged'))
 assert.ok(updates>0);assert.equal(spoken.length,0);assert.equal(m.isSpeechReady(),true)
 assert.deepEqual(m.getCommunicationVoices(),[br,local,pt])
 m.falar('Teste');assert.equal(spoken.at(-1).voice,local)
-assert.equal(spoken.at(-1).rate,.9);assert.equal(spoken.at(-1).pitch,1.05);assert.equal(spoken.at(-1).volume,1)
+assert.equal(spoken.at(-1).rate,.75);assert.equal(spoken.at(-1).pitch,1);assert.equal(spoken.at(-1).volume,1)
 const refreshedLocal={...local},betterBrazilian={...br,default:true,localService:true}
 voices=[betterBrazilian,pt,en,refreshedLocal];synth.dispatchEvent(new Event('voiceschanged'))
 for(const text of ['A','Casa','Eu quero água.','Olá! Vamos aprender juntos.']) {

@@ -12,6 +12,7 @@ export default function EducationalKeyboard({
   embedded = false,
   onComplete,
   onAdvance,
+  advanceLabel = 'Praticar no caderno',
 }) {
   const target = learningWords.find(item => item.id === targetWordId) ?? learningWords[0]
   // Accented forms are writing aids, not additional letters of the alphabet.
@@ -114,7 +115,7 @@ export default function EducationalKeyboard({
       {mode === 'practice' && correct && (
         <div className="writing-actions">
           <button type="button" onClick={() => speakText(target.audioText)}><SpeakerIcon />Ouvir palavra</button>
-          <button type="button" onClick={onAdvance}>Praticar no caderno</button>
+          <button type="button" onClick={onAdvance}>{advanceLabel}</button>
         </div>
       )}
 
@@ -132,7 +133,7 @@ export default function EducationalKeyboard({
       <div className="writing-keyboard" aria-label="Letras com acento">
         {accentedLetters.map(letter => <div className="writing-key" key={letter}>
           <button type="button" className="writing-letter" aria-label={`Inserir letra ${letter}`} aria-disabled={mode === 'practice' && full} onClick={() => insertLetter(letter)}>{letter}</button>
-          <button type="button" aria-label={`Ouvir letra ${letter}`} onClick={() => speakText(letter)}><SpeakerIcon /></button>
+          <button type="button" aria-label={`Ouvir letra ${letter}`} onClick={() => speakText(letter.toLocaleLowerCase('pt-BR'))}><SpeakerIcon /></button>
         </div>)}
       </div>
       </>}

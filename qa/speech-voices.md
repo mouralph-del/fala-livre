@@ -26,9 +26,16 @@ persistido. Preferências antigas contendo apenas `name` continuam compatíveis.
 Uma voz salva ausente usa Automática com aviso, sem apagar a preferência; se
 retornar, é restaurada. Outras preferências, plano e progresso não mudam.
 
-Parâmetros: idioma preferencial pt-BR, rate 0.9, pitch 1.05 e volume 1. O idioma
+Parâmetros: idioma preferencial pt-BR, rate 0.75, pitch neutro 1 e volume 1. O idioma
 da utterance acompanha a voz escolhida. Nova acao manual cancela a anterior;
 não há fila adicional e callbacks de falas interrompidas não reportam erros antigos.
+
+O alfabeto envia nomes explícitos em minúsculas (a, bê, cê, éfe etc.), separados
+dos rótulos acessíveis dos botões. Caracteres maiúsculos isolados podem ser
+descritos pelo sintetizador; não se envia “maiúsculo” ou “minúsculo” no áudio.
+A inteligibilidade e a pronúncia final precisam de escuta em um dispositivo
+físico, especialmente Android/iPhone. Testes com síntese simulada verificam
+texto, parâmetros e seleção de voz, mas não comprovam a qualidade sonora.
 
 ## Compatibilidade e limites
 

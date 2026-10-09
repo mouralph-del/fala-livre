@@ -6,7 +6,7 @@ let portugueseVoices = []
 let availableVoices = []
 let automaticVoiceId = null
 let lastPreference
-export const speechParameters = Object.freeze({ lang: 'pt-BR', rate: 0.9, pitch: 1.05, volume: 1 })
+export const speechParameters = Object.freeze({ lang: 'pt-BR', rate: 0.75, pitch: 1, volume: 1 })
 const voiceListeners = new Set()
 let voiceSignature = ''
 

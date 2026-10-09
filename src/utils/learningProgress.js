@@ -21,7 +21,15 @@ export function getLearningProgressRecorder(store) {
       const established = store.getProgressSnapshot().effectiveProgress?.generation || null
       if (expected && established !== expected) return rejected()
       if (!generation && !initialGeneration.value) initialGeneration.value = established
-      const result = await store[method](...args)
+      let evidence = args
+      // Join only evidence actually recorded for this word, in either mode/order.
+      if (method === 'recordActivityPerformed' && args[0] === 'writing' && !args[2].includes('complete')) {
+        const prior = store.getProgressSnapshot().effectiveProgress?.performedActivities.writing[args[1]] || []
+        if (['typing', 'notebook'].every(step => prior.includes(step) || args[2].includes(step))) {
+          evidence = [args[0], args[1], [...args[2], 'complete']]
+        }
+      }
+      const result = await store[method](...evidence)
       if (!generation && !initialGeneration.value) initialGeneration.value = store.getProgressSnapshot().effectiveProgress?.generation || null
       return result
     }).catch(() => ({ status: 'rejected', changed: false, persisted: false, reason: 'write-failed' }))

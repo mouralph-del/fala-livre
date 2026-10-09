@@ -10,6 +10,7 @@ export const CONTENT_ROTATION_MODULES = Object.freeze([
   'communication',
   'wordsAndPhrases',
   'writing',
+  'writingNotebook',
   'dailySituations',
   'myDayRoutines',
   'myDayCommunication',
@@ -124,12 +125,14 @@ export function getModuleRotation(moduleId, contentIds) {
   if (!isValidModule(moduleId)) return null
 
   const contentRotation = loadContentRotation()
+  // Preserve the old shared position when first splitting the notebook sequence.
   const savedState = contentRotation.modules[moduleId]
+    ?? (moduleId === 'writingNotebook' ? contentRotation.modules.writing : undefined)
   const state = savedState
     ? reconcileRotation(savedState, contentIds)
     : createInitialRotation(contentIds)
 
-  if (!savedState || JSON.stringify(savedState) !== JSON.stringify(state)) {
+  if (!contentRotation.modules[moduleId] || JSON.stringify(savedState) !== JSON.stringify(state)) {
     contentRotation.modules[moduleId] = state
     saveContentRotation(contentRotation)
   }

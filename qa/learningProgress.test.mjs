@@ -4,6 +4,20 @@ import { createProgressStore } from '../src/utils/progressStorage.js'
 import { getLearningProgressRecorder, progressResultMessage } from '../src/utils/learningProgress.js'
 
 const generation = '00000000-0000-4000-8000-000000000001'
+test('independent writing modes join real evidence in either order without double completion', async () => {
+  for (const order of [['typing', 'notebook'], ['notebook', 'typing']]) {
+    const f = fixture()
+    await f.recorder.recordActivityPerformed('writing', 'casa', [order[0]])
+    assert.deepEqual(JSON.parse(f.raw()).performedActivities.writing.casa, [order[0]])
+    await f.recorder.recordActivityPerformed('writing', 'cama', [order[1]])
+    assert.ok(!JSON.parse(f.raw()).performedActivities.writing.casa.includes('complete'))
+    await f.recorder.recordActivityPerformed('writing', 'casa', [order[1]])
+    assert.deepEqual(JSON.parse(f.raw()).performedActivities.writing.casa, ['typing', 'notebook', 'complete'])
+    const revision = JSON.parse(f.raw()).revision
+    await f.recorder.recordActivityPerformed('writing', 'casa', [order[1]])
+    assert.equal(JSON.parse(f.raw()).revision, revision)
+  }
+})
 function fixture(fail = false) {
   let raw = null, writes = 0
   const store = createProgressStore({
