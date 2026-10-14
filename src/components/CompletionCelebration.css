@@ -1,0 +1,7 @@
+.completion-celebration { position: fixed; bottom: max(12px, env(safe-area-inset-bottom)); right: max(12px, env(safe-area-inset-right)); z-index: 30; width: min(300px, calc(100vw - 24px)); padding: 16px; border: 2px solid var(--secondary); border-radius: var(--radius-card); background: white; box-shadow: var(--shadow-md); color: var(--primary); }
+.completion-celebration strong { font-size: 1.25rem; }
+.completion-celebration p { margin: 8px 0; }
+.completion-celebration button { min-height: 48px; padding: 8px 16px; border: 1px solid var(--primary); border-radius: var(--radius-control); background: var(--soft-blue); color: var(--primary); font-weight: 700; cursor: pointer; }
+.completion-celebration button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.completion-star, .achievement-star { color: #946400; }
+.completion-star { display: inline-block; font-size: 2rem; margin-right: 12px; }

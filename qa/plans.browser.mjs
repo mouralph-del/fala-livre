@@ -60,7 +60,16 @@ try {
   await click('.demo-back')
   assert.equal(await storage(),initial,'pricing and selection never change account or educational storage')
   assert.equal(await ev(`(async()=> (await import('/src/services/planAccess.js')).getCurrentPlan())()`),'premium-demo')
-  await A.cdp('Page.reload');await ready(A);assert.equal(await price(),'R$ 149,90/ano');assert.equal(await storage(),initial)
+  // Wait for the new document, rather than accepting the old page's h1.
+  const loaded = new Promise(resolve => {
+    const listener = event => {
+      if (JSON.parse(event.data).method !== 'Page.loadEventFired') return
+      sockets[0].removeEventListener('message', listener)
+      resolve()
+    }
+    sockets[0].addEventListener('message', listener)
+  })
+  await A.cdp('Page.reload');await loaded;await ready(A);assert.equal(await price(),'R$ 149,90/ano');assert.equal(await storage(),initial)
   const shots=path.join(tempRoot,'falalivre-plans-review');fs.mkdirSync(shots,{recursive:true})
   for(const width of [320,360,390,430,768,1024,1366])for(const size of ['normal','large'])for(const zoom of [1,1.25]) {
     await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false})

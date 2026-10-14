@@ -21,6 +21,8 @@ export function getProgressSummary(progress, persistedProgress = null) {
   const communication = explored('communication', 'guided-exploration'), emotions = explored('myDayEmotions', 'educational-exploration')
   const count = (items, key) => items.filter(item => item[key].recorded).length
   const counts = { wordsExplored: count(words, 'explored'), wordsCompleted: count(words, 'complete'), writingCompleted: count(writing, 'complete'), routinesCompleted: count(routines, 'complete'), communicationCompleted: count(communicationExercises, 'complete'), levelsCompleted: games.reduce((sum, game) => sum + count(game.levels, 'complete'), 0) }
+  const stars = { aprender: counts.wordsCompleted, escrever: count(writing, 'typing') + count(writing, 'notebook'), diaADia: counts.routinesCompleted + counts.communicationCompleted, jogar: counts.levelsCompleted }
+  stars.total = stars.aprender + stars.escrever + stars.diaADia + stars.jogar
   const facts = [communication, emotions, ...words.flatMap(item => [item.explored, item.build, item.sentence, item.complete]), ...writing.flatMap(item => [item.typing, item.notebook, item.complete]), ...routines.map(item => item.complete), ...communicationExercises.map(item => item.complete), ...games.flatMap(game => game.levels.map(level => level.complete))]
-  return { valid: true, hasEvidence: facts.some(item => item.recorded), hasSessionOnly: facts.some(item => item.sessionOnly), communication, emotions, words, writing, routines, communicationExercises, games, counts }
+  return { valid: true, hasEvidence: facts.some(item => item.recorded), hasSessionOnly: facts.some(item => item.sessionOnly), communication, emotions, words, writing, routines, communicationExercises, games, counts, stars }
 }

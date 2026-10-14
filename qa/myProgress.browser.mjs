@@ -121,13 +121,20 @@ try {
   await A.evaluate('localStorage.removeItem(window.audit.key);location.hash="/"')
   await act(A, 'await a.mount("app")')
   assert.match(await text(), /Olá!/); assert.doesNotMatch(await text(), /Pedro|Pontos|Atividades3|Conquistas2|120/)
-  for (const [label, expected] of [['Começar a aprender', '#/aprender'], ['Começar a jogar', '#/jogar']]) {
+  for (const [label, expected] of [['Começar a aprender', '#/aprender']]) {
     await A.evaluate(`document.querySelector('[aria-label="${label}"]').click()`); await pause(100)
     assert.equal(await A.evaluate('location.hash'), expected)
     await A.evaluate('location.hash="/"'); await pause(100)
   }
+  // A visitor sees the existing Premium invitation, rather than a game start.
+  await A.evaluate('document.querySelector(".activity-card--play button").click()'); await pause(100)
+  assert.equal(await A.evaluate('location.hash'), '#/')
+  assert.ok(await A.evaluate('document.querySelector(".premium-dialog[open]") !== null'))
+  await A.evaluate('document.querySelector(".premium-close").click()'); await pause(100)
+  await A.evaluate('location.hash="/aprender"'); await pause(100)
+  await A.evaluate('location.hash="/"'); await pause(100)
   await A.evaluate('document.querySelector(".header-menu-toggle").click()'); await pause(100)
-  await A.evaluate('document.querySelector(".header-navigation a").focus()')
+  await A.evaluate('Array.from(document.querySelectorAll(\'.header-desktop-navigation a[href="#/meu-progresso"], .header-navigation a[href="#/meu-progresso"]\')).find(link => link.getClientRects().length).focus()')
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', text: '\r', windowsVirtualKeyCode: 13 })
   await A.cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await pause(100)
   assert.equal(await A.evaluate('location.hash'), '#/meu-progresso')
@@ -137,7 +144,7 @@ try {
     for (const route of ['/', '/meu-progresso', '/perfil']) {
       await A.evaluate(`location.hash='${route}'`); await pause(100)
       assert.equal(await A.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'), true, `App ${route} ${width}`)
-      assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 5)
+      assert.equal(await A.evaluate('document.querySelectorAll(".header-navigation a").length'), 6)
     }
   }
   await A.evaluate('location.hash="/meu-progresso"'); await pause(100)
@@ -148,7 +155,7 @@ try {
   await A.cdp('Page.reload'); await pause(300); await ready(A); await act(A, 'await a.mount("app")')
   assert.match(await text(), /Meu Progresso/)
   assert.equal(await A.evaluate('document.querySelector(".records-empty aside") !== null'), true)
-  for (const [route, selector] of [['/aprender', '.learn-page'], ['/jogar', '.games-page'], ['/unknown', '.home']]) {
+  for (const [route, selector] of [['/aprender', '.learn-page'], ['/jogar', '.premium-access-panel'], ['/unknown', '.home']]) {
     await A.evaluate(`location.hash='${route}'`); await pause(100)
     assert.equal(await A.evaluate(`document.querySelector('${selector}') !== null`), true, route)
   }

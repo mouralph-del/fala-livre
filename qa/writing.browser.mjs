@@ -62,7 +62,7 @@ try {
   const beforeRotation = await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writingNotebook')
   const keyboardBefore = await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writing')
   await ev('document.querySelector("canvas").scrollIntoView({block:"center"})')
-  const directPoint = await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();return{x:r.x+40,y:r.y+40}})()')
+  const directPoint = await ev('(()=>{const r=document.querySelector("canvas").getBoundingClientRect();const reference=document.querySelector("#writing-notebook-panel .writing-practice").getBoundingClientRect();return{x:r.x+40,y:Math.max(r.y+40,reference.bottom+20)}})()')
   for(const [type,offset,buttons] of [['mousePressed',0,1],['mouseMoved',45,1],['mouseReleased',45,0]]) await A.cdp('Input.dispatchMouseEvent',{type,x:directPoint.x+offset,y:directPoint.y+offset/2,button:'left',buttons,clickCount:1})
   await pause(60)
   assert.ok(await ev('(()=>{const c=document.querySelector("canvas");return c.getContext("2d").getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0)})()'))
@@ -73,7 +73,7 @@ try {
   assert.equal(await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writingNotebook.currentIndex'),beforeRotation.currentIndex+1)
   assert.deepEqual(await ev('JSON.parse(localStorage.getItem("falaLivre_contentRotation_v1")).modules.writing'),keyboardBefore)
   // Start the full-cycle scenario at its boundary in this isolated test profile.
-  await ev('localStorage.removeItem("falaLivre_contentRotation_v1");location.reload()')
+  await ev('localStorage.removeItem("falaLivre_contentRotation_v1");localStorage.removeItem("falaLivre_writingHints_v1");location.reload()')
   await wait('document.querySelector(".writing-letter")!==null')
   // All twelve targets are completed using only public virtual-letter controls.
   const seen=new Set()
@@ -107,7 +107,7 @@ try {
     if(phase==='notebook'){
       await click('#writing-notebook-mode')
     }
-    for(const width of [320,360,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
+    for(const width of [320,360,375,390,430,768,1024,1366,1440,1920])for(const size of ['normal','large']) {
       await A.cdp('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<=430})
       await ev('document.documentElement.dataset.elementSize='+JSON.stringify(size)+';document.documentElement.dataset.reduceMotion="true";window.scrollTo(0,0)');await pause(50)
       await physicalAbsent();assert.ok(await ev('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1'),phase+width+size)

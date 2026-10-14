@@ -83,7 +83,7 @@ export default function Writing({ progressService, qaControls = false } = {}) {
     </div>
 
     <div id="writing-typing-panel" className="writing-mode-panel" role="region" aria-labelledby="writing-typing-mode" tabIndex={-1} hidden={phase !== 'typing'}>
-      <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} onComplete={id => {
+      <EducationalKeyboard key={currentWord.id} embedded targetWordId={currentWord.id} attemptId={String(rotation.cycle)} onComplete={id => {
         if (id !== currentWord.id || typedWord.current === id) return
         typedWord.current = id
         progress.recordActivityPerformed('writing', id, ['typing'])

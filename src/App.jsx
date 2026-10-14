@@ -1,3 +1,4 @@
+import CompletionCelebration from './components/CompletionCelebration'
 import './App.css'
 import officialLogo from './assets/illustrations/fala-livre-logo.png'
 
@@ -141,6 +142,7 @@ function App({ access = planAccess } = {}) {
         </div>
       </header>
       <div className="home-surround" data-scene={sceneForRoute(route)}>
+        <CompletionCelebration />
         <PageScene family={sceneForRoute(route)} activity={blocked ? undefined : route} />
         {blocked ? <PremiumAccess feature={access.getFeature(feature)} /> : route === 'paymentDemo' ? <PaymentDemoInfo /> : route === 'plans' ? <Plans /> : route === 'signIn' || route === 'createAccount' ? <AccountAccess key={route} mode={route === 'signIn' ? 'sign-in' : 'create'} /> : route === 'responsibleGuidance' ? <ResponsibleGuidance /> : route === 'progress' ? <MyProgress transitionDismissed={transitionDismissed} onDismissTransition={() => setTransitionDismissed(true)} /> : route === 'games' || route.startsWith('games/') ? <Games gameId={route.slice(6)} /> : route === 'situations' ? <DailySituations /> : route === 'writing' ? <Writing /> : route === 'keyboard' ? <EducationalKeyboard /> : route === 'notebook' ? <Notebook /> : route === 'words' ? <WordsAndPhrases /> : route === 'profile' ? <Profile /> : route === 'communication' ? <Communication /> : route === 'learn' ? <Learn access={access} onPremiumRequest={setPremiumNotice} /> : route === 'myDay' ? <MyDay /> : route === 'myDayRoutines' ? <SequenceGame embedded /> : route === 'myDayCommunication' ? <InteractiveSituationsGame embedded continuous /> : route === 'myDayEmotions' ? <MyDayEmotions /> : <main id="conteudo" className="home" tabIndex={-1}>
           <section className="welcome" aria-labelledby="welcome-title">

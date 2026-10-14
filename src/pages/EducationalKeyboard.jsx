@@ -5,6 +5,9 @@ import WritingPractice from '../components/WritingPractice'
 import { SpeakerIcon } from '../components/CommunicationCard'
 import { falar, stopSpeaking } from '../utils/speech'
 import './Writing.css'
+import { readHint, updateHint } from '../utils/writingHints.js'
+import { getModuleRotation } from '../utils/contentRotationStorage.js'
+import { learningWordIds } from '../data/learningWords'
 
 export default function EducationalKeyboard({
   mode = 'practice',
@@ -12,12 +15,17 @@ export default function EducationalKeyboard({
   embedded = false,
   onComplete,
   onAdvance,
+  attemptId,
   advanceLabel = 'Praticar no caderno',
 }) {
   const target = learningWords.find(item => item.id === targetWordId) ?? learningWords[0]
   // Accented forms are writing aids, not additional letters of the alphabet.
   const accentedLetters = [...new Set(target.letters.filter(letter => /^[ÁÉÍÓÚÀÂÊÔÜÇ]$/.test(letter)))]
   const limit = mode === 'practice' ? target.letters.length : 12
+  const hintKey = JSON.stringify(['typing', target.id, attemptId ?? String(getModuleRotation('writing', learningWordIds).cycle)])
+  const [hint, setHint] = useState(() => readHint(hintKey))
+  const hiddenWord = hint.started && !hint.revealed
+  const completed = useRef(false)
   const [letters, setLetters] = useState([])
   const [message, setMessage] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
@@ -26,7 +34,7 @@ export default function EducationalKeyboard({
 
   const full = letters.length === limit
   const assembled = letters.join('')
-  const correct = mode === 'practice' && assembled === target.word && finishMessage === `Muito bem! Você escreveu ${target.word}.`
+  const correct = mode === 'practice' && assembled === target.word && finishMessage === 'Muito bem! Você escreveu a palavra.'
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true })
@@ -40,6 +48,8 @@ export default function EducationalKeyboard({
   }, [])
 
   const insertLetter = useCallback((letter) => {
+    if (letters.length >= limit) return
+    if (mode === 'practice') setHint(updateHint(hintKey, 'start'))
     setLetters(current => {
       if (current.length >= limit) return current
       const nextLetters = [...current, letter]
@@ -47,7 +57,7 @@ export default function EducationalKeyboard({
       setFinishMessage('')
       return nextLetters
     })
-  }, [limit])
+  }, [limit, letters.length, mode, hintKey])
 
   const removeLastLetter = useCallback(() => {
     setLetters(current => current.slice(0, -1))
@@ -64,8 +74,8 @@ export default function EducationalKeyboard({
   const confirmWord = useCallback(() => {
     if (mode !== 'practice') return
     if (assembled === target.word) {
-      setFinishMessage(`Muito bem! Você escreveu ${target.word}.`)
-      onComplete?.(target.id)
+      setFinishMessage('Muito bem! Você escreveu a palavra.')
+      if (!completed.current) { completed.current = true; onComplete?.(target.id) }
       return
     }
     setFinishMessage('Quase! Confira a palavra e tente novamente.')
@@ -77,15 +87,15 @@ export default function EducationalKeyboard({
     {!embedded && <a className="writing-back" href="#/aprender/escrever">← Escrever</a>}
     {!embedded && <header className="writing-intro">
       <h1 ref={headingRef} tabIndex={-1}>{mode === 'explore' ? 'Conhecer as letras' : 'Teclado educativo'}</h1>
-      <p>{mode === 'explore' ? 'Explore o alfabeto e ouça cada letra com atenção.' : `Use letras para escrever ${target.word}.`}</p>
+      <p>{mode === 'explore' ? 'Explore o alfabeto e ouça cada letra com atenção.' : 'Observe a imagem e use as letras para escrever.'}</p>
     </header>}
 
-    {mode === 'practice' && <WritingPractice wordId={target.id} />}
+    {mode === 'practice' && <WritingPractice wordId={target.id} hiddenWord={hiddenWord} hint={hint} onHelp={() => setHint(updateHint(hintKey, 'help'))} />}
 
     <section className="writing-work" aria-labelledby="your-writing">
       {mode === 'practice' ? <h2 id="your-writing">Sua escrita</h2> : <h2 id="your-writing">Exploração do alfabeto</h2>}
 
-      <div className="writing-slot-panel" aria-label={mode === 'practice' ? `Sua escrita da palavra ${target.word}` : 'Letras exploradas'}>
+      <div className="writing-slot-panel" aria-label={mode === 'practice' ? 'Sua escrita' : 'Letras exploradas'}>
         {mode === 'practice' ? (
           Array.from({ length: target.letters.length }, (_, index) => (
             <span key={`${target.id}-slot-${index}`} className="writing-slot" aria-label={`Posição ${index + 1}: ${letters[index] || 'vazia'}`}>

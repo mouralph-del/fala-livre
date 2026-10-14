@@ -44,6 +44,12 @@ export default function MyProgress({ progressService, transitionDismissed = fals
       {failure && <><p>{failure}</p><button type="button" onClick={() => { void actions.loadProgress() }}>Tentar ler novamente</button></>}
       {showRecords && summary.hasSessionOnly && <p>Alguns registros estão disponíveis apenas nesta sessão e podem desaparecer ao fechar ou recarregar o navegador.</p>}
     </div>
+    {!loading && !failure && <section className="achievement-summary" aria-label="Estrelas conquistadas">
+      <h2><span className="achievement-star" aria-hidden="true">★</span> {summary.valid ? summary.stars.total : 0} estrelas conquistadas</h2>
+      <p>Uma estrela por atividade ou nível concluído. Na escrita, Teclado e Caderno recebem uma estrela cada.</p>
+      <ul>{Object.entries({ Aprender: 'aprender', Escrever: 'escrever', 'Meu Dia a Dia': 'diaADia', Jogar: 'jogar' }).map(([label, key]) => <li key={key}><span className="achievement-star" aria-hidden="true">★</span> {label}: {summary.valid ? summary.stars[key] : 0} conclusões</li>)}</ul>
+      <p>As estrelas celebram a participação e não são uma nota.</p>
+    </section>}
     {empty && <section className="records-empty">
       <InterfaceIcon name="chart" className="records-empty-icon" />
       <p>Seus registros de atividades vão aparecer aqui conforme você explorar o Fala Livre.</p>

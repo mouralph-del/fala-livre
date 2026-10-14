@@ -321,3 +321,15 @@
   .writing-notebook-flow .writing-practice img { width: 72px; height: 72px; flex-shrink: 0; }
   .writing-notebook-flow .writing-practice button { margin-top: 6px; }
 }
+
+/* The activity owns the sticky reference; its ancestors do not clip scrolling. */
+.writing-practice { position: sticky; top: max(8px, env(safe-area-inset-top)); z-index: 5; flex-direction: row; text-align: left; gap: 12px; padding: 10px 12px; }
+.writing-practice img, .writing-notebook-flow .writing-practice img { width: 64px; height: 64px; flex-shrink: 0; }
+.writing-practice h2 { font-size: 1.125rem; }
+.writing-practice p { margin: 0; }
+.writing-practice p:empty { display: none; }
+.writing-practice button { margin-top: 4px; padding: 8px; }
+.writing-help { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.writing-help span { font-size: .875rem; }
+.writing-work { scroll-margin-top: 200px; }
+.writing-key button { scroll-margin-top: 220px; }

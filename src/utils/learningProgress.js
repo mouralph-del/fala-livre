@@ -31,6 +31,10 @@ export function getLearningProgressRecorder(store) {
       }
       const result = await store[method](...evidence)
       if (!generation && !initialGeneration.value) initialGeneration.value = store.getProgressSnapshot().effectiveProgress?.generation || null
+      const completion = method === 'recordLevelCompleted' || method === 'recordActivityPerformed' && (args[2].includes('complete') || args[0] === 'writing' && args[2].some(step => ['typing', 'notebook'].includes(step)))
+      if (completion && result.changed && result.status !== 'rejected' && typeof globalThis.window?.dispatchEvent === 'function') {
+        globalThis.window?.dispatchEvent(new CustomEvent('falaLivre:completion', { detail: { method, module: args[0], activity: args[1] } }))
+      }
       return result
     }).catch(() => ({ status: 'rejected', changed: false, persisted: false, reason: 'write-failed' }))
     queue = task.then(() => {})
