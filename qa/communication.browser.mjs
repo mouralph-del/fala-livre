@@ -85,6 +85,8 @@ try {
   const solve=async tokens=>{for(const id of tokens)await select(id);await button('Conferir frase');assert.ok(await evaluate(`document.querySelector('.interactive-response')`+' !== null'))}
   const instrument=()=>evaluate(`window.__spoken=[];window.__cancels=0;speechSynthesis.speak=u=>{window.__spoken.push({text:u.text,lang:u.lang,voice:u.voice?.name})};speechSynthesis.cancel=()=>window.__cancels++`)
   await cdp('Runtime.enable');await cdp('Page.enable')
+  // Exercise Premium educational content with the existing isolated demo session.
+  await cdp('Page.addScriptToEvaluateOnNewDocument', { source: "localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}))" })
   await cdp('Emulation.setDeviceMetricsOverride',{width:1366,height:1600,deviceScaleFactor:1,mobile:false})
   await cdp('Page.navigate',{url:'http://127.0.0.1:4183/#'+route})
   await wait(`document.querySelector('[data-situation]')`)

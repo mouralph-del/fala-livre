@@ -75,6 +75,8 @@ try {
   const instrument=()=>evaluate(`window.__spoken=[];window.__cancels=0;speechSynthesis.speak=u=>window.__spoken.push({text:u.text,lang:u.lang,voice:u.voice?.name});speechSynthesis.cancel=()=>window.__cancels++`)
   const say=async expected=>{await button('Ouvir mensagem');assert.equal(await evaluate('window.__spoken.at(-1).text'),expected)}
   await cdp('Runtime.enable');await cdp('Page.enable')
+  // Keep the Premium prerequisite separate from educational storage scenarios.
+  await cdp('Page.addScriptToEvaluateOnNewDocument', { source: "localStorage.setItem('falalivre.demo-session.v1',JSON.stringify({demo:true,responsibleName:'Alex',userName:'Noa'}))" })
   await cdp('Emulation.setDeviceMetricsOverride',{width:1366,height:1100,deviceScaleFactor:1,mobile:false})
   await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`window.SpeechSynthesisUtterance=class{constructor(text){this.text=text}};speechSynthesis.getVoices=()=>[{name:'QA Português',voiceURI:'qa',lang:'pt-BR',default:true}];window.__spoken=[];window.__cancels=0;speechSynthesis.speak=u=>window.__spoken.push({text:u.text,lang:u.lang,voice:u.voice?.name});speechSynthesis.cancel=()=>window.__cancels++`})
   await cdp('Page.navigate',{url:'http://127.0.0.1:4184/#'+route});await wait(`document.querySelector('[data-emotions-view="menu"]')`)
@@ -171,9 +173,9 @@ try {
   await say('Eu estou com medo.');assert.equal(await evaluate('window.__spoken.at(-1).voice'),'QA Português')
   await evaluate('window.SpeechSynthesisUtterance=undefined');await button('Ouvir mensagem');assert.ok(await evaluate(`document.querySelector('main').textContent.includes('Áudio indisponível')`))
   await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false})
-  const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa/emotions-390.png',Buffer.from(shot.data,'base64'))
+  const shot=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),'falalivre-emotions-390.png'),Buffer.from(shot.data,'base64'))
   for(const value of ['invalid',null]){
-    await cdp('Page.addScriptToEvaluateOnNewDocument',{source:value===null?`Storage.prototype.getItem=()=>{throw Error('QA unavailable')};Storage.prototype.setItem=()=>{throw Error('QA unavailable')}`:`localStorage.setItem('${key}','invalid')`})
+    await cdp('Page.addScriptToEvaluateOnNewDocument',{source:value===null?`const originalGet=Storage.prototype.getItem,originalSet=Storage.prototype.setItem;Storage.prototype.getItem=function(key){if(key==='falalivre.demo-session.v1')return originalGet.call(this,key);throw Error('QA unavailable')};Storage.prototype.setItem=function(key,value){if(key==='falalivre.demo-session.v1')return originalSet.call(this,key,value);throw Error('QA unavailable')}`:`localStorage.setItem('${key}','invalid')`})
     await cdp('Page.reload');await wait(`document.querySelector('[data-emotions-view="menu"]')`);await open('Conhecer emoções');await button('Próximo conceito');assert.ok(await current())
   }
   assert.equal(errors.length,0,JSON.stringify(errors))
