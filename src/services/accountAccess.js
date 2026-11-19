@@ -1,65 +1,211 @@
-// Frontend-only demo: public credentials ship in the bundle. NOT secure
-// authentication; never protect real data. Replace this service with the backend.
-// Browser progress/preferences remain unrelated to accounts.
-const SESSION_KEY = 'falalivre.demo-session.v1'
-const DEMO_SESSION = Object.freeze({ demo: true, responsibleName: 'Alex', userName: 'Noa' })
-const validName = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 200 && [...value].every(character => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127)
-const listeners = new Set()
-function readSession() {
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(SESSION_KEY))
-    if (stored?.demo !== true) return null
-    if (stored.name === 'Responsável' && stored.responsibleName === undefined && stored.userName === undefined) {
-      // Migrate only the known legacy demo, keeping all educational keys intact.
-      try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(DEMO_SESSION)) } catch { /* Memory-only fallback. */ }
-      return DEMO_SESSION
-    }
-    return validName(stored.responsibleName) && validName(stored.userName)
-      ? Object.freeze({ demo: true, responsibleName: stored.responsibleName.trim(), userName: stored.userName.trim() }) : null
-  } catch { return null }
-}
-let session = readSession()
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut as firebaseSignOut, 
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { PROGRESS_STORAGE_KEY, progressStore } from '../utils/progressStorage';
+
+const validName = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 200;
+const listeners = new Set();
+
+let session = null;
+
 function publish(next) {
-  session = next
-  listeners.forEach(listener => listener())
-}
-function storageChanged(event) {
-  if (event.key === SESSION_KEY || event.key === null) publish(readSession())
-}
-export function getCurrentSession() { return session }
-export function subscribeSession(listener) {
-  if (!listeners.size) window.addEventListener('storage', storageChanged)
-  listeners.add(listener)
-  return () => {
-    listeners.delete(listener)
-    if (!listeners.size) window.removeEventListener('storage', storageChanged)
-  }
-}
-export function signOut() {
-  try { window.localStorage.removeItem(SESSION_KEY) } catch { /* Memory-only fallback. */ }
-  publish(null)
-}
-export class InvalidAccountCredentials extends Error {
-  constructor() { super('invalid-account-credentials'); this.name = 'InvalidAccountCredentials' }
-}
-export class AccountServiceUnavailable extends Error {
-  constructor() { super('account-service-unavailable'); this.name = 'AccountServiceUnavailable' }
+  session = next;
+  listeners.forEach(listener => listener());
 }
 
-// Explicit academic simulation; same demo session, never a payment entitlement.
-export function activatePremiumDemonstration() {
-  const next = session || DEMO_SESSION
-  try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(next)) } catch { /* Memory-only fallback. */ }
-  publish(next)
-  return next
+// Restaura o progresso da nuvem para o navegador e atualiza as telas
+async function restoreProgressFromCloud(cloudProgress) {
+  try {
+    if (cloudProgress) {
+      window.localStorage.setItem(PROGRESS_STORAGE_KEY, cloudProgress);
+    } else {
+      window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+    }
+    await progressStore.loadProgress();
+  } catch (error) {
+    console.error('Erro ao restaurar progresso:', error);
+  }
+}
+
+// Escuta qualquer nova estrela ou atividade concluída e salva no Firestore automaticamente
+let lastSyncedRaw = null;
+progressStore.subscribeProgress(() => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const currentRaw = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
+  if (currentRaw && currentRaw !== lastSyncedRaw) {
+    lastSyncedRaw = currentRaw;
+    updateDoc(doc(db, 'usuarios', user.uid), {
+      progresso: currentRaw
+    }).catch(err => console.error('Erro ao salvar progresso na nuvem:', err));
+  }
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    lastSyncedRaw = null;
+    window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+    await progressStore.loadProgress();
+    publish(null);
+    return;
+  }
+
+  try {
+    const userDocRef = doc(db, 'usuarios', user.uid);
+    const userSnap = await getDoc(userDocRef);
+
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      lastSyncedRaw = data.progresso || null;
+      await restoreProgressFromCloud(lastSyncedRaw);
+
+      publish(Object.freeze({
+        uid: user.uid,
+        email: user.email,
+        responsibleName: data.responsibleName,
+        userName: data.userName,
+        demo: data.isPremium === true
+      }));
+    } else {
+      publish(null);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar perfil no Firestore:', error);
+    publish(null);
+  }
+});
+
+export function getCurrentSession() {
+  return session;
+}
+
+export function subscribeSession(listener) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+export async function signOut() {
+  lastSyncedRaw = null;
+  window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+  await progressStore.loadProgress();
+  await firebaseSignOut(auth);
+  publish(null);
+}
+
+export class InvalidAccountCredentials extends Error {
+  constructor() {
+    super('invalid-account-credentials');
+    this.name = 'InvalidAccountCredentials';
+  }
+}
+
+export class AccountServiceUnavailable extends Error {
+  constructor() {
+    super('account-service-unavailable');
+    this.name = 'AccountServiceUnavailable';
+  }
+}
+
+export async function activatePremiumDemonstration() {
+  const user = auth.currentUser;
+  if (!user || !session) throw new AccountServiceUnavailable();
+
+  const userDocRef = doc(db, 'usuarios', user.uid);
+  await updateDoc(userDocRef, { isPremium: true });
+
+  const next = Object.freeze({
+    ...session,
+    demo: true
+  });
+  publish(next);
+  return next;
 }
 
 export async function requestAccountAccess(mode, credentials) {
-  if (mode !== 'sign-in') throw new AccountServiceUnavailable()
-  if (credentials?.email !== 'teste@falalivre.com' || credentials?.password !== 'FalaLivre123') {
-    throw new InvalidAccountCredentials()
+  const email = credentials?.email?.trim();
+  const password = credentials?.password;
+
+  if (!email || !password) {
+    throw new InvalidAccountCredentials();
   }
-  // A credential login always returns the approved Alex/Noa identity.
-  session = DEMO_SESSION
-  return activatePremiumDemonstration()
+
+  if (mode === 'create') {
+    const responsibleName = credentials?.responsibleName?.trim();
+    const userName = credentials?.userName?.trim();
+
+    if (!validName(responsibleName) || !validName(userName)) {
+      throw new InvalidAccountCredentials();
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Ao criar uma conta nova, garante que ela comece zerada (sem herdar dados antigos do navegador)
+      lastSyncedRaw = null;
+      window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+      await progressStore.loadProgress();
+
+      await setDoc(doc(db, 'usuarios', user.uid), {
+        email,
+        responsibleName,
+        userName,
+        isPremium: false,
+        progresso: null,
+        criadoEm: new Date().toISOString()
+      });
+
+      const newSession = Object.freeze({
+        uid: user.uid,
+        email: user.email,
+        responsibleName,
+        userName,
+        demo: false
+      });
+
+      publish(newSession);
+      return newSession;
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use' || error.code === 'auth/weak-password' || error.code === 'auth/invalid-email') {
+        throw new InvalidAccountCredentials();
+      }
+      throw new AccountServiceUnavailable();
+    }
+  }
+
+  if (mode === 'sign-in') {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const userSnap = await getDoc(doc(db, 'usuarios', user.uid));
+      const data = userSnap.exists() ? userSnap.data() : { responsibleName: 'Responsável', userName: 'Usuário', isPremium: false, progresso: null };
+
+      lastSyncedRaw = data.progresso || null;
+      await restoreProgressFromCloud(lastSyncedRaw);
+
+      const loggedSession = Object.freeze({
+        uid: user.uid,
+        email: user.email,
+        responsibleName: data.responsibleName,
+        userName: data.userName,
+        demo: data.isPremium === true
+      });
+
+      publish(loggedSession);
+      return loggedSession;
+    } catch {
+      throw new InvalidAccountCredentials();
+    }
+  }
+
+  throw new AccountServiceUnavailable();
 }
